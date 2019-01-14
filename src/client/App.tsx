@@ -1,11 +1,11 @@
 import { Grid } from '@material-ui/core';
 import * as React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { About } from './components/About';
+import { Block } from './components/Block';
 // Pages
 import { Header } from './components/Header';
 import { Home } from './components/Home';
-import { UsersList } from './components/UsersList';
+import { Tx } from './components/Tx';
 
 export const App = () => (
   <BrowserRouter>
@@ -14,8 +14,8 @@ export const App = () => (
         <Header />
         <Switch>
           <Route exact path='/' component={Home} />
-          <Route path='/about' component={About} />
-          <Route path='/users-list' component={UsersList} />
+          <Route path='/block' component={Block} />
+          <Route path='/tx' component={Tx} />
         </Switch>
       </Grid>
     </div>

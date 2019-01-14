@@ -1,6 +1,6 @@
 {
-  "name": "fullstack-typescript",
-  "version": "1.0.0",
+  "name": "hubble",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "engines": {
@@ -24,7 +24,8 @@
     "tabWidth": 2,
     "semi": true,
     "singleQuote": true,
-    "jsxSingleQuote": true
+    "jsxSingleQuote": true,
+    "printWidth": 120
   },
   "keywords": [
     "typescript",
@@ -38,12 +39,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/gilamran/fullstack-typescript.git"
+    "url": "https://github.com/orbs-network/hubble.git"
   },
   "license": "MIT",
   "author": "Gil Amran",
   "dependencies": {
     "@material-ui/core": "^3.8.3",
+    "@material-ui/icons": "^3.0.2",
     "axios": "^0.18.0",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",

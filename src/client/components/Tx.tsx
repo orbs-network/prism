@@ -1,22 +1,18 @@
 import { Card, CardContent, CardHeader, Typography } from '@material-ui/core';
 import * as React from 'react';
-import { IUserDTO } from '../../shared/IUserDTO';
 
-interface IProps {
-  user: IUserDTO;
-}
-
-export class User extends React.Component<IProps> {
+export class Tx extends React.Component {
   public render() {
     return (
       <Card>
-        <CardHeader title={`User: ${this.props.user.userName}`} />
+        <CardHeader title={`Tx blabla`} />
         <CardContent>
           <Typography variant='subheading'>
-            Id: {this.props.user.userId}
+            Hash:
+            0x77bb2d5055ce4e5aa2863083bb8f59ac5c8114206c1884cd4bc8dfee3a46a98c
           </Typography>
           <Typography variant='subheading'>
-            Image Url: {this.props.user.imageUrl}
+            Difficulty: 2,656,027,952,978,796
           </Typography>
         </CardContent>
       </Card>
