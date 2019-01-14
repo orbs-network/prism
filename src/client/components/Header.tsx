@@ -1,10 +1,9 @@
-import { AppBar, Button, Toolbar, IconButton, Typography, InputBase } from '@material-ui/core';
-import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { AppBar, IconButton, InputBase, Toolbar, Typography } from '@material-ui/core';
+import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
-import { fade } from '@material-ui/core/styles/colorManipulator';
-import { withStyles, createStyles, Theme, WithStyles } from '@material-ui/core/styles';
+import * as React from 'react';
 
 const styles = (theme: Theme) =>
   createStyles({
