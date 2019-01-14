@@ -45,7 +45,6 @@ export const Home = withStyles(styles)(({ classes }: Props) => (
                   <TableCell>Price</TableCell>
                   <TableCell align='right'>Difficulty</TableCell>
                   <TableCell align='right'>Block time</TableCell>
-                  <TableCell align='right'>Hashrate</TableCell>
                   <TableCell align='right'>TPS</TableCell>
                 </TableRow>
               </TableHead>
@@ -56,7 +55,6 @@ export const Home = withStyles(styles)(({ classes }: Props) => (
                   </TableCell>
                   <TableCell align='right'>2,602 T</TableCell>
                   <TableCell align='right'>15.4 s</TableCell>
-                  <TableCell align='right'>181.8 TH/s</TableCell>
                   <TableCell align='right'>126</TableCell>
                 </TableRow>
               </TableBody>
