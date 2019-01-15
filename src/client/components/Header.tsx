@@ -75,7 +75,7 @@ export const Header = withStyles(styles)(({ classes }: Props) => (
         <MenuIcon />
       </IconButton>
       <Typography className={classes.title} variant='h6' color='inherit' noWrap>
-        Hubble.com
+        OrbsHubble.com
       </Typography>
       <div className={classes.grow} />
       <div className={classes.search}>
@@ -83,7 +83,7 @@ export const Header = withStyles(styles)(({ classes }: Props) => (
           <SearchIcon />
         </div>
         <InputBase
-          placeholder='Block Number / Ts Hash'
+          placeholder='Block Number / Tx Hash'
           classes={{
             root: classes.inputRoot,
             input: classes.inputInput,
