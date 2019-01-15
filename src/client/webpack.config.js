@@ -17,10 +17,11 @@ const plugins = [
 ];
 
 if (!config.IS_PRODUCTION) {
-  plugins.push(
-    new OpenBrowserPlugin({ url: `http://localhost:${config.SERVER_PORT}` }),
-  );
+  plugins.push(new OpenBrowserPlugin({ url: `http://localhost:${config.SERVER_PORT}` }));
 }
+
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+// plugins.push(new BundleAnalyzerPlugin());
 
 module.exports = {
   mode: config.IS_PRODUCTION ? 'production' : 'development',
