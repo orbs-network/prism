@@ -1,7 +1,9 @@
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { BlockItem } from './BlockItem';
-import { Card, CardHeader, CardContent } from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
 import { IBlock } from '../../../shared/IBlock';
 
 const styles = (theme: Theme) => createStyles({});

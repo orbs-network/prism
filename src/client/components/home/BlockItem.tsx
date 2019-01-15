@@ -1,5 +1,4 @@
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
-import { fade } from '@material-ui/core/styles/colorManipulator';
 import * as React from 'react';
 import { IBlock } from '../../../shared/IBlock';
 
