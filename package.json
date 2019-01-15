@@ -80,7 +80,7 @@
     "html-webpack-plugin": "^3.2.0",
     "jest": "^23.6.0",
     "jest-puppeteer": "^3.8.0",
-    "open-browser-webpack-plugin": "0.0.5",
+    "open-browser-webpack-plugin": "github:rodrigopandini/open-browser-webpack-plugin",
     "postcss-loader": "^3.0.0",
     "puppeteer": "^1.11.0",
     "rimraf": "^2.6.3",
