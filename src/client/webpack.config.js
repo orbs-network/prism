@@ -6,7 +6,7 @@ const cssnano = require('cssnano');
 
 const config = require('../server/config');
 const projectRoot = path.join(__dirname, '..', '..');
-var nodeModulesPath = path.resolve(__dirname, 'node_modules');
+const nodeModulesPath = path.resolve(__dirname, 'node_modules');
 
 const plugins = [
   new HtmlWebpackPlugin({
