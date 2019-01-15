@@ -6,6 +6,7 @@ const cssnano = require('cssnano');
 
 const config = require('../server/config');
 const projectRoot = path.join(__dirname, '..', '..');
+var nodeModulesPath = path.resolve(__dirname, 'node_modules');
 
 const plugins = [
   new HtmlWebpackPlugin({
@@ -26,7 +27,7 @@ if (!config.IS_PRODUCTION) {
 module.exports = {
   mode: config.IS_PRODUCTION ? 'production' : 'development',
   devtool: config.IS_PRODUCTION ? '' : 'inline-source-map',
-  entry: ['babel-polyfill', './client'],
+  entry: ['./client'],
   output: {
     path: path.join(projectRoot, 'dist', 'public'),
     filename: `[name]-${version}-bundle.js`,
@@ -50,7 +51,8 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'awesome-typescript-loader',
+        loaders: ['babel-loader'],
+        exclude: [/node_modules/, nodeModulesPath],
       },
       {
         test: /\.css$/,
