@@ -1,10 +1,12 @@
 import * as puppeteer from 'puppeteer';
 
-describe('<User/>', () => {
-  it('should display the user inside a Card component', async () => {
+describe('Blocks progression', () => {
+  it('should display the app title', async () => {
+    console.log('lunching chrome');
     const browser = await puppeteer.launch({
       headless: true,
     });
+    console.log('opening new page');
     const page = await browser.newPage();
 
     page.emulate({
@@ -15,10 +17,14 @@ describe('<User/>', () => {
       userAgent: '',
     });
 
+    console.log('go to localhost:3000');
     await page.goto('http://localhost:3000/');
+    console.log('wait for selector');
     await page.waitForSelector('#pageTitle');
 
+    console.log('eval the page title');
     const html = await page.$eval('#pageTitle', e => e.innerHTML);
+    console.log('expecting');
     expect(html).toBe('Hubble - The ORBS Blockchain Explorer');
 
     browser.close();
