@@ -7,7 +7,9 @@ import { Header } from './components/Header';
 import { Home } from './components/home/Home';
 import { Tx } from './components/Tx';
 
-export const App = () => (
+import { hot } from 'react-hot-loader';
+
+const AppImpl = () => (
   <BrowserRouter>
     <Grid container spacing={24}>
       <Header />
@@ -19,3 +21,5 @@ export const App = () => (
     </Grid>
   </BrowserRouter>
 );
+
+export const App = hot(module)(AppImpl);
