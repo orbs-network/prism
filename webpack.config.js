@@ -82,4 +82,8 @@ module.exports = {
     ],
   },
   plugins,
+  externals: {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+  },
 };
