@@ -1,14 +1,16 @@
 import * as express from 'express';
-import { apiRouter } from './routes/api-router';
-import { staticsRouter } from './routes/statics-router';
-import { staticsDevRouter } from './routes/statics-dev-router';
-import * as config from './config';
+import { initServer } from './server';
+import { WS } from './ws/ws';
 
-const app = express();
+async function main() {
+  // statics and api server
+  const server = initServer();
 
-app.use(apiRouter());
-app.use(config.IS_PRODUCTION ? staticsRouter() : staticsDevRouter());
+  // ws for real-time data
+  const ws = new WS(server);
+  ws.init();
+}
 
-app.listen(config.SERVER_PORT, () => {
-  console.log(`App listening on port ${config.SERVER_PORT}!`);
-});
+main()
+  .then(() => console.log('running'))
+  .catch(err => console.log(`error: ${err}`));

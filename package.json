@@ -49,7 +49,9 @@
   "author": "Gil Amran",
   "dependencies": {
     "body-parser": "^1.18.3",
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "socket.io": "^2.2.0",
+    "socket.io-client": "^2.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
@@ -70,6 +72,8 @@
     "@types/node": "^10.12.18",
     "@types/puppeteer": "^1.11.1",
     "@types/react": "^16.7.18",
+    "@types/socket.io": "^2.1.2",
+    "@types/socket.io-client": "^1.4.32",
     "axios": "^0.18.0",
     "babel-loader": "^8.0.5",
     "concurrently": "^4.1.0",
