@@ -35,42 +35,9 @@ export const Home = withStyles(styles)(({ classes }: Props) => (
     </Typography>
     <Grid container spacing={24}>
       <Grid item xs={12}>
-        <Card>
-          <CardHeader />
-          <CardContent>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Price</TableCell>
-                  <TableCell align='right'>Difficulty</TableCell>
-                  <TableCell align='right'>Block time</TableCell>
-                  <TableCell align='right'>TPS</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow>
-                  <TableCell component='th' scope='row'>
-                    $177
-                  </TableCell>
-                  <TableCell align='right'>2,602 T</TableCell>
-                  <TableCell align='right'>15.4 s</TableCell>
-                  <TableCell align='right'>126</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={12}>
         <Grid container spacing={16}>
-          <Grid item xs={6}>
+          <Grid item xs={12}>
             <BlockBox />
-          </Grid>
-          <Grid item xs={6}>
-            <Card>
-              <CardHeader title={'Transactions'} />
-              <CardContent>bla</CardContent>
-            </Card>
           </Grid>
         </Grid>
       </Grid>
