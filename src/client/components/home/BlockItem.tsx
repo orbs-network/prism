@@ -16,6 +16,10 @@ interface IProps extends WithStyles<typeof styles> {
 export const BlockItem = withStyles(styles)(({ classes, block }: IProps) => (
   <div>
     <hr />
-    <div>Height: {block.blockHeight}</div>
+    <div>Height: {block.height}</div>
+    <div>Hash: {block.hash}</div>
+    <div>Txns: {block.countOfTx}</div>
+    <div>Time Stamp: {block.timestamp}</div>
+    <div>Leader Node: {block.leanderNode}</div>
   </div>
 ));

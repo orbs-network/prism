@@ -5,45 +5,41 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import { IBlock } from '../../../shared/IBlock';
+import * as io from 'socket.io-client';
+
+const socket = io();
 
 const styles = (theme: Theme) => createStyles({});
 
 type Props = WithStyles<typeof styles>;
 
-const fakeBlocks: IBlock[] = [
-  {
-    blockHeight: 7065236,
-    leaderNode: 'OrbsTerra03',
-    countOfTx: 234,
-    approvalTime: Date.now(),
-  },
-  {
-    blockHeight: 7065237,
-    leaderNode: 'OrbsTerra02',
-    countOfTx: 163,
-    approvalTime: Date.now(),
-  },
-  {
-    blockHeight: 7065238,
-    leaderNode: 'OrbsIBM13',
-    countOfTx: 442,
-    approvalTime: Date.now(),
-  },
-  {
-    blockHeight: 7065239,
-    leaderNode: 'OrbsPepssi09',
-    countOfTx: 125,
-    approvalTime: Date.now(),
-  },
-];
+interface IState {
+  blocks: IBlock[];
+}
 
-export const BlockBox = withStyles(styles)(({ classes }: Props) => (
-  <Card>
-    <CardHeader title={'Blocks'} />
-    <CardContent>
-      {fakeBlocks.map((block, idx) => (
-        <BlockItem block={block} key={idx} />
-      ))}
-    </CardContent>
-  </Card>
-));
+export class BlockBox extends React.Component<Props, IState> {
+  constructor(props) {
+    super(props);
+    this.state = { blocks: [] };
+  }
+
+  public componentDidMount() {
+    socket.on('new-block', (block: IBlock) => {
+      const blocks = [block, ...this.state.blocks].slice(0, 5);
+      this.setState({ blocks });
+    });
+  }
+
+  public render() {
+    return (
+      <Card id='blocks-box'>
+        <CardHeader title={'Blocks'} />
+        <CardContent>
+          {this.state.blocks.map((block, idx) => (
+            <BlockItem block={block} key={idx} id={`block-${idx}`} />
+          ))}
+        </CardContent>
+      </Card>
+    );
+  }
+}

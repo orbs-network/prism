@@ -1,6 +1,7 @@
 export interface IBlock {
-  blockHeight: number;
+  hash: string;
+  height: number;
   countOfTx: number;
-  leaderNode: string;
-  approvalTime: number;
+  leanderNode: string;
+  timestamp: number;
 }
