@@ -18,7 +18,7 @@
     "dev-client": "webpack-dev-server -w",
     "dev-client:hot": "webpack-dev-server -w --hot",
     "build-server": "tsc -p ./src/server",
-    "dev-server": "tsc-watch -p ./src/server --onSuccess \"node index.js\"",
+    "dev-server": "tsc-watch -p ./src/server --onSuccess \"node index.js\" --noClear",
     "dev": "npm run clean && concurrently --prefix \"[{name}]\" --names \"SERVER,CLIENT\" -c \"bgBlue.bold,bgGreen.bold\" \"npm run dev-server\" \"npm run dev-client\"",
     "dev:hot": "npm run clean && concurrently --prefix \"[{name}]\" --names \"SERVER,CLIENT\" -c \"bgBlue.bold,bgGreen.bold\" \"npm run dev-server\" \"npm run dev-client:hot\"",
     "build": "npm run clean && concurrently --prefix \"[{name}]\" --names \"SERVER,CLIENT\" -c \"bgBlue.bold,bgGreen.bold\" \"npm run build-server\" \"npm run build-client\""
@@ -100,7 +100,7 @@
     "source-map-loader": "^0.2.4",
     "style-loader": "^0.23.1",
     "ts-jest": "^23.10.5",
-    "tsc-watch": "^1.0.31",
+    "tsc-watch": "^1.1.35",
     "tslib": "^1.9.3",
     "tslint": "^5.12.1",
     "typescript": "^3.2.2",
