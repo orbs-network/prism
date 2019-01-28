@@ -36,7 +36,7 @@ export class BlockBox extends React.Component<Props, IState> {
         <CardHeader title={'Blocks'} />
         <CardContent>
           {this.state.blocks.map((block, idx) => (
-            <BlockItem block={block} key={idx} id={`block-${idx}`} />
+            <BlockItem block={block} key={idx} />
           ))}
         </CardContent>
       </Card>

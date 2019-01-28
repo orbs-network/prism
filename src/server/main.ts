@@ -12,7 +12,7 @@ async function main() {
   ws.init();
   setInterval(() => {
     ws.emit('new-block', generateRandomFakeBlock());
-  }, 1000);
+  }, 200);
 }
 
 main()
