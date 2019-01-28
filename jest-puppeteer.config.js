@@ -1,9 +1,12 @@
+const debug = process.env.DEBUG_E2E === 'true';
+
 module.exports = {
   launch: {
-    headless: true,
+    headless: !debug,
   },
   server: {
-    command: 'NODE_ENV=production npm start',
+    command: 'npm run start:prod',
     port: 3000,
+    debug
   },
 };
