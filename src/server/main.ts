@@ -1,7 +1,8 @@
 import { OrbsAdaper } from './orbs-adapter';
 import { initServer } from './server';
-import { Storage } from './storage';
+import { Indexer } from './indexer';
 import { WS } from './ws/ws';
+import { Storage } from './storage';
 
 async function main() {
   // statics and api server
@@ -9,7 +10,8 @@ async function main() {
 
   const ws = new WS(server);
   const orbsAdapter = new OrbsAdaper();
-  const storage = new Storage(orbsAdapter, ws);
+  const storage = new Storage(ws);
+  const indexer = new Indexer(orbsAdapter, storage);
 }
 
 main()

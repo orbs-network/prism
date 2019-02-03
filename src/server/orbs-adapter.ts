@@ -35,6 +35,6 @@ export class OrbsAdaper {
   }
 
   private generateBlocks() {
-    this.blocksGeneratorIntervalId = setInterval(() => this.emitNewBlock(), 200);
+    this.blocksGeneratorIntervalId = setInterval(() => this.emitNewBlock(), 3000);
   }
 }
