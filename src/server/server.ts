@@ -3,11 +3,12 @@ import { apiRouter } from './routes/api-router';
 import { staticsRouter } from './routes/statics-router';
 import { staticsDevRouter } from './routes/statics-dev-router';
 import * as config from './config';
+import { Storage } from './storage';
 
-export function initServer() {
+export function initServer(storage: Storage) {
   const app = express();
 
-  app.use(apiRouter());
+  app.use(apiRouter(storage));
   app.use(config.IS_PRODUCTION ? staticsRouter() : staticsDevRouter());
 
   const server = app.listen(config.SERVER_PORT, () => {

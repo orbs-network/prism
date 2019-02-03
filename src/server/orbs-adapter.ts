@@ -1,5 +1,5 @@
-import { generateRandomFakeBlock } from './fake-blocks-generator';
 import { IBlock } from '../shared/IBlock';
+import { generateRandomFakeBlock } from './fake-blocks-generator';
 
 export type NewBlockCallback = (block: IBlock) => void;
 

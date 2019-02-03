@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { IUserDTO } from '../../shared/IUserDTO';
+import { IBlock } from '../../shared/IBlock';
 
-export function loadUsersAPI() {
-  return axios.get(`/api/users`).then(res => res.data as IUserDTO[]);
+export function loadBlock(blockHash: string) {
+  return axios.get(`/api/block/${blockHash}`).then(res => res.data as IBlock);
 }

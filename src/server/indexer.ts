@@ -1,4 +1,4 @@
-import { IBlock } from '../shared/IBlock';
+import { IBlockSummary, IBlock } from '../shared/IBlock';
 import { OrbsAdaper } from './orbs-adapter';
 import { Storage } from './storage';
 

@@ -1,10 +1,27 @@
-import { IBlock } from '../shared/IBlock';
+import { IBlockSummary, IBlock } from '../shared/IBlock';
 import { WS } from './ws/ws';
 
 export class Storage {
-  constructor(private ws: WS) {}
+  private ws: WS;
+  private db: IBlock[] = [];
 
-  public StoreBlock(newBlock: IBlock): void {
-    this.ws.emit('new-block', newBlock);
+  public init(ws: WS): void {
+    this.ws = ws;
+  }
+
+  public getBlock(blockHash: string): IBlock {
+    return this.db.find(block => block.hash === blockHash);
+  }
+
+  public StoreBlock(block: IBlock): void {
+    this.db.push(block);
+    const blockSummary: IBlockSummary = {
+      hash: block.hash,
+      height: block.height,
+      countOfTx: block.countOfTx,
+      leanderNode: block.leanderNode,
+      timestamp: block.timestamp,
+    };
+    this.ws.emit('new-block-summary', blockSummary);
   }
 }

@@ -15,7 +15,7 @@ const AppImpl = () => (
       <Header />
       <Switch>
         <Route exact path='/' component={Home} />
-        <Route path='/block' component={Block} />
+        <Route path='/block/:hash' component={Block} />
         <Route path='/tx' component={Tx} />
       </Switch>
     </Grid>

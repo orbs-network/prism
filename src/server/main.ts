@@ -5,13 +5,13 @@ import { WS } from './ws/ws';
 import { Storage } from './storage';
 
 async function main() {
-  // statics and api server
-  const server = initServer();
-
-  const ws = new WS(server);
+  const storage = new Storage();
   const orbsAdapter = new OrbsAdaper();
-  const storage = new Storage(ws);
+  const server = initServer(storage);
+  const ws = new WS(server);
   const indexer = new Indexer(orbsAdapter, storage);
+
+  storage.init(ws);
 }
 
 main()
