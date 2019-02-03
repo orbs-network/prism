@@ -7,7 +7,7 @@ import * as React from 'react';
 interface IProps {
   match: any;
 }
-export const Block: React.FunctionComponent<IProps> = ({ match }) => (
+export const BlockDetails: React.FunctionComponent<IProps> = ({ match }) => (
   <Card>
     <CardHeader title='Block' />
     <CardContent>

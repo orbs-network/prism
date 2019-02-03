@@ -1,7 +1,7 @@
 import Grid from '@material-ui/core/Grid';
 import * as React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { Block } from './components/Block';
+import { BlockDetails } from './components/BlockDetails';
 
 import * as io from 'socket.io-client';
 
@@ -44,7 +44,7 @@ class AppImpl extends React.Component<IProps, IState> {
           <Header />
           <Switch>
             <Route exact path='/' render={() => <Home blocks={this.state.blocks} />} />
-            <Route path='/block/:hash' component={Block} />
+            <Route path='/block/:hash' component={BlockDetails} />
             <Route path='/tx' component={Tx} />
           </Switch>
         </Grid>
