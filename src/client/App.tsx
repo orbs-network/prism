@@ -1,54 +1,40 @@
+import { createStyles, Theme, WithStyles } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import * as React from 'react';
+import { hot } from 'react-hot-loader';
+import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { BlockDetails } from './components/BlockDetails';
-
 import * as io from 'socket.io-client';
-
+import { BlockDetails } from './components/BlockDetails';
 // Pages
 import { Header } from './components/Header';
 import { Home } from './components/home/Home';
 import { Tx } from './components/Tx';
+import { configureStore } from './store';
+import { listenToBlocksSummaryAction } from './blocksSummaryActions';
 
-import { hot } from 'react-hot-loader';
-import { IBlockSummary } from '../shared/IBlock';
-import { Theme, createStyles, WithStyles } from '@material-ui/core';
-
-const socket = io();
+const store = configureStore();
+store.dispatch(listenToBlocksSummaryAction());
 
 const styles = (theme: Theme) => createStyles({});
 
 interface IProps extends WithStyles<typeof styles> {}
 
-interface IState {
-  blocks: IBlockSummary[];
-}
-
-class AppImpl extends React.Component<IProps, IState> {
-  constructor(props: IProps) {
-    super(props);
-    this.state = { blocks: [] };
-  }
-
-  public componentDidMount() {
-    socket.on('new-block-summary', (blockSummary: IBlockSummary) => {
-      const blocks = [blockSummary, ...this.state.blocks].slice(0, 5);
-      this.setState({ blocks });
-    });
-  }
-
+class AppImpl extends React.Component<IProps> {
   public render() {
     return (
-      <BrowserRouter>
-        <Grid container spacing={24}>
-          <Header />
-          <Switch>
-            <Route exact path='/' render={() => <Home blocks={this.state.blocks} />} />
-            <Route path='/block/:hash' component={BlockDetails} />
-            <Route path='/tx' component={Tx} />
-          </Switch>
-        </Grid>
-      </BrowserRouter>
+      <Provider store={store}>
+        <BrowserRouter>
+          <Grid container spacing={24}>
+            <Header />
+            <Switch>
+              <Route exact path='/' component={Home} />
+              <Route path='/block/:hash' component={BlockDetails} />
+              <Route path='/tx' component={Tx} />
+            </Switch>
+          </Grid>
+        </BrowserRouter>
+      </Provider>
     );
   }
 }

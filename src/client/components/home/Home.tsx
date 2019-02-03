@@ -3,7 +3,6 @@ import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/s
 import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
 import { BlockBox } from './BlockBox';
-import { IBlockSummary } from '../../../shared/IBlock';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -19,11 +18,9 @@ const styles = (theme: Theme) =>
     },
   });
 
-interface IProps extends WithStyles<typeof styles> {
-  blocks: IBlockSummary[];
-}
+interface IProps extends WithStyles<typeof styles> {}
 
-export const Home = withStyles(styles)(({ classes, blocks }: IProps) => (
+export const Home = withStyles(styles)(({ classes }: IProps) => (
   <div className={classes.root}>
     <Typography className={classes.headTableTitle} variant='h3' id='pageTitle'>
       Hubble - The ORBS Blockchain Explorer
@@ -32,7 +29,7 @@ export const Home = withStyles(styles)(({ classes, blocks }: IProps) => (
       <Grid item xs={12}>
         <Grid container spacing={16}>
           <Grid item xs={12}>
-            <BlockBox blocks={blocks} />
+            <BlockBox />
           </Grid>
         </Grid>
       </Grid>
