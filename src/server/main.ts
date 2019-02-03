@@ -1,18 +1,15 @@
-import * as express from 'express';
+import { OrbsAdaper } from './orbs-adapter';
 import { initServer } from './server';
+import { Storage } from './storage';
 import { WS } from './ws/ws';
-import { generateRandomFakeBlock } from './fake-blocks-generator';
 
 async function main() {
   // statics and api server
   const server = initServer();
 
-  // ws for real-time data
   const ws = new WS(server);
-  ws.init();
-  setInterval(() => {
-    ws.emit('new-block', generateRandomFakeBlock());
-  }, 200);
+  const orbsAdapter = new OrbsAdaper();
+  const storage = new Storage(orbsAdapter, ws);
 }
 
 main()
