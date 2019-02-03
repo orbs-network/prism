@@ -25,8 +25,8 @@ export const BlockBox = withStyles(styles)(
     }
 
     public componentDidMount() {
-      socket.on('new-block-summary', (block: IBlockSummary) => {
-        const blocks = [block, ...this.state.blocks].slice(0, 5);
+      socket.on('new-block-summary', (blockSummary: IBlockSummary) => {
+        const blocks = [blockSummary, ...this.state.blocks].slice(0, 5);
         this.setState({ blocks });
       });
     }

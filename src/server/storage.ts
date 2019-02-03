@@ -15,13 +15,16 @@ export class Storage {
 
   public StoreBlock(block: IBlock): void {
     this.db.push(block);
-    const blockSummary: IBlockSummary = {
+    this.ws.emit('new-block-summary', this.blockToBlockSummary(block));
+  }
+
+  private blockToBlockSummary(block: IBlock): IBlockSummary {
+    return {
       hash: block.hash,
       height: block.height,
       countOfTx: block.countOfTx,
       leanderNode: block.leanderNode,
       timestamp: block.timestamp,
     };
-    this.ws.emit('new-block-summary', blockSummary);
   }
 }
