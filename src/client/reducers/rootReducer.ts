@@ -1,9 +1,13 @@
 import { combineReducers, Reducer } from 'redux';
-import { blocks, BlocksState } from './blocksReducer';
+import { blocksByHash, IBlocksByHash } from './blocksByHashReducer';
+import { recentBlocksHashs, RecentBlocksHashes } from './recentBlocksReducer';
 
 export interface IRootState {
-  blocks: BlocksState;
+  blocksByHash: IBlocksByHash;
+  recentBlocksHashs: RecentBlocksHashes;
 }
+
 export const rootReducer: Reducer<IRootState> = combineReducers<IRootState>({
-  blocks,
+  blocksByHash,
+  recentBlocksHashs,
 });

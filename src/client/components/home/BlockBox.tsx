@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { IBlockSummary } from '../../../shared/IBlock';
 import { IRootState } from '../../reducers/rootReducer';
 import { BlockItem } from './BlockItem';
+import { getRecentBlocks } from '../../reducers/recentBlocksReducer';
 
 const styles = (theme: Theme) => createStyles({});
 
@@ -20,7 +21,7 @@ const BlockBoxImpl = withStyles(styles)(
         <Card id='blocks-box'>
           <CardHeader title={'Blocks'} />
           <CardContent>
-            {this.props.blocks.slice(0, 5).map((block, idx) => (
+            {this.props.blocks.map((block, idx) => (
               <BlockItem block={block} key={idx} />
             ))}
           </CardContent>
@@ -31,7 +32,7 @@ const BlockBoxImpl = withStyles(styles)(
 );
 
 const mapStateToProps = (state: IRootState) => ({
-  blocks: state.blocks,
+  blocks: getRecentBlocks(state),
 });
 
 export const BlockBox = connect(mapStateToProps)(BlockBoxImpl);
