@@ -1,12 +1,12 @@
-import { blocksSummaryActionsNames } from '../blocksSummaryActions';
 import { IBlockSummary } from '../../shared/IBlock';
+import { BlocksSummaryActions } from '../blocksSummaryActions';
 
 export type BlocksState = IBlockSummary[];
 const initialSate: BlocksState = [];
 
-export function blocks(state = initialSate, action) {
+export function blocks(state = initialSate, action: BlocksSummaryActions) {
   switch (action.type) {
-    case blocksSummaryActionsNames.NEW_BLOCK_SUMMARY:
+    case 'NEW_BLOCK_SUMMARY':
       return [...state, action.blockSummary];
     default:
       return state;
