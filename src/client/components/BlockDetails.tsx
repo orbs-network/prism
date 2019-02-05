@@ -6,8 +6,8 @@ import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { loadFullBlockAction } from '../actions/fullBlockActions';
-import { getFullBlockData, IFullBlockData, isFullBlockLoading } from '../reducers/blocksReducer';
+import { loadBlockAction } from '../actions/blockActions';
+import { getBlockData, IBlockData, isBlockLoading } from '../reducers/blocksReducer';
 import { IRootState } from '../reducers/rootReducer';
 
 const styles = (theme: Theme) => createStyles({});
@@ -17,23 +17,23 @@ interface IOwnProps {
 }
 
 interface IProps {
-  fullBlockData: IFullBlockData;
-  isFullBlockLoading: boolean;
-  loadFullBlock: (hash: string) => void;
+  blockData: IBlockData;
+  isBlockLoading: boolean;
+  loadBlock: (hash: string) => void;
 }
 
 const BlockDetailsImpl = withStyles(styles)(
   class extends React.Component<IProps & IOwnProps> {
     public componentDidMount() {
-      this.props.loadFullBlock(this.props.hash);
+      this.props.loadBlock(this.props.hash);
     }
 
     public render() {
-      if (this.props.isFullBlockLoading) {
+      if (this.props.isBlockLoading) {
         return <div>Loading...</div>;
       }
 
-      const { block } = this.props.fullBlockData;
+      const { block } = this.props.blockData;
       return (
         <Card>
           <CardHeader title='Block' />
@@ -60,12 +60,12 @@ const BlockDetailsImpl = withStyles(styles)(
 );
 
 const mapStateToProps = (state: IRootState, ownProps: IOwnProps) => ({
-  fullBlockData: getFullBlockData(state, ownProps.hash),
-  isFullBlockLoading: isFullBlockLoading(state, ownProps.hash),
+  blockData: getBlockData(state, ownProps.hash),
+  isBlockLoading: isBlockLoading(state, ownProps.hash),
 });
 
 const dispatchProps = {
-  loadFullBlock: loadFullBlockAction,
+  loadBlock: loadBlockAction,
 };
 
 export const BlockDetails = connect(

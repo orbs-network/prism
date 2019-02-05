@@ -1,5 +1,5 @@
 import { BlocksSummaryActions } from './blocksSummaryActions';
-import { FullBlocksActions } from './fullBlockActions';
+import { BlocksActions } from './blockActions';
 import { TxActions } from './txActions';
 
-export type RootAction = BlocksSummaryActions | FullBlocksActions | TxActions;
+export type RootAction = BlocksSummaryActions | BlocksActions | TxActions;
