@@ -49,6 +49,7 @@
   "author": "Gil Amran",
   "dependencies": {
     "@types/react-redux": "^7.0.1",
+    "cross-env": "^5.2.0",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "object-hash": "^1.3.1",
@@ -83,7 +84,6 @@
     "axios": "^0.18.0",
     "babel-loader": "^8.0.5",
     "concurrently": "^4.1.0",
-    "cross-env": "^5.2.0",
     "css-loader": "^2.1.0",
     "cssnano": "^4.1.8",
     "enzyme": "^3.8.0",
