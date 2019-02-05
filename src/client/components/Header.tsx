@@ -5,8 +5,12 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import SearchIcon from '@material-ui/icons/Search';
+import { searchAction } from '../actions/searchActions';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
+import { compose } from 'redux';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -69,27 +73,70 @@ const styles = (theme: Theme) =>
     },
   });
 
-type Props = WithStyles<typeof styles>;
+interface IProps extends WithStyles<typeof styles> {
+  search: (term: string, history: any) => void;
+  history: any;
+}
 
-export const Header = withStyles(styles)(({ classes }: Props) => (
-  <AppBar position='static' color='default'>
-    <Toolbar>
-      <Typography className={classes.title} variant='h6' color='inherit' noWrap>
-        <Link to='/'>OrbsHubble.com</Link>
-      </Typography>
-      <div className={classes.grow} />
-      <div className={classes.search}>
-        <div className={classes.searchIcon}>
-          <SearchIcon />
-        </div>
-        <InputBase
-          placeholder='Block Number / Tx Hash'
-          classes={{
-            root: classes.inputRoot,
-            input: classes.inputInput,
-          }}
-        />
-      </div>
-    </Toolbar>
-  </AppBar>
-));
+interface IState {
+  searchTerm: string;
+}
+
+const HeaderImpl = withStyles(styles)(
+  class extends React.Component<IProps, IState> {
+    constructor(props) {
+      super(props);
+      this.state = { searchTerm: '' };
+    }
+
+    public render() {
+      const { classes } = this.props;
+      return (
+        <AppBar position='static' color='default'>
+          <Toolbar>
+            <Typography className={classes.title} variant='h6' color='inherit' noWrap>
+              <Link to='/'>OrbsHubble.com</Link>
+            </Typography>
+            <div className={classes.grow} />
+            <div className={classes.search}>
+              <div className={classes.searchIcon}>
+                <SearchIcon />
+              </div>
+              <form onSubmit={e => this.onSubmitSearch(e)}>
+                <InputBase
+                  placeholder='Block Number / Tx Hash'
+                  classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput,
+                  }}
+                  value={this.state.searchTerm}
+                  onChange={e => this.setState({ searchTerm: e.currentTarget.value })}
+                />
+              </form>
+            </div>
+          </Toolbar>
+        </AppBar>
+      );
+    }
+
+    private onSubmitSearch(e) {
+      e.preventDefault();
+      this.props.search(this.state.searchTerm, this.props.history);
+      this.setState({ searchTerm: '' });
+    }
+  },
+);
+
+const mapDispatchToProps = {
+  search: searchAction,
+};
+
+export const Header: any = withRouter(
+  compose(
+    withStyles(styles),
+    connect(
+      null,
+      mapDispatchToProps,
+    ),
+  )(HeaderImpl),
+);

@@ -12,9 +12,10 @@ export function apiRouter(storage: Storage) {
     const blockHash: string = req.params.blockHash;
     const block: IBlock = storage.getBlock(blockHash);
     if (!block) {
-      return res.send(404);
+      res.send(404);
+    } else {
+      res.json(block);
     }
-    res.json(block);
   });
 
   router.get('/api/tx/:txHash', (req, res) => {
@@ -27,12 +28,13 @@ export function apiRouter(storage: Storage) {
   });
 
   router.get('/api/search/:term', (req, res) => {
-    const txHash: string = req.params.txHash;
-    const searchResult = storage.findHash(txHash);
+    const term: string = req.params.term;
+    const searchResult = storage.findHash(term);
+    console.log(`search results`, searchResult);
     if (searchResult) {
       res.json(searchResult);
     } else {
-      res.json(`not found`);
+      res.send(404);
     }
   });
 

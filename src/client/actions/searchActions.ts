@@ -4,13 +4,21 @@ import { ISearchResult } from '../../shared/ISearchResult';
 import { search } from '../utils/api-facade';
 
 // Action Creators
-export const searchAction = (term: string): ThunkAction<void, {}, {}, AnyAction> => {
+export const searchAction = (term: string, history): ThunkAction<void, {}, {}, AnyAction> => {
   return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
     dispatch(searchStartedAction(term));
     try {
       const searchResult: ISearchResult = await search(term); // Call the server api
       dispatch(searchCompletedAction(searchResult));
+      if (searchResult.type === 'block') {
+        console.log(`going to /block/${searchResult.block.hash}`, history);
+        history.push(`/block/${searchResult.block.hash}`);
+      } else {
+        history.push(`/tx/${searchResult.tx.hash}`);
+      }
+      // navigate to the result
     } catch (e) {
+      history.push(`/not-found/${term}`);
       dispatch(seachErrorAction(e));
     }
   };
@@ -18,12 +26,12 @@ export const searchAction = (term: string): ThunkAction<void, {}, {}, AnyAction>
 
 export interface ISearchStartedAction {
   type: 'SEARCH_STARTED';
-  hash: string;
+  term: string;
 }
 
-export const searchStartedAction = (hash: string): ISearchStartedAction => ({
+export const searchStartedAction = (term: string): ISearchStartedAction => ({
   type: 'SEARCH_STARTED',
-  hash,
+  term,
 });
 
 export interface ISearchCompletedAction {

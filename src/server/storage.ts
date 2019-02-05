@@ -27,6 +27,7 @@ export class Storage {
   }
 
   public findHash(hash: string): ISearchResult {
+    console.log('searching for', hash);
     const block = this.getBlock(hash);
     if (block) {
       return {
