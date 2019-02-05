@@ -26,7 +26,7 @@ export function blocksByHash(state: IBlocksByHash = {}, action: RootAction): IBl
           summary: action.blockSummary,
         },
       };
-    case 'LOAD_BLOCK_COMPLETED':
+    case 'LOAD_BLOCK_COMPLETED': {
       const { block } = action;
       const { hash } = block;
       const summary = state[hash] && state[hash].summary;
@@ -40,6 +40,21 @@ export function blocksByHash(state: IBlocksByHash = {}, action: RootAction): IBl
           },
         },
       };
+    }
+    case 'LOAD_BLOCK_ERROR': {
+      const { error, hash } = action;
+      const summary = state[hash] && state[hash].summary;
+      return {
+        ...state,
+        [hash]: {
+          summary,
+          blockData: {
+            isLoading: false,
+            error,
+          },
+        },
+      };
+    }
     default:
       return state;
   }

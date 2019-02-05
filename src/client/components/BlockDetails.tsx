@@ -40,6 +40,10 @@ const BlockDetailsImpl = withStyles(styles)(
         return <div>empty</div>;
       }
 
+      if (this.props.blockData.error) {
+        return <Typography variant='h4'>{this.props.blockData.error}</Typography>;
+      }
+
       const { block } = this.props.blockData;
       return (
         <Card>

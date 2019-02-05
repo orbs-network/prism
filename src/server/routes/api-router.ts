@@ -10,15 +10,19 @@ export function apiRouter(storage: Storage) {
 
   router.get('/api/block/:blockHash', (req, res) => {
     const blockHash: string = req.params.blockHash;
-    console.log('Searching for block:', blockHash);
     const block: IBlock = storage.getBlock(blockHash);
-    console.log('found', block);
+    if (!block) {
+      return res.send(404);
+    }
     res.json(block);
   });
 
   router.get('/api/tx/:txHash', (req, res) => {
     const txHash: string = req.params.txHash;
     const tx: ITx = storage.getTx(txHash);
+    if (!tx) {
+      return res.send(404);
+    }
     res.json(tx);
   });
 

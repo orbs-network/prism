@@ -11,7 +11,7 @@ export const loadBlockAction = (hash: string): ThunkAction<void, {}, {}, AnyActi
       const block: IBlock = await loadBlock(hash); // Call the server api
       dispatch(loadBlockCompletedAction(block));
     } catch (e) {
-      dispatch(loadBlockErrorAction(e));
+      dispatch(loadBlockErrorAction(hash, 'Block Not Found'));
     }
   };
 };
@@ -38,11 +38,13 @@ export const loadBlockCompletedAction = (block: IBlock): ILoadingBlockCompletedA
 
 export interface ILoadingBlockErrorAction {
   type: 'LOAD_BLOCK_ERROR';
+  hash: string;
   error: string;
 }
 
-export const loadBlockErrorAction = (error: string): ILoadingBlockErrorAction => ({
+export const loadBlockErrorAction = (hash: string, error: string): ILoadingBlockErrorAction => ({
   type: 'LOAD_BLOCK_ERROR',
+  hash,
   error,
 });
 
