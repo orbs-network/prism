@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { loadBlockAction } from '../actions/blockActions';
 import { getBlockData, IBlockData, isBlockLoading } from '../reducers/blocksReducer';
 import { IRootState } from '../reducers/rootReducer';
+import * as timeago from 'timeago.js';
 
 const styles = (theme: Theme) => createStyles({});
 
@@ -42,7 +43,7 @@ const BlockDetailsImpl = withStyles(styles)(
             <Typography>hash:{block.hash}</Typography>
             <Typography>height:{block.height}</Typography>
             <Typography>countOfTx:{block.countOfTx}</Typography>
-            <Typography>timestamp:{block.timestamp}</Typography>
+            <Typography>Time: {timeago.format(block.timestamp)}</Typography>
             <Typography>leanderNode:{block.leanderNode}</Typography>
             <Typography>Txs</Typography>
             <ul>
