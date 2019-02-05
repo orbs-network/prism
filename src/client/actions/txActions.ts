@@ -1,9 +1,7 @@
 import { AnyAction } from 'redux';
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
-import * as io from 'socket.io-client';
 import { ITx } from '../../shared/ITx';
 import { loadTx } from '../utils/api-facade';
-const socket = io();
 
 // Action Creators
 export const loadTxAction = (hash: string): ThunkAction<void, {}, {}, AnyAction> => {

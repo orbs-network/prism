@@ -12,6 +12,6 @@ export class Indexer {
   }
 
   private onNewBlock(newBlock: IRawBlock): void {
-    this.storage.StoreBlock(newBlock);
+    this.storage.storeBlock(newBlock);
   }
 }

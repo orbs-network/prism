@@ -1,6 +1,7 @@
 import { IBlockSummary, IRawBlock, IBlock } from '../shared/IBlock';
 import { WS } from './ws/ws';
 import { ITx } from '../shared/ITx';
+import { ISearchResult } from '../shared/ISearchResult';
 
 export class Storage {
   private ws: WS;
@@ -19,10 +20,28 @@ export class Storage {
     return this.txs.get(txHash);
   }
 
-  public StoreBlock(rawBlock: IRawBlock): void {
+  public storeBlock(rawBlock: IRawBlock): void {
     this.blocks.set(rawBlock.hash, this.rawBlockToBlock(rawBlock));
     rawBlock.txs.map(tx => this.txs.set(tx.hash, tx));
     this.ws.emit('new-block-summary', this.blockToBlockSummary(rawBlock));
+  }
+
+  public findHash(hash: string): ISearchResult {
+    const block = this.getBlock(hash);
+    if (block) {
+      return {
+        block,
+        type: 'block',
+      };
+    }
+
+    const tx = this.getTx(hash);
+    if (tx) {
+      return {
+        tx,
+        type: 'tx',
+      };
+    }
   }
 
   private rawBlockToBlock(block: IRawBlock): IBlock {

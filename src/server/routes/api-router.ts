@@ -23,7 +23,13 @@ export function apiRouter(storage: Storage) {
   });
 
   router.get('/api/search/:term', (req, res) => {
-    res.send(`ok`);
+    const txHash: string = req.params.txHash;
+    const searchResult = storage.findHash(txHash);
+    if (searchResult) {
+      res.json(searchResult);
+    } else {
+      res.json(`not found`);
+    }
   });
 
   return router;
