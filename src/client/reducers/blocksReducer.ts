@@ -3,20 +3,21 @@ import { RootAction } from '../actions/rootAction';
 import { IRootState } from './rootReducer';
 
 export interface IBlockData {
+  isLoading: boolean;
   error?: string;
-  block?: IBlock;
+  block: IBlock;
 }
 
-export interface IBlockData {
+export interface IBlockEntry {
   summary?: IBlockSummary;
   blockData?: IBlockData;
 }
 
 export interface IBlocksByHash {
-  [hash: string]: IBlockData;
+  [hash: string]: IBlockEntry;
 }
 
-export function blocksByHash(state: IBlocksByHash = {}, action: RootAction): IBlocksByHash {
+export function blocksByHash(state: IBlocksByHash = {}, action: RootAction): IBlockEntry {
   switch (action.type) {
     case 'NEW_BLOCK_SUMMARY':
       return {
@@ -34,6 +35,7 @@ export function blocksByHash(state: IBlocksByHash = {}, action: RootAction): IBl
         [hash]: {
           summary,
           blockData: {
+            isLoading: false,
             block,
           },
         },
@@ -46,5 +48,7 @@ export function blocksByHash(state: IBlocksByHash = {}, action: RootAction): IBl
 export const getBlockData = (state: IRootState, hash: string): IBlockData =>
   state.blocksByHash[hash] && state.blocksByHash[hash].blockData;
 
-export const isBlockLoading = (state: IRootState, hash: string): boolean =>
-  state.blocksByHash[hash] === undefined || state.blocksByHash[hash].blockData === undefined;
+export const isBlockLoading = (state: IRootState, hash: string): boolean => {
+  const blockData = getBlockData(state, hash);
+  return blockData && blockData.isLoading;
+};

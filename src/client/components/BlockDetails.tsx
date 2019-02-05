@@ -26,12 +26,18 @@ interface IProps {
 const BlockDetailsImpl = withStyles(styles)(
   class extends React.Component<IProps & IOwnProps> {
     public componentDidMount() {
-      this.props.loadBlock(this.props.hash);
+      if (!this.props.isBlockLoading && !this.props.blockData) {
+        this.props.loadBlock(this.props.hash);
+      }
     }
 
     public render() {
       if (this.props.isBlockLoading) {
         return <div>Loading...</div>;
+      }
+
+      if (!this.props.blockData) {
+        return <div>empty</div>;
       }
 
       const { block } = this.props.blockData;

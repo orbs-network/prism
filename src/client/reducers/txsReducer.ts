@@ -4,6 +4,7 @@ import { IRootState } from './rootReducer';
 
 export interface ITxData {
   error?: string;
+  isLoading: boolean;
   tx?: ITx;
 }
 
@@ -18,7 +19,10 @@ export function txsByHash(state: ITxsByHash = {}, action: RootAction): ITxsByHas
       const { hash } = tx;
       return {
         ...state,
-        [hash]: { tx },
+        [hash]: {
+          isLoading: false,
+          tx,
+        },
       };
     default:
       return state;
@@ -27,4 +31,7 @@ export function txsByHash(state: ITxsByHash = {}, action: RootAction): ITxsByHas
 
 export const getTxData = (state: IRootState, hash: string): ITxData => state.txsByHash[hash];
 
-export const isTxLoading = (state: IRootState, hash: string): boolean => state.txsByHash[hash] === undefined;
+export const isTxLoading = (state: IRootState, hash: string): boolean => {
+  const tx = getTxData(state, hash);
+  return tx && tx.isLoading;
+};

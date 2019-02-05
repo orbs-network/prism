@@ -25,12 +25,18 @@ interface IProps {
 const TxDetailsImpl = withStyles(styles)(
   class extends React.Component<IProps & IOwnProps> {
     public componentDidMount() {
-      this.props.loadTx(this.props.hash);
+      if (!this.props.isTxLoading && !this.props.txData) {
+        this.props.loadTx(this.props.hash);
+      }
     }
 
     public render() {
       if (this.props.isTxLoading) {
         return <div>Loading...</div>;
+      }
+
+      if (!this.props.txData) {
+        return <div>Empty</div>;
       }
 
       const { tx } = this.props.txData;
