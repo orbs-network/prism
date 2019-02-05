@@ -1,7 +1,7 @@
 import { AnyAction } from 'redux';
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import * as io from 'socket.io-client';
-import { IBlockSummary } from '../shared/IBlock';
+import { IBlockSummary } from '../../shared/IBlock';
 
 const socket = io();
 

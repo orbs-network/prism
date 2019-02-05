@@ -1,7 +1,8 @@
 import * as bodyParser from 'body-parser';
 import { Router } from 'express';
-import { IBlock } from '../../shared/IBlock';
+import { IRawBlock, IBlock } from '../../shared/IBlock';
 import { Storage } from '../storage';
+import { ITx } from '../../shared/ITx';
 
 export function apiRouter(storage: Storage) {
   const router = Router();
@@ -9,12 +10,16 @@ export function apiRouter(storage: Storage) {
 
   router.get('/api/block/:blockHash', (req, res) => {
     const blockHash: string = req.params.blockHash;
+    console.log('Searching for block:', blockHash);
     const block: IBlock = storage.getBlock(blockHash);
+    console.log('found', block);
     res.json(block);
   });
 
   router.get('/api/tx/:txHash', (req, res) => {
-    res.send(`ok`);
+    const txHash: string = req.params.txHash;
+    const tx: ITx = storage.getTx(txHash);
+    res.json(tx);
   });
 
   router.get('/api/search/:term', (req, res) => {

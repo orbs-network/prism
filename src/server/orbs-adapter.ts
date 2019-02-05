@@ -1,7 +1,7 @@
-import { IBlock } from '../shared/IBlock';
+import { IRawBlock } from '../shared/IBlock';
 import { generateRandomFakeBlock } from './fake-blocks-generator';
 
-export type NewBlockCallback = (block: IBlock) => void;
+export type NewBlockCallback = (block: IRawBlock) => void;
 
 export class OrbsAdaper {
   private blocksGeneratorIntervalId: NodeJS.Timeout;

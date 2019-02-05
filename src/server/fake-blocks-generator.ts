@@ -1,23 +1,27 @@
-import * as hash from 'object-hash';
-import { IBlock, ITransaction } from '../shared/IBlock';
+import * as genHash from 'object-hash';
+import { IRawBlock } from '../shared/IBlock';
+import { ITx } from '../shared/ITx';
 
 let blockHeight = 1;
-export function generateFakeTx(): ITransaction {
+export function generateFakeTx(blockHash: string): ITx {
   return {
-    hash: hash(Math.random()),
+    blockHash,
+    hash: genHash(Math.random()),
+    data: `Dummy Data: ${Math.random()}`,
   };
 }
 
-export function generateRandomFakeBlock(): IBlock {
-  const txs: ITransaction[] = [];
+export function generateRandomFakeBlock(): IRawBlock {
+  const hash: string = genHash(Math.random());
+  const txs: ITx[] = [];
   const countOfTx = Math.floor(Math.random() * 10 + 6);
   for (let i = 0; i < countOfTx; i++) {
-    txs.push(generateFakeTx());
+    txs.push(generateFakeTx(hash));
   }
 
   return {
     height: ++blockHeight,
-    hash: hash(Math.random()),
+    hash,
     countOfTx,
     leanderNode: 'mishmish',
     timestamp: Date.now(),

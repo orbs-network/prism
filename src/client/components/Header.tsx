@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -79,7 +80,7 @@ export const Header = withStyles(styles)(({ classes }: Props) => (
         <MenuIcon />
       </IconButton>
       <Typography className={classes.title} variant='h6' color='inherit' noWrap>
-        OrbsHubble.com
+        <Link to='/'>OrbsHubble.com</Link>
       </Typography>
       <div className={classes.grow} />
       <div className={classes.search}>

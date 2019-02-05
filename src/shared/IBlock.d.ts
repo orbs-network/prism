@@ -1,3 +1,5 @@
+import { ITx } from './ITx';
+
 export interface IBlockSummary {
   hash: string;
   height: number;
@@ -6,10 +8,10 @@ export interface IBlockSummary {
   timestamp: number;
 }
 
-export interface ITransaction {
-  hash: string;
+export interface IBlock extends IBlockSummary {
+  txsHashes: string[];
 }
 
-export interface IBlock extends IBlockSummary {
-  txs: ITransaction[];
+export interface IRawBlock extends IBlockSummary {
+  txs: ITx[];
 }

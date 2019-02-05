@@ -1,6 +1,7 @@
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { IBlockSummary } from '../../../shared/IBlock';
+import { Link } from 'react-router-dom';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -20,7 +21,7 @@ export const BlockItem = withStyles(styles)(({ classes, block }: IProps) => (
       Height: <span data-type='block-height'>{block.height}</span>
     </div>
     <div>
-      Hash: <a href={`/block/${block.hash}`}>{block.hash}</a>
+      Hash: <Link to={`/block/${block.hash}`}>{block.hash}</Link>
     </div>
     <div>Txns: {block.countOfTx}</div>
     <div>Time Stamp: {block.timestamp}</div>

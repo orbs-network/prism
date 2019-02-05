@@ -1,5 +1,5 @@
 import { IBlockSummary } from '../../shared/IBlock';
-import { BlocksSummaryActions } from '../blocksSummaryActions';
+import { BlocksSummaryActions } from '../actions/blocksSummaryActions';
 import { IRootState } from './rootReducer';
 
 export type RecentBlocksHashes = string[];
@@ -14,4 +14,5 @@ export function recentBlocksHashs(state: RecentBlocksHashes = [], action: Blocks
   }
 }
 
-export const getRecentBlocks = (state: IRootState) => state.recentBlocksHashs.map(hash => state.blocksByHash[hash]);
+export const getRecentBlocksSummary = (state: IRootState): IBlockSummary[] =>
+  state.recentBlocksHashs.map(hash => state.blocksByHash[hash].summary);
