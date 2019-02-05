@@ -5,7 +5,7 @@ module.exports = {
     headless: !debug,
   },
   server: {
-    command: 'npm start',
+    command: 'npm run start:prod',
     port: 3000,
     debug,
   },
