@@ -11,7 +11,7 @@ export const loadTxAction = (hash: string): ThunkAction<void, {}, {}, AnyAction>
       const tx: ITx = await loadTx(hash); // Call the server api
       dispatch(loadTxCompletedAction(tx));
     } catch (e) {
-      dispatch(loadTxErrorAction(e));
+      dispatch(loadTxErrorAction(hash, 'Tx Not Found'));
     }
   };
 };
@@ -38,11 +38,13 @@ export const loadTxCompletedAction = (tx: ITx): ILoadingTxCompletedAction => ({
 
 export interface ILoadingTxErrorAction {
   type: 'LOAD_TX_ERROR';
+  hash: string;
   error: string;
 }
 
-export const loadTxErrorAction = (error: string): ILoadingTxErrorAction => ({
+export const loadTxErrorAction = (hash: string, error: string): ILoadingTxErrorAction => ({
   type: 'LOAD_TX_ERROR',
+  hash,
   error,
 });
 

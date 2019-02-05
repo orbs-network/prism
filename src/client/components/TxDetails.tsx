@@ -39,6 +39,10 @@ const TxDetailsImpl = withStyles(styles)(
         return <div>Empty</div>;
       }
 
+      if (this.props.txData.error) {
+        return <Typography variant='h4'>{this.props.txData.error}</Typography>;
+      }
+
       const { tx } = this.props.txData;
       return (
         <Card>

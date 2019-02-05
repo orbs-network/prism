@@ -14,7 +14,7 @@ export interface ITxsByHash {
 
 export function txsByHash(state: ITxsByHash = {}, action: RootAction): ITxsByHash {
   switch (action.type) {
-    case 'LOAD_TX_COMPLETED':
+    case 'LOAD_TX_COMPLETED': {
       const { tx } = action;
       const { hash } = tx;
       return {
@@ -24,6 +24,17 @@ export function txsByHash(state: ITxsByHash = {}, action: RootAction): ITxsByHas
           tx,
         },
       };
+    }
+    case 'LOAD_TX_ERROR': {
+      const { error, hash } = action;
+      return {
+        ...state,
+        [hash]: {
+          isLoading: false,
+          error,
+        },
+      };
+    }
     default:
       return state;
   }
