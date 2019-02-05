@@ -45,7 +45,6 @@ const BlockDetailsImpl = withStyles(styles)(
         <Card>
           <CardHeader title='Block' />
           <CardContent>
-            <Typography>data</Typography>
             <Typography>hash:{block.hash}</Typography>
             <Typography>height:{block.height}</Typography>
             <Typography>countOfTx:{block.countOfTx}</Typography>

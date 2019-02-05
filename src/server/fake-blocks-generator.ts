@@ -7,7 +7,7 @@ export function generateFakeTx(blockHash: string): ITx {
   return {
     blockHash,
     hash: genHash(Math.random()),
-    data: `Dummy Data: ${Math.random()}`,
+    data: Math.random().toString(),
   };
 }
 
