@@ -1,11 +1,9 @@
 import AppBar from '@material-ui/core/AppBar';
-import IconButton from '@material-ui/core/IconButton';
 import InputBase from '@material-ui/core/InputBase';
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
@@ -76,9 +74,6 @@ type Props = WithStyles<typeof styles>;
 export const Header = withStyles(styles)(({ classes }: Props) => (
   <AppBar position='static' color='default'>
     <Toolbar>
-      <IconButton className={classes.menuButton} color='inherit' aria-label='Open drawer'>
-        <MenuIcon />
-      </IconButton>
       <Typography className={classes.title} variant='h6' color='inherit' noWrap>
         <Link to='/'>OrbsHubble.com</Link>
       </Typography>
