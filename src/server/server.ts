@@ -9,6 +9,7 @@ export function initServer(storage: Storage) {
   const app = express();
 
   app.use(apiRouter(storage));
+  console.log(`process.env.NODE_ENV: ${process.env.NODE_ENV}`);
   app.use(config.IS_PRODUCTION ? staticsRouter() : staticsDevRouter());
 
   const server = app.listen(config.SERVER_PORT, () => {
