@@ -7,10 +7,11 @@ import Typography from '@material-ui/core/Typography';
 import SearchIcon from '@material-ui/icons/Search';
 import { searchAction } from '../actions/searchActions';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { compose } from 'redux';
+import { Link } from '@material-ui/core';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -91,12 +92,16 @@ const HeaderImpl = withStyles(styles)(
 
     public render() {
       const { classes } = this.props;
+      // const homeLink = props => <RouterLink to='/'>{props.children}</RouterLink>;
       return (
-        <AppBar position='static' color='default'>
+        <AppBar position='static'>
           <Toolbar>
-            <Typography className={classes.title} variant='h6' color='inherit' noWrap>
-              <Link to='/'>OrbsHubble.com</Link>
-            </Typography>
+            <Link>
+              <Typography className={classes.title} variant='h6' noWrap>
+                OrbsHubble.com
+              </Typography>
+            </Link>
+            {/* <Typography className={classes.title} variant='h6' noWrap /> */}
             <div className={classes.grow} />
             <div className={classes.search}>
               <div className={classes.searchIcon}>
