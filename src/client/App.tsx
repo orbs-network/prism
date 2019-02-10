@@ -10,24 +10,35 @@ import { Home } from './components/home/Home';
 import { NotFound } from './components/NotFound';
 import { TxDetails } from './components/TxDetails';
 import { configureStore } from './store';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 const store = configureStore();
 store.dispatch(listenToBlocksSummaryAction());
+
+const theme = createMuiTheme({
+  palette: {
+    type: 'dark',
+  },
+});
 
 class AppImpl extends React.Component {
   public render() {
     return (
       <BrowserRouter>
         <Provider store={store}>
-          <Grid container spacing={24}>
-            <Header />
-            <Switch>
-              <Route exact path='/' component={Home} />
-              <Route path='/block/:hash' render={({ match }) => <BlockDetails hash={match.params.hash} />} />
-              <Route path='/tx/:hash' render={({ match }) => <TxDetails hash={match.params.hash} />} />
-              <Route path='/not-found/:term' render={({ match }) => <NotFound term={match.params.term} />} />
-            </Switch>
-          </Grid>
+          <MuiThemeProvider theme={theme}>
+            <CssBaseline />
+            <Grid container spacing={24}>
+              <Header />
+              <Switch>
+                <Route exact path='/' component={Home} />
+                <Route path='/block/:hash' render={({ match }) => <BlockDetails hash={match.params.hash} />} />
+                <Route path='/tx/:hash' render={({ match }) => <TxDetails hash={match.params.hash} />} />
+                <Route path='/not-found/:term' render={({ match }) => <NotFound term={match.params.term} />} />
+              </Switch>
+            </Grid>
+          </MuiThemeProvider>
         </Provider>
       </BrowserRouter>
     );
