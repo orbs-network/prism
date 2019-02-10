@@ -39,8 +39,8 @@ const HelixImpl = withStyles(styles)(
 
       // ADD CAMERA
       this.camera = new PerspectiveCamera(10, width / height, 0.1, 1000);
-      this.camera.position.y = -1.5;
-      this.camera.position.z = 50;
+      this.camera.position.x = -5;
+      this.camera.position.z = 40;
 
       // Add Fog
       this.scene.fog = new Fog(0x000000, 48, 53);

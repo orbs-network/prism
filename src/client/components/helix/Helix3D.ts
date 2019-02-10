@@ -16,9 +16,9 @@ export class Helix3D {
   private tubeMaterial: MeshLambertMaterial;
 
   constructor() {
-    this.sphereGeometry = new SphereGeometry(0.1, 32, 32);
+    this.sphereGeometry = new SphereGeometry(0.3, 32, 32);
     this.sphereMaterial = new MeshLambertMaterial({ color: 0x00ff00 });
-    this.tubeGeometry = new CylinderGeometry(0.03, 0.03, 2, 32);
+    this.tubeGeometry = new CylinderGeometry(0.1, 0.1, 2, 32);
     this.tubeMaterial = new MeshLambertMaterial({ color: 0xaaaaaa });
   }
 
@@ -28,13 +28,13 @@ export class Helix3D {
   }
 
   public animate(): any {
-    this.chain.rotation.y += 0.01;
+    this.chain.rotation.x += 0.01;
   }
 
   private createChain(): Object3D {
     const chain = new Object3D();
     for (let i = 0; i < 30; i++) {
-      chain.add(this.createBlock(-0.3 * i, 9 * i));
+      chain.add(this.createBlock(-0.75 * i, 15 * i));
     }
     return chain;
   }
@@ -43,15 +43,14 @@ export class Helix3D {
     const sphere1 = new Mesh(this.sphereGeometry, this.sphereMaterial);
     const sphere2 = new Mesh(this.sphereGeometry, this.sphereMaterial);
     const connector = new Mesh(this.tubeGeometry, this.tubeMaterial);
-    connector.rotation.z = Math.PI / 2;
-    sphere1.position.x = 1;
-    sphere2.position.x = -1;
+    sphere1.position.y = 1;
+    sphere2.position.y = -1;
     const block = new Object3D();
     block.add(connector);
     block.add(sphere1);
     block.add(sphere2);
-    block.position.y = height;
-    block.rotation.y = (angle * Math.PI) / 180;
+    block.position.x = height;
+    block.rotation.x = (angle * Math.PI) / 180;
     return block;
   }
 }
