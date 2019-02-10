@@ -29,12 +29,12 @@ const HelixImpl = withStyles(styles)(
       this.scene = new Scene();
 
       // Add light
-      const light = new AmbientLight(0x202020);
+      const light = new AmbientLight(0xffffff, 0.5);
       this.scene.add(light);
 
       // another light
-      const directionalLight = new DirectionalLight(0xffffff, 0.5);
-      directionalLight.position.set(0.3, 0.3, 1);
+      const directionalLight = new DirectionalLight(0xffffff, 1);
+      directionalLight.position.set(0, 1, 0);
       this.scene.add(directionalLight);
 
       // ADD CAMERA
@@ -42,12 +42,9 @@ const HelixImpl = withStyles(styles)(
       this.camera.position.x = -5;
       this.camera.position.z = 40;
 
-      // Add Fog
-      this.scene.fog = new Fog(0x000000, 48, 53);
-
       // ADD RENDERER
       this.renderer = new WebGLRenderer({ antialias: true });
-      this.renderer.setClearColor('#000000');
+      this.renderer.setClearColor('#0a0f25');
       this.renderer.setSize(width, height);
       this.mount.appendChild(this.renderer.domElement);
 

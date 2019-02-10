@@ -16,10 +16,10 @@ export class Helix3D {
   private tubeMaterial: MeshLambertMaterial;
 
   constructor() {
-    this.sphereGeometry = new SphereGeometry(0.3, 32, 32);
-    this.sphereMaterial = new MeshLambertMaterial({ color: 0x00ff00 });
+    this.sphereGeometry = new SphereGeometry(0.25, 32, 32);
+    this.sphereMaterial = new MeshLambertMaterial({ color: 0x4485bb });
     this.tubeGeometry = new CylinderGeometry(0.1, 0.1, 2, 32);
-    this.tubeMaterial = new MeshLambertMaterial({ color: 0xaaaaaa });
+    this.tubeMaterial = new MeshLambertMaterial({ color: 0x344396 });
   }
 
   public build(): Object3D {
