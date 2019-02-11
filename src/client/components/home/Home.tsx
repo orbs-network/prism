@@ -3,7 +3,7 @@ import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/s
 import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
 import { BlockBox } from './BlockBox';
-import { HelixContainer } from '../helix/HelixContainer';
+// import { HelixContainer } from '../helix/HelixContainer';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -30,7 +30,7 @@ export const Home = withStyles(styles)(({ classes }: IProps) => (
       <Grid item xs={12}>
         <Grid container spacing={16}>
           <Grid item xs={12}>
-            <HelixContainer />
+            {/* <HelixContainer /> */}
           </Grid>
           <Grid item xs={12}>
             <BlockBox />
