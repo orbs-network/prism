@@ -1,6 +1,6 @@
 import * as genHash from 'object-hash';
-import { IRawBlock } from '../shared/IBlock';
-import { ITx } from '../shared/ITx';
+import { IRawBlock } from '../../shared/IBlock';
+import { ITx } from '../../shared/ITx';
 
 let blockHeight = 1;
 export function generateFakeTx(blockHash: string): ITx {

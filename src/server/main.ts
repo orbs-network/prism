@@ -1,17 +1,23 @@
-import { OrbsAdaper } from './orbs-adapter';
+import { MockOrbsAdapter } from './orbs-adapter/MockOrbsAdapter';
 import { initServer } from './server';
 import { Indexer } from './indexer';
 import { WS } from './ws/ws';
 import { Storage } from './storage';
+import { genDb } from './db/DBFactory';
+import { genOrbsAdapter } from './orbs-adapter/OrbsAdapterFactory';
 
 async function main() {
+  // externals
+  const orbsAdapter = genOrbsAdapter();
+  const db = genDb();
+
+  // internals
   const storage = new Storage();
-  const orbsAdapter = new OrbsAdaper();
   const server = initServer(storage);
   const ws = new WS(server);
   const indexer = new Indexer(orbsAdapter, storage);
 
-  storage.init(ws);
+  storage.init(ws, db);
 }
 
 main()

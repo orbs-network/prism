@@ -2,33 +2,34 @@ import { IBlockSummary, IRawBlock, IBlock } from '../shared/IBlock';
 import { WS } from './ws/ws';
 import { ITx } from '../shared/ITx';
 import { ISearchResult } from '../shared/ISearchResult';
+import { IDB } from './db/IDB';
 
 export class Storage {
   private ws: WS;
-  private blocks: Map<string, IBlock> = new Map();
-  private txs: Map<string, ITx> = new Map();
+  private db: IDB;
 
-  public init(ws: WS): void {
+  public init(ws: WS, db: IDB): void {
     this.ws = ws;
+    this.db = db;
   }
 
-  public getBlock(blockHash: string): IBlock {
-    return this.blocks.get(blockHash);
+  public getBlock(blockHash: string): Promise<IBlock> {
+    return this.db.getBlockByHash(blockHash);
   }
 
-  public getTx(txHash: string): ITx {
-    return this.txs.get(txHash);
+  public getTx(txHash: string): Promise<ITx> {
+    return this.db.getTxByHash(txHash);
   }
 
-  public storeBlock(rawBlock: IRawBlock): void {
-    this.blocks.set(rawBlock.hash, this.rawBlockToBlock(rawBlock));
-    rawBlock.txs.map(tx => this.txs.set(tx.hash, tx));
+  public async handleNewBlock(rawBlock: IRawBlock): Promise<void> {
+    await this.db.storeBlock(this.rawBlockToBlock(rawBlock));
+    await this.db.storeTx(rawBlock.txs);
     this.ws.emit('new-block-summary', this.blockToBlockSummary(rawBlock));
   }
 
-  public findHash(hash: string): ISearchResult {
+  public async findHash(hash: string): Promise<ISearchResult> {
     console.log('searching for', hash);
-    const block = this.getBlock(hash);
+    const block = await this.getBlock(hash);
     if (block) {
       return {
         block,
@@ -36,7 +37,7 @@ export class Storage {
       };
     }
 
-    const tx = this.getTx(hash);
+    const tx = await this.getTx(hash);
     if (tx) {
       return {
         tx,

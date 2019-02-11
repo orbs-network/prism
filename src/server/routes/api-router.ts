@@ -8,9 +8,9 @@ export function apiRouter(storage: Storage) {
   const router = Router();
   router.use(bodyParser.json());
 
-  router.get('/api/block/:blockHash', (req, res) => {
+  router.get('/api/block/:blockHash', async (req, res) => {
     const blockHash: string = req.params.blockHash;
-    const block: IBlock = storage.getBlock(blockHash);
+    const block: IBlock = await storage.getBlock(blockHash);
     if (!block) {
       res.send(404);
     } else {
@@ -18,18 +18,18 @@ export function apiRouter(storage: Storage) {
     }
   });
 
-  router.get('/api/tx/:txHash', (req, res) => {
+  router.get('/api/tx/:txHash', async (req, res) => {
     const txHash: string = req.params.txHash;
-    const tx: ITx = storage.getTx(txHash);
+    const tx: ITx = await storage.getTx(txHash);
     if (!tx) {
       return res.send(404);
     }
     res.json(tx);
   });
 
-  router.get('/api/search/:term', (req, res) => {
+  router.get('/api/search/:term', async (req, res) => {
     const term: string = req.params.term;
-    const searchResult = storage.findHash(term);
+    const searchResult = await storage.findHash(term);
     console.log(`search results`, searchResult);
     if (searchResult) {
       res.json(searchResult);

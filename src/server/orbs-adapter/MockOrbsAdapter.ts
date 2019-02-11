@@ -1,9 +1,8 @@
-import { IRawBlock } from '../shared/IBlock';
+import { IRawBlock } from '../../shared/IBlock';
 import { generateRandomFakeBlock } from './fake-blocks-generator';
+import { IOrbsAdapter, NewBlockCallback } from './IOrbsAdapter';
 
-export type NewBlockCallback = (block: IRawBlock) => void;
-
-export class OrbsAdaper {
+export class MockOrbsAdapter implements IOrbsAdapter {
   private blocksGeneratorIntervalId: NodeJS.Timeout;
   private listenerCounter: number = 0;
   private listeners: Map<number, NewBlockCallback> = new Map();
@@ -18,7 +17,7 @@ export class OrbsAdaper {
     return this.listenerCounter;
   }
 
-  public UnregisterFromNewBlocks(subscriptionToken: number) {
+  public UnregisterFromNewBlocks(subscriptionToken: number): void {
     this.listeners.delete(subscriptionToken);
   }
 
