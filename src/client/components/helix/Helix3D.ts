@@ -1,3 +1,4 @@
+import { Expo, TimelineLite, TweenLite, Power0, Power2, Power4, Power1 } from 'gsap';
 import { CylinderGeometry, Mesh, MeshLambertMaterial, Object3D, SphereGeometry } from 'three';
 
 export class Helix3D {
@@ -26,9 +27,7 @@ export class Helix3D {
 
     if (object) {
       object.rotation.x = -this.chain.rotation.x;
-      object.scale.x = 2;
-      object.scale.y = 2;
-      object.scale.z = 2;
+      TweenLite.to(object.scale, 0.3, { x: 2, y: 2, z: 2 });
     }
   }
 
@@ -39,9 +38,7 @@ export class Helix3D {
 
     if (object) {
       object.rotation.x = object.userData.rotation;
-      object.scale.x = 1;
-      object.scale.y = 1;
-      object.scale.z = 1;
+      TweenLite.to(object.scale, 0.3, { x: 1, y: 1, z: 1 });
     }
   }
 
