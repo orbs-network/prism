@@ -53,7 +53,7 @@ const BlockDetailsImpl = withStyles(styles)(
             <Typography>height:{block.height}</Typography>
             <Typography>countOfTx:{block.countOfTx}</Typography>
             <Typography>Time: {timeago.format(block.timestamp)}</Typography>
-            <Typography>leanderNode:{block.leanderNode}</Typography>
+            <Typography>leader Node:{block.leaderNode}</Typography>
             <Typography>Txs</Typography>
             <ul>
               {block.txsHashes.map((hash, id) => (

@@ -4,7 +4,7 @@ export interface IBlockSummary {
   hash: string;
   height: number;
   countOfTx: number;
-  leanderNode: string;
+  leaderNode: string;
   timestamp: number;
 }
 

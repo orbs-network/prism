@@ -23,7 +23,7 @@ export function generateRandomFakeBlock(): IRawBlock {
     height: ++blockHeight,
     hash,
     countOfTx,
-    leanderNode: 'mishmish',
+    leaderNode: 'mishmish',
     timestamp: Date.now(),
     txs,
   };
