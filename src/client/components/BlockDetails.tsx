@@ -55,11 +55,11 @@ const BlockDetailsImpl = withStyles(styles)(
             <Typography>Time: {timeago.format(block.timestamp)}</Typography>
             <Typography>Txs</Typography>
             <ul>
-              {block.txsHashes.map((hash, id) => (
+              {block.txsHashes ? block.txsHashes.map((hash, id) => (
                 <li key={id}>
                   <Link to={`/tx/${hash}`}>{hash}</Link>
                 </li>
-              ))}
+              )) : <Typography>No transactions found</Typography>}
             </ul>
           </CardContent>
         </Card>

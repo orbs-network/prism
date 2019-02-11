@@ -1,5 +1,5 @@
 export interface ITx {
-  blockHash: string;
   hash: string;
+  blockHash: string;
   data: string;
 }
