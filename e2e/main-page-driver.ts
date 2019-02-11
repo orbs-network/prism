@@ -6,12 +6,16 @@ export class MainPageDriver {
     }
 
     public async waitForBlocks(countOfBlocks: number): Promise<void> {
+        console.log('waitForBlocks', countOfBlocks);
         await waitUntil(async () => await this.getCountOfBlocks() === countOfBlocks);
     }
 
     public async getVisibleBlockItems() {
+        console.log('getVisibleBlockItems');
         const blocksBox = await page.waitForSelector('#blocks-box');
+        console.log('blocksBox', !!blocksBox);
         const blockItems = await blocksBox.$$('[data-type=block-item]');
+        console.log('blockItems.length', blockItems.length);
         return blockItems;
     }
 
@@ -22,6 +26,7 @@ export class MainPageDriver {
     }
 
     public async getCountOfBlocks() {
+        console.log('getCountOfBlocks');
         return (await this.getVisibleBlockItems()).length;
     }
 }
