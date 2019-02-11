@@ -10,6 +10,7 @@ async function main() {
   // externals
   const orbsAdapter = genOrbsAdapter();
   const db = genDb();
+  await db.init(); // create tables if needed
 
   // internals
   const storage = new Storage();

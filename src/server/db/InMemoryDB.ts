@@ -3,8 +3,13 @@ import { IBlock } from '../../shared/IBlock';
 import { ITx } from '../../shared/ITx';
 
 export class InMemoryDB implements IDB {
-  private blocks: Map<string, IBlock> = new Map();
-  private txs: Map<string, ITx> = new Map();
+  private blocks: Map<string, IBlock>;
+  private txs: Map<string, ITx>;
+
+  public async init(): Promise<void> {
+    this.blocks = new Map();
+    this.txs = new Map();
+  }
 
   public async storeBlock(block: IBlock): Promise<void> {
     this.blocks.set(block.hash, block);

@@ -3,6 +3,10 @@ import { IBlock } from '../../shared/IBlock';
 import { ITx } from '../../shared/ITx';
 
 export class PostgressDB implements IDB {
+  public async init(): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
   public storeTx(tx: ITx | ITx[]): Promise<void> {
     throw new Error('Method not implemented.');
   }
