@@ -18,7 +18,7 @@ const HelixContainerImpl = withStyles(styles)(
   class extends React.Component<IProps> {
     public render() {
       return (
-        <Card id='blocks-box'>
+        <Card id='helix-blocks-box'>
           <CardHeader title={'Blocks Helix'} />
           <CardContent>
             <Helix />

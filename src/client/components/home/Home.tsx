@@ -32,9 +32,9 @@ export const Home = withStyles(styles)(({ classes }: IProps) => (
           <Grid item xs={12}>
             <HelixContainer />
           </Grid>
-          {/* <Grid item xs={12}>
+          <Grid item xs={12}>
             <BlockBox />
-          </Grid> */}
+          </Grid>
         </Grid>
       </Grid>
     </Grid>
