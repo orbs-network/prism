@@ -51,7 +51,6 @@ export class Storage {
       hash: block.hash,
       height: block.height,
       countOfTx: block.countOfTx,
-      leaderNode: block.leaderNode,
       timestamp: block.timestamp,
       txsHashes: block.txs.map(tx => tx.hash),
     };
@@ -62,7 +61,6 @@ export class Storage {
       hash: rawBlock.hash,
       height: rawBlock.height,
       countOfTx: rawBlock.countOfTx,
-      leaderNode: rawBlock.leaderNode,
       timestamp: rawBlock.timestamp,
     };
   }

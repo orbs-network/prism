@@ -26,6 +26,5 @@ export const BlockItem = withStyles(styles)(({ classes, block }: IProps) => (
     </div>
     <div>Txns: {block.countOfTx}</div>
     <div>Time : {timeago.format(block.timestamp)}</div>
-    <div>Leader Node: {block.leaderNode}</div>
   </div>
 ));
