@@ -1,24 +1,22 @@
 import { IRawBlock } from '../../shared/IBlock';
 import { generateRandomFakeBlock } from './fake-blocks-generator';
-import { IOrbsAdapter, NewBlockCallback } from './IOrbsAdapter';
+import { IOrbsAdapter, NewBlockCallback, INewBlocksHandler } from './IOrbsAdapter';
 
 export class MockOrbsAdapter implements IOrbsAdapter {
+  private blockChain: IRawBlock[] = [];
   private blocksGeneratorIntervalId: NodeJS.Timeout;
-  private listenerCounter: number = 0;
-  private listeners: Map<number, NewBlockCallback> = new Map();
+  private listeners: Map<INewBlocksHandler, INewBlocksHandler> = new Map();
 
   constructor() {
     this.generateBlocks();
   }
 
-  public RegisterToNewBlocks(cb: NewBlockCallback): number {
-    this.listenerCounter++;
-    this.listeners.set(this.listenerCounter, cb);
-    return this.listenerCounter;
+  public RegisterToNewBlocks(handler: INewBlocksHandler): void {
+    this.listeners.set(handler, handler);
   }
 
-  public UnregisterFromNewBlocks(subscriptionToken: number): void {
-    this.listeners.delete(subscriptionToken);
+  public UnregisterFromNewBlocks(handler: INewBlocksHandler): void {
+    this.listeners.delete(handler);
   }
 
   public dispose(): void {
@@ -28,9 +26,20 @@ export class MockOrbsAdapter implements IOrbsAdapter {
     this.listeners = new Map();
   }
 
+  public getBlockAt(height: number): Promise<IRawBlock> {
+    return new Promise((resolve, reject) => {
+      if (height === 0 || height > this.blockChain.length) {
+        reject(this.blockChain.length);
+      } else {
+        resolve(this.blockChain[height - 1]);
+      }
+    });
+  }
+
   private emitNewBlock(): void {
     const newBlock = generateRandomFakeBlock();
-    this.listeners.forEach(cb => cb(newBlock));
+    this.blockChain.push(newBlock);
+    this.listeners.forEach(handler => handler.handleNewBlock(newBlock));
   }
 
   private generateBlocks() {

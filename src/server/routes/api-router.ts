@@ -1,7 +1,7 @@
 import * as bodyParser from 'body-parser';
 import { Router } from 'express';
 import { IRawBlock, IBlock } from '../../shared/IBlock';
-import { Storage } from '../storage';
+import { Storage } from '../storage/storage';
 import { ITx } from '../../shared/ITx';
 
 export function apiRouter(storage: Storage) {

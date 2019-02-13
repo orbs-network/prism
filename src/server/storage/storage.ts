@@ -1,15 +1,12 @@
-import { IBlockSummary, IRawBlock, IBlock } from '../shared/IBlock';
-import { WS } from './ws/ws';
-import { ITx } from '../shared/ITx';
-import { ISearchResult } from '../shared/ISearchResult';
-import { IDB } from './db/IDB';
+import { IBlock, IRawBlock } from '../../shared/IBlock';
+import { ISearchResult } from '../../shared/ISearchResult';
+import { ITx } from '../../shared/ITx';
+import { IDB } from '../db/IDB';
 
 export class Storage {
-  private ws: WS;
   private db: IDB;
 
-  public init(ws: WS, db: IDB): void {
-    this.ws = ws;
+  public init(db: IDB): void {
     this.db = db;
   }
 
@@ -24,11 +21,9 @@ export class Storage {
   public async handleNewBlock(rawBlock: IRawBlock): Promise<void> {
     await this.db.storeBlock(this.rawBlockToBlock(rawBlock));
     await this.db.storeTx(rawBlock.txs);
-    this.ws.emit('new-block-summary', this.blockToBlockSummary(rawBlock));
   }
 
   public async findHash(hash: string): Promise<ISearchResult> {
-    console.log('searching for', hash);
     const block = await this.getBlock(hash);
     if (block) {
       return {
@@ -53,15 +48,6 @@ export class Storage {
       countOfTx: block.countOfTx,
       timestamp: block.timestamp,
       txsHashes: block.txs.map(tx => tx.hash),
-    };
-  }
-
-  private blockToBlockSummary(rawBlock: IRawBlock): IBlockSummary {
-    return {
-      hash: rawBlock.hash,
-      height: rawBlock.height,
-      countOfTx: rawBlock.countOfTx,
-      timestamp: rawBlock.timestamp,
     };
   }
 }

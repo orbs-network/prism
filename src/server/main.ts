@@ -1,10 +1,8 @@
-import { MockOrbsAdapter } from './orbs-adapter/MockOrbsAdapter';
-import { initServer } from './server';
-import { Indexer } from './indexer';
-import { WS } from './ws/ws';
-import { Storage } from './storage';
 import { genDb } from './db/DBFactory';
 import { genOrbsAdapter } from './orbs-adapter/OrbsAdapterFactory';
+import { initServer } from './server';
+import { Storage } from './storage/storage';
+import { WS } from './ws/ws';
 
 async function main() {
   // externals
@@ -16,9 +14,12 @@ async function main() {
   const storage = new Storage();
   const server = initServer(storage);
   const ws = new WS(server);
-  const indexer = new Indexer(orbsAdapter, storage);
 
-  storage.init(ws, db);
+  // link all the parts
+  orbsAdapter.RegisterToNewBlocks(ws);
+  orbsAdapter.RegisterToNewBlocks(storage);
+
+  storage.init(db);
 }
 
 main()

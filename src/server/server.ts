@@ -3,7 +3,7 @@ import { apiRouter } from './routes/api-router';
 import { staticsRouter } from './routes/statics-router';
 import { staticsDevRouter } from './routes/statics-dev-router';
 import * as config from './config';
-import { Storage } from './storage';
+import { Storage } from './storage/storage';
 
 export function initServer(storage: Storage) {
   const app = express();

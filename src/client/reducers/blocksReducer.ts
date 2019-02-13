@@ -32,7 +32,7 @@ function appendBlockToState(state: IBlocksByHash, block: IBlock): IBlocksByHash 
   };
 }
 
-export function blocksByHash(state: IBlocksByHash = {}, action: RootAction): IBlockEntry {
+export function blocksByHash(state: IBlocksByHash = {}, action: RootAction): IBlocksByHash {
   switch (action.type) {
     case 'NEW_BLOCK_SUMMARY':
       return {
