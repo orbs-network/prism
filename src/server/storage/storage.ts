@@ -2,13 +2,10 @@ import { IBlock, IRawBlock } from '../../shared/IBlock';
 import { ISearchResult } from '../../shared/ISearchResult';
 import { ITx } from '../../shared/ITx';
 import { IDB } from '../db/IDB';
+import { rawBlockToBlock } from '../block-transform/blockTransform';
 
 export class Storage {
-  private db: IDB;
-
-  public init(db: IDB): void {
-    this.db = db;
-  }
+  constructor(private db: IDB) {}
 
   public getBlock(blockHash: string): Promise<IBlock> {
     return this.db.getBlockByHash(blockHash);
@@ -19,7 +16,7 @@ export class Storage {
   }
 
   public async handleNewBlock(rawBlock: IRawBlock): Promise<void> {
-    await this.db.storeBlock(this.rawBlockToBlock(rawBlock));
+    await this.db.storeBlock(rawBlockToBlock(rawBlock));
     await this.db.storeTx(rawBlock.txs);
   }
 
@@ -39,15 +36,7 @@ export class Storage {
         type: 'tx',
       };
     }
-  }
 
-  private rawBlockToBlock(block: IRawBlock): IBlock {
-    return {
-      hash: block.hash,
-      height: block.height,
-      countOfTx: block.countOfTx,
-      timestamp: block.timestamp,
-      txsHashes: block.txs.map(tx => tx.hash),
-    };
+    return null;
   }
 }

@@ -11,15 +11,13 @@ async function main() {
   await db.init(); // create tables if needed
 
   // internals
-  const storage = new Storage();
+  const storage = new Storage(db);
   const server = initServer(storage);
   const ws = new WS(server);
 
   // link all the parts
   orbsAdapter.RegisterToNewBlocks(ws);
   orbsAdapter.RegisterToNewBlocks(storage);
-
-  storage.init(db);
 }
 
 main()

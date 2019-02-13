@@ -11,5 +11,5 @@
     "moduleResolution": "node",
     "types": ["node"]
   },
-  "files": ["./main.ts"]
+  "files": ["./main.ts", "./**/*.test.ts"]
 }
