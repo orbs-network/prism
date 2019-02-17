@@ -4,4 +4,5 @@ module.exports = {
   ORBS_ENDPOINT: process.env.ORBS_ENDPOINT,
   ORBS_VIRTUAL_CHAIN_ID: parseInt(process.env.ORBS_VIRTUAL_CHAIN_ID),
   ORBS_NETWORK_TYPE: process.env.ORBS_NETWORK_TYPE,
+  POOLING_INTERVAL: parseInt(process.env.POOLING_INTERVAL),
 };

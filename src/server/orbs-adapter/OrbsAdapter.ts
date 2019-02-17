@@ -1,7 +1,7 @@
 import { Client, NetworkType } from 'orbs-client-sdk';
 import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import { INewBlocksHandler, IOrbsAdapter, IRawBlock } from './IOrbsAdapter';
-import { ORBS_ENDPOINT, ORBS_VIRTUAL_CHAIN_ID, ORBS_NETWORK_TYPE } from '../config';
+import { ORBS_ENDPOINT, ORBS_VIRTUAL_CHAIN_ID, ORBS_NETWORK_TYPE, POOLING_INTERVAL } from '../config';
 
 export class OrbsAdapter implements IOrbsAdapter {
   private latestKnownHeight: bigint = BigInt(1);
@@ -50,6 +50,6 @@ export class OrbsAdapter implements IOrbsAdapter {
   }
 
   private startPooling(): void {
-    setInterval(() => this.checkForNewBlocks(), 1000);
+    setInterval(() => this.checkForNewBlocks(), POOLING_INTERVAL);
   }
 }
