@@ -14,7 +14,7 @@ export interface IBlockEntry {
 }
 
 export interface IBlocksByHash {
-  [hash: string]: IBlockEntry;
+  [blockHash: string]: IBlockEntry;
 }
 
 function appendBlockToState(state: IBlocksByHash, block: IBlock): IBlocksByHash {
@@ -54,11 +54,11 @@ export function blocksByHash(state: IBlocksByHash = {}, action: RootAction): IBl
       }
     }
     case 'LOAD_BLOCK_ERROR': {
-      const { error, hash } = action;
-      const summary = state[hash] && state[hash].summary;
+      const { error, blockHash } = action;
+      const summary = state[blockHash] && state[blockHash].summary;
       return {
         ...state,
-        [hash]: {
+        [blockHash]: {
           summary,
           blockData: {
             isLoading: false,
@@ -72,10 +72,10 @@ export function blocksByHash(state: IBlocksByHash = {}, action: RootAction): IBl
   }
 }
 
-export const getBlockData = (state: IRootState, hash: string): IBlockData =>
-  state.blocksByHash[hash] && state.blocksByHash[hash].blockData;
+export const getBlockData = (state: IRootState, blockHash: string): IBlockData =>
+  state.blocksByHash[blockHash] && state.blocksByHash[blockHash].blockData;
 
-export const isBlockLoading = (state: IRootState, hash: string): boolean => {
-  const blockData = getBlockData(state, hash);
+export const isBlockLoading = (state: IRootState, blockHash: string): boolean => {
+  const blockData = getBlockData(state, blockHash);
   return blockData && blockData.isLoading;
 };

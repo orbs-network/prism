@@ -3,7 +3,7 @@ import { generateRandomFakeBlock } from '../orbs-adapter/fake-blocks-generator';
 import { Storage } from './storage';
 import { rawBlockToBlock, rawTxToTx } from '../block-transform/blockTransform';
 import { ISearchResult } from '../../shared/ISearchResult';
-import { hashToString } from '../hash-converter/hashConverter';
+import { uint8ArrayToString } from '../hash-converter/hashConverter';
 
 describe('storage', () => {
   it('should store and retrive blocks', async () => {
@@ -14,7 +14,7 @@ describe('storage', () => {
     await storage.handleNewBlock(block);
 
     const expected = rawBlockToBlock(block);
-    const actual = await storage.getBlock(hashToString(block.blockHash));
+    const actual = await storage.getBlock(uint8ArrayToString(block.blockHash));
     expect(expected).toEqual(actual);
   });
 
@@ -26,7 +26,7 @@ describe('storage', () => {
     await storage.handleNewBlock(block);
 
     for (const tx of block.transactions) {
-      const actual = await storage.getTx(hashToString(tx.txHash));
+      const actual = await storage.getTx(uint8ArrayToString(tx.txId));
       expect(rawTxToTx(block, tx)).toEqual(actual);
     }
   });
@@ -42,11 +42,11 @@ describe('storage', () => {
       await storage.handleNewBlock(block2);
 
       const expected: ISearchResult = { type: 'block', block: rawBlockToBlock(block2) };
-      const actual = await storage.findHash(hashToString(block2.blockHash));
+      const actual = await storage.search(uint8ArrayToString(block2.blockHash));
       expect(expected).toEqual(actual);
     });
 
-    it('should be able to find a tx by hash', async () => {
+    it('should be able to find a tx by id', async () => {
       const db = new InMemoryDB();
       await db.init();
       const storage = new Storage(db);
@@ -59,12 +59,12 @@ describe('storage', () => {
       const expected: ISearchResult = {
         type: 'tx',
         tx: {
-          txHash: hashToString(tx.txHash),
-          blockHash: hashToString(block2.blockHash),
+          txId: uint8ArrayToString(tx.txId),
+          blockHash: uint8ArrayToString(block2.blockHash),
           data: tx.data,
         },
       };
-      const actual = await storage.findHash(hashToString(block2.transactions[0].txHash));
+      const actual = await storage.search(uint8ArrayToString(block2.transactions[0].txId));
       expect(expected).toEqual(actual);
     });
 
@@ -74,7 +74,7 @@ describe('storage', () => {
       const storage = new Storage(db);
 
       const expected: ISearchResult = null;
-      const actual = await storage.findHash('fake hash');
+      const actual = await storage.search('fake hash');
       expect(expected).toEqual(actual);
     });
   });

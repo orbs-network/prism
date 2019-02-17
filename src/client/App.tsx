@@ -39,8 +39,11 @@ class AppImpl extends React.Component {
               <Header />
               <Switch>
                 <Route exact path='/' component={Home} />
-                <Route path='/block/:hash' render={({ match }) => <BlockDetails hash={match.params.hash} />} />
-                <Route path='/tx/:hash' render={({ match }) => <TxDetails hash={match.params.hash} />} />
+                <Route
+                  path='/block/:blockHash'
+                  render={({ match }) => <BlockDetails blockHash={match.params.blockHash} />}
+                />
+                <Route path='/tx/:txId' render={({ match }) => <TxDetails txId={match.params.txId} />} />
                 <Route path='/not-found/:term' render={({ match }) => <NotFound term={match.params.term} />} />
               </Switch>
             </Grid>

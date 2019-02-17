@@ -12,8 +12,8 @@ export class Storage {
     return this.db.getBlockByHash(blockHash);
   }
 
-  public getTx(txHash: string): Promise<ITx> {
-    return this.db.getTxByHash(txHash);
+  public getTx(txId: string): Promise<ITx> {
+    return this.db.getTxById(txId);
   }
 
   public async handleNewBlock(rawBlock: IRawBlock): Promise<void> {
@@ -21,8 +21,8 @@ export class Storage {
     await this.db.storeTx(rawBlock.transactions.map(tx => rawTxToTx(rawBlock, tx)));
   }
 
-  public async findHash(hash: string): Promise<ISearchResult> {
-    const block = await this.getBlock(hash);
+  public async search(term: string): Promise<ISearchResult> {
+    const block = await this.getBlock(term);
     if (block) {
       return {
         block,
@@ -30,7 +30,7 @@ export class Storage {
       };
     }
 
-    const tx = await this.getTx(hash);
+    const tx = await this.getTx(term);
     if (tx) {
       return {
         tx,

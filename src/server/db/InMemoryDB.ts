@@ -25,13 +25,13 @@ export class InMemoryDB implements IDB {
 
   public async storeTx(tx: ITx | ITx[]): Promise<void> {
     if (Array.isArray(tx)) {
-      tx.map(t => this.txs.set(t.txHash, t));
+      tx.map(t => this.txs.set(t.txId, t));
     } else {
-      this.txs.set(tx.txHash, tx);
+      this.txs.set(tx.txId, tx);
     }
   }
 
-  public async getTxByHash(hash: string): Promise<ITx> {
-    return this.txs.get(hash);
+  public async getTxById(txId: string): Promise<ITx> {
+    return this.txs.get(txId);
   }
 }

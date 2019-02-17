@@ -2,7 +2,6 @@ import { ITx } from '../../shared/ITx';
 
 export interface IRawTx {
   txId: Uint8Array;
-  txHash: Uint8Array;
   data: string;
 }
 

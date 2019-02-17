@@ -1,16 +1,16 @@
 import { combineReducers, Reducer } from 'redux';
 import { blocksByHash, IBlocksByHash } from './blocksReducer';
-import { txsByHash, ITxsByHash } from './txsReducer';
+import { txsById, ITxsById } from './txsReducer';
 import { recentBlocksHashs, RecentBlocksHashes } from './recentBlocksReducer';
 
 export interface IRootState {
-  txsByHash: ITxsByHash;
+  txsById: ITxsById;
   blocksByHash: IBlocksByHash;
   recentBlocksHashs: RecentBlocksHashes;
 }
 
 export const rootReducer: Reducer<IRootState> = combineReducers<IRootState>({
-  txsByHash,
+  txsById,
   blocksByHash,
   recentBlocksHashs,
 });

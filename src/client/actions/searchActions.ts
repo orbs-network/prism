@@ -14,7 +14,7 @@ export const searchAction = (term: string, history): ThunkAction<void, {}, {}, A
         console.log(`going to /block/${searchResult.block.blockHash}`, history);
         history.push(`/block/${searchResult.block.blockHash}`);
       } else {
-        history.push(`/tx/${searchResult.tx.txHash}`);
+        history.push(`/tx/${searchResult.tx.txId}`);
       }
       // navigate to the result
     } catch (e) {

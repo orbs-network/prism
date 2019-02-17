@@ -12,7 +12,6 @@ function genHash(): Uint8Array {
 export function generateFakeTx(): IRawTx {
   return {
     txId: genHash(),
-    txHash: genHash(),
     data: Math.random().toString(),
   };
 }

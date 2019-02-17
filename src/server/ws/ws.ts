@@ -2,7 +2,7 @@ import { Server } from 'http';
 import * as socketIO from 'socket.io';
 import { IBlockSummary } from '../../shared/IBlock';
 import { INewBlocksHandler, IRawBlock } from '../orbs-adapter/IOrbsAdapter';
-import { hashToString } from '../hash-converter/hashConverter';
+import { uint8ArrayToString } from '../hash-converter/hashConverter';
 
 export class WS implements INewBlocksHandler {
   private sockets = {};
@@ -32,7 +32,7 @@ export class WS implements INewBlocksHandler {
 
   private blockToBlockSummary(rawBlock: IRawBlock): IBlockSummary {
     return {
-      blockHash: hashToString(rawBlock.blockHash),
+      blockHash: uint8ArrayToString(rawBlock.blockHash),
       blockHeight: rawBlock.blockHeight.toString(),
       numTransactions: rawBlock.transactions.length,
       blockTimestamp: rawBlock.timeStamp.getTime(),

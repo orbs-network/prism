@@ -109,7 +109,7 @@ const HeaderImpl = withStyles(styles)(
               </div>
               <form onSubmit={e => this.onSubmitSearch(e)}>
                 <InputBase
-                  placeholder='Block Number / Tx Hash'
+                  placeholder='Block Height/ Block Hash / Tx Id'
                   classes={{
                     root: classes.inputRoot,
                     input: classes.inputInput,

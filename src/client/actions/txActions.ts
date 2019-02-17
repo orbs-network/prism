@@ -4,26 +4,26 @@ import { ITx } from '../../shared/ITx';
 import { loadTx } from '../utils/api-facade';
 
 // Action Creators
-export const loadTxAction = (hash: string): ThunkAction<void, {}, {}, AnyAction> => {
+export const loadTxAction = (txId: string): ThunkAction<void, {}, {}, AnyAction> => {
   return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
-    dispatch(loadTxStartedAction(hash));
+    dispatch(loadTxStartedAction(txId));
     try {
-      const tx: ITx = await loadTx(hash); // Call the server api
+      const tx: ITx = await loadTx(txId); // Call the server api
       dispatch(loadTxCompletedAction(tx));
     } catch (e) {
-      dispatch(loadTxErrorAction(hash, 'Tx Not Found'));
+      dispatch(loadTxErrorAction(txId, 'Tx Not Found'));
     }
   };
 };
 
 export interface ILoadingTxStartedAction {
   type: 'LOAD_TX_STARTED';
-  hash: string;
+  txId: string;
 }
 
-export const loadTxStartedAction = (hash: string): ILoadingTxStartedAction => ({
+export const loadTxStartedAction = (txId: string): ILoadingTxStartedAction => ({
   type: 'LOAD_TX_STARTED',
-  hash,
+  txId,
 });
 
 export interface ILoadingTxCompletedAction {
@@ -38,13 +38,13 @@ export const loadTxCompletedAction = (tx: ITx): ILoadingTxCompletedAction => ({
 
 export interface ILoadingTxErrorAction {
   type: 'LOAD_TX_ERROR';
-  hash: string;
+  txId: string;
   error: string;
 }
 
-export const loadTxErrorAction = (hash: string, error: string): ILoadingTxErrorAction => ({
+export const loadTxErrorAction = (txId: string, error: string): ILoadingTxErrorAction => ({
   type: 'LOAD_TX_ERROR',
-  hash,
+  txId,
   error,
 });
 

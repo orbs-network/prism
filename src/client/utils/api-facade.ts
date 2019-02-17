@@ -8,8 +8,8 @@ export async function loadBlock(blockHash: string): Promise<IBlock> {
   return res.data as IBlock;
 }
 
-export async function loadTx(txHash: string): Promise<ITx> {
-  const res = await axios.get(`/api/tx/${txHash}`);
+export async function loadTx(txId: string): Promise<ITx> {
+  const res = await axios.get(`/api/tx/${txId}`);
   return res.data as ITx;
 }
 

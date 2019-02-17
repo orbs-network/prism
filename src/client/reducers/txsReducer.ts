@@ -8,28 +8,28 @@ export interface ITxData {
   tx?: ITx;
 }
 
-export interface ITxsByHash {
-  [hash: string]: ITxData;
+export interface ITxsById {
+  [txId: string]: ITxData;
 }
 
-export function txsByHash(state: ITxsByHash = {}, action: RootAction): ITxsByHash {
+export function txsById(state: ITxsById = {}, action: RootAction): ITxsById {
   switch (action.type) {
     case 'LOAD_TX_COMPLETED': {
       const { tx } = action;
-      const { txHash } = tx;
+      const { txId } = tx;
       return {
         ...state,
-        [txHash]: {
+        [txId]: {
           isLoading: false,
           tx,
         },
       };
     }
     case 'LOAD_TX_ERROR': {
-      const { error, hash } = action;
+      const { error, txId } = action;
       return {
         ...state,
-        [hash]: {
+        [txId]: {
           isLoading: false,
           error,
         },
@@ -40,9 +40,9 @@ export function txsByHash(state: ITxsByHash = {}, action: RootAction): ITxsByHas
   }
 }
 
-export const getTxData = (state: IRootState, hash: string): ITxData => state.txsByHash[hash];
+export const getTxData = (state: IRootState, txId: string): ITxData => state.txsById[txId];
 
-export const isTxLoading = (state: IRootState, hash: string): boolean => {
-  const tx = getTxData(state, hash);
+export const isTxLoading = (state: IRootState, txId: string): boolean => {
+  const tx = getTxData(state, txId);
   return tx && tx.isLoading;
 };

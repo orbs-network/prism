@@ -13,20 +13,20 @@ import { Link } from 'react-router-dom';
 const styles = (theme: Theme) => createStyles({});
 
 interface IOwnProps {
-  hash: string;
+  txId: string;
 }
 
 interface IProps {
   txData: ITxData;
   isTxLoading: boolean;
-  loadTx: (hash: string) => void;
+  loadTx: (txId: string) => void;
 }
 
 const TxDetailsImpl = withStyles(styles)(
   class extends React.Component<IProps & IOwnProps> {
     public componentDidMount() {
       if (!this.props.isTxLoading && !this.props.txData) {
-        this.props.loadTx(this.props.hash);
+        this.props.loadTx(this.props.txId);
       }
     }
 
@@ -52,7 +52,6 @@ const TxDetailsImpl = withStyles(styles)(
               block:<Link to={`/block/${tx.blockHash}`}>{tx.blockHash}</Link>
             </Typography>
             <Typography>txId:{tx.txId}</Typography>
-            <Typography>txHash:{tx.txHash}</Typography>
             <Typography>data:{tx.data}</Typography>
           </CardContent>
         </Card>
@@ -62,8 +61,8 @@ const TxDetailsImpl = withStyles(styles)(
 );
 
 const mapStateToProps = (state: IRootState, ownProps: IOwnProps) => ({
-  txData: getTxData(state, ownProps.hash),
-  isTxLoading: isTxLoading(state, ownProps.hash),
+  txData: getTxData(state, ownProps.txId),
+  isTxLoading: isTxLoading(state, ownProps.txId),
 });
 
 const dispatchProps = {

@@ -37,7 +37,7 @@ export class PostgresDB implements IDB {
     }
   }
 
-  public async getTxByHash(hash: string): Promise<ITx> {
+  public async getTxById(hash: string): Promise<ITx> {
     const query = `
       SELECT hash, block_hash as "blockHash", data
       FROM txs
@@ -76,7 +76,7 @@ export class PostgresDB implements IDB {
     await this.query(`
     INSERT INTO txs (hash, block_hash, data)
     VALUES (
-      '${tx.txHash}',
+      '${tx.txId}',
       '${tx.blockHash}',
       '${tx.data}'
     );

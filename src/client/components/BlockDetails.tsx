@@ -13,20 +13,20 @@ import { IRootState } from '../reducers/rootReducer';
 const styles = (theme: Theme) => createStyles({});
 
 interface IOwnProps {
-  hash: string;
+  blockHash: string;
 }
 
 interface IProps {
   blockData: IBlockData;
   isBlockLoading: boolean;
-  loadBlock: (hash: string) => void;
+  loadBlock: (blockHash: string) => void;
 }
 
 const BlockDetailsImpl = withStyles(styles)(
   class extends React.Component<IProps & IOwnProps> {
     public componentDidMount() {
       if (!this.props.isBlockLoading && !this.props.blockData) {
-        this.props.loadBlock(this.props.hash);
+        this.props.loadBlock(this.props.blockHash);
       }
     }
 
@@ -48,7 +48,7 @@ const BlockDetailsImpl = withStyles(styles)(
         <Card>
           <CardHeader title='Block' />
           <CardContent>
-            <Typography>hash:{block.blockHash}</Typography>
+            <Typography>blockHash:{block.blockHash}</Typography>
             <Typography>height:{block.blockHeight}</Typography>
             <Typography>numTransactions:{block.txsHashes.length}</Typography>
             <Typography>TimeStamp: {block.blockTimestamp}</Typography>
@@ -72,8 +72,8 @@ const BlockDetailsImpl = withStyles(styles)(
 );
 
 const mapStateToProps = (state: IRootState, ownProps: IOwnProps) => ({
-  blockData: getBlockData(state, ownProps.hash),
-  isBlockLoading: isBlockLoading(state, ownProps.hash),
+  blockData: getBlockData(state, ownProps.blockHash),
+  isBlockLoading: isBlockLoading(state, ownProps.blockHash),
 });
 
 const dispatchProps = {

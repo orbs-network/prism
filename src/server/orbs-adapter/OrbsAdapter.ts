@@ -44,7 +44,6 @@ export class OrbsAdapter implements IOrbsAdapter {
       timeStamp: getBlockResponse.blockTimestamp,
       transactions: getBlockResponse.transactions.map(tx => ({
         txId: tx.txId,
-        txHash: tx.txHash,
         data: 'Dummy_Data',
       })),
     };
