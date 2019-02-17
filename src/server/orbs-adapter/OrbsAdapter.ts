@@ -1,6 +1,7 @@
 import { Client, NetworkType } from 'orbs-client-sdk';
 import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import { INewBlocksHandler, IOrbsAdapter, IRawBlock } from './IOrbsAdapter';
+import { ORBS_ENDPOINT, ORBS_VIRTUAL_CHAIN_ID, ORBS_NETWORK_TYPE } from '../config';
 
 export class OrbsAdapter implements IOrbsAdapter {
   private latestKnownHeight: bigint = BigInt(1);
@@ -8,7 +9,7 @@ export class OrbsAdapter implements IOrbsAdapter {
   private listeners: Map<INewBlocksHandler, INewBlocksHandler> = new Map();
 
   public async init(): Promise<void> {
-    this.orbsClient = new Client('http://localhost:9000', 42, NetworkType.NETWORK_TYPE_TEST_NET);
+    this.orbsClient = new Client(ORBS_ENDPOINT, ORBS_VIRTUAL_CHAIN_ID, ORBS_NETWORK_TYPE as NetworkType);
     this.startPooling();
   }
 
