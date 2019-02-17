@@ -15,6 +15,7 @@ export function rawBlockToBlock(block: IRawBlock): IBlock {
 export function rawTxToTx(block: IRawBlock, tx: IRawTx): ITx {
   return {
     blockHash: hashToString(block.blockHash),
+    txId: hashToString(tx.txId),
     txHash: hashToString(tx.txHash),
     data: tx.data,
   };

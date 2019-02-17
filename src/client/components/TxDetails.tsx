@@ -51,7 +51,8 @@ const TxDetailsImpl = withStyles(styles)(
             <Typography>
               block:<Link to={`/block/${tx.blockHash}`}>{tx.blockHash}</Link>
             </Typography>
-            <Typography>hash:{tx.txHash}</Typography>
+            <Typography>txId:{tx.txId}</Typography>
+            <Typography>txHash:{tx.txHash}</Typography>
             <Typography>data:{tx.data}</Typography>
           </CardContent>
         </Card>
