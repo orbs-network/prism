@@ -7,7 +7,6 @@ import { Storage } from '../storage/storage';
 export function apiRouter(storage: Storage) {
   const router = Router();
   router.use(bodyParser.json());
-  ``;
   router.get('/api/block/:blockHash', async (req, res) => {
     const blockHash: string = req.params.blockHash;
     const block: IBlock = await storage.getBlock(blockHash);
