@@ -5,7 +5,7 @@ import { IRootState } from './rootReducer';
 export interface IBlockData {
   isLoading: boolean;
   error?: string;
-  block: IBlock;
+  block?: IBlock;
 }
 
 export interface IBlockEntry {
@@ -18,11 +18,11 @@ export interface IBlocksByHash {
 }
 
 function appendBlockToState(state: IBlocksByHash, block: IBlock): IBlocksByHash {
-  const { hash } = block;
-  const summary = state[hash] && state[hash].summary;
+  const { blockHash } = block;
+  const summary = state[blockHash] && state[blockHash].summary;
   return {
     ...state,
-    [hash]: {
+    [blockHash]: {
       summary,
       blockData: {
         isLoading: false,
@@ -37,7 +37,7 @@ export function blocksByHash(state: IBlocksByHash = {}, action: RootAction): IBl
     case 'NEW_BLOCK_SUMMARY':
       return {
         ...state,
-        [action.blockSummary.hash]: {
+        [action.blockSummary.blockHash]: {
           summary: action.blockSummary,
         },
       };

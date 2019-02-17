@@ -1,15 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "esnext",
     "sourceMap": true,
     "module": "commonjs",
     "importHelpers": true,
     "allowJs": true,
     "outDir": "../../dist/server-root",
     "rootDir": "..",
-    "lib": ["es6"],
+    "lib": ["esnext", "esnext.bigint"],
     "moduleResolution": "node",
     "types": ["node"]
   },
-  "files": ["./main.ts", "./**/*.test.ts"]
+  "files": ["./main.ts"]
 }

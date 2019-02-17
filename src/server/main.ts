@@ -15,9 +15,11 @@ async function main() {
   const server = initServer(storage);
   const ws = new WS(server);
 
+  console.log(`init******************`);
   // link all the parts
   orbsAdapter.RegisterToNewBlocks(ws);
   orbsAdapter.RegisterToNewBlocks(storage);
+  await orbsAdapter.init();
 }
 
 main()

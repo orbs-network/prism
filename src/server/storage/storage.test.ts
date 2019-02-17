@@ -1,8 +1,9 @@
 import { InMemoryDB } from '../db/InMemoryDB';
 import { generateRandomFakeBlock } from '../orbs-adapter/fake-blocks-generator';
 import { Storage } from './storage';
-import { rawBlockToBlock } from '../block-transform/blockTransform';
+import { rawBlockToBlock, rawTxToTx } from '../block-transform/blockTransform';
 import { ISearchResult } from '../../shared/ISearchResult';
+import { hashToString } from '../hash-converter/hashConverter';
 
 describe('storage', () => {
   it('should store and retrive blocks', async () => {
@@ -13,7 +14,7 @@ describe('storage', () => {
     await storage.handleNewBlock(block);
 
     const expected = rawBlockToBlock(block);
-    const actual = await storage.getBlock(block.hash);
+    const actual = await storage.getBlock(hashToString(block.blockHash));
     expect(expected).toEqual(actual);
   });
 
@@ -24,9 +25,9 @@ describe('storage', () => {
     const block = generateRandomFakeBlock();
     await storage.handleNewBlock(block);
 
-    for (const tx of block.txs) {
-      const actual = await storage.getTx(tx.hash);
-      expect(tx).toEqual(actual);
+    for (const tx of block.transactions) {
+      const actual = await storage.getTx(hashToString(tx.txHash));
+      expect(rawTxToTx(block, tx)).toEqual(actual);
     }
   });
 
@@ -41,7 +42,7 @@ describe('storage', () => {
       await storage.handleNewBlock(block2);
 
       const expected: ISearchResult = { type: 'block', block: rawBlockToBlock(block2) };
-      const actual = await storage.findHash(block2.hash);
+      const actual = await storage.findHash(hashToString(block2.blockHash));
       expect(expected).toEqual(actual);
     });
 
@@ -54,8 +55,16 @@ describe('storage', () => {
       await storage.handleNewBlock(block1);
       await storage.handleNewBlock(block2);
 
-      const expected: ISearchResult = { type: 'tx', tx: block2.txs[0] };
-      const actual = await storage.findHash(block2.txs[0].hash);
+      const tx = block2.transactions[0];
+      const expected: ISearchResult = {
+        type: 'tx',
+        tx: {
+          txHash: hashToString(tx.txHash),
+          blockHash: hashToString(block2.blockHash),
+          data: tx.data,
+        },
+      };
+      const actual = await storage.findHash(hashToString(block2.transactions[0].txHash));
       expect(expected).toEqual(actual);
     });
 

@@ -1,8 +1,7 @@
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
 import * as React from 'react';
-import { IBlockSummary } from '../../../shared/IBlock';
 import { Link } from 'react-router-dom';
-import * as timeago from 'timeago.js';
+import { IBlockSummary } from '../../../shared/IBlock';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -16,15 +15,15 @@ interface IProps extends WithStyles<typeof styles> {
 }
 
 export const BlockItem = withStyles(styles)(({ classes, block }: IProps) => (
-  <div id={`block-${block.height}`} data-type='block-item'>
+  <div id={`block-${block.blockHeight}`} data-type='block-item'>
     <hr />
     <div>
-      Height: <span data-type='block-height'>{block.height}</span>
+      Height: <span data-type='block-height'>{block.blockHeight}</span>
     </div>
     <div>
-      Hash: <Link to={`/block/${block.hash}`}>{block.hash}</Link>
+      Hash: <Link to={`/block/${block.blockHash}`}>{block.blockHash}</Link>
     </div>
-    <div>Txns: {block.countOfTx}</div>
-    <div>Time : {timeago.format(block.timestamp)}</div>
+    <div>Txns: {block.numTransactions}</div>
+    <div>TimeStamp : {block.blockTimestamp}</div>
   </div>
 ));

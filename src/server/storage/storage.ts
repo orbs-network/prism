@@ -1,8 +1,9 @@
-import { IBlock, IRawBlock } from '../../shared/IBlock';
+import { IBlock } from '../../shared/IBlock';
 import { ISearchResult } from '../../shared/ISearchResult';
 import { ITx } from '../../shared/ITx';
+import { rawBlockToBlock, rawTxToTx } from '../block-transform/blockTransform';
 import { IDB } from '../db/IDB';
-import { rawBlockToBlock } from '../block-transform/blockTransform';
+import { IRawBlock } from '../orbs-adapter/IOrbsAdapter';
 
 export class Storage {
   constructor(private db: IDB) {}
@@ -17,7 +18,7 @@ export class Storage {
 
   public async handleNewBlock(rawBlock: IRawBlock): Promise<void> {
     await this.db.storeBlock(rawBlockToBlock(rawBlock));
-    await this.db.storeTx(rawBlock.txs);
+    await this.db.storeTx(rawBlock.transactions.map(tx => rawTxToTx(rawBlock, tx)));
   }
 
   public async findHash(hash: string): Promise<ISearchResult> {

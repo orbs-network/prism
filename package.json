@@ -67,7 +67,6 @@
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0",
     "three": "^0.101.1",
-    "timeago.js": "^4.0.0-beta.2",
     "tslib": "^1.9.3"
   },
   "devDependencies": {

@@ -9,7 +9,6 @@ import { Link } from 'react-router-dom';
 import { loadBlockAction } from '../actions/blockActions';
 import { getBlockData, IBlockData, isBlockLoading } from '../reducers/blocksReducer';
 import { IRootState } from '../reducers/rootReducer';
-import * as timeago from 'timeago.js';
 
 const styles = (theme: Theme) => createStyles({});
 
@@ -49,17 +48,21 @@ const BlockDetailsImpl = withStyles(styles)(
         <Card>
           <CardHeader title='Block' />
           <CardContent>
-            <Typography>hash:{block.hash}</Typography>
-            <Typography>height:{block.height}</Typography>
-            <Typography>countOfTx:{block.countOfTx}</Typography>
-            <Typography>Time: {timeago.format(block.timestamp)}</Typography>
+            <Typography>hash:{block.blockHash}</Typography>
+            <Typography>height:{block.blockHeight}</Typography>
+            <Typography>numTransactions:{block.txsHashes.length}</Typography>
+            <Typography>TimeStamp: {block.blockTimestamp}</Typography>
             <Typography>Txs</Typography>
             <ul>
-              {block.txsHashes ? block.txsHashes.map((hash, id) => (
-                <li key={id}>
-                  <Link to={`/tx/${hash}`}>{hash}</Link>
-                </li>
-              )) : <Typography>No transactions found</Typography>}
+              {block.txsHashes ? (
+                block.txsHashes.map((hash, id) => (
+                  <li key={id}>
+                    <Link to={`/tx/${hash}`}>{hash}</Link>
+                  </li>
+                ))
+              ) : (
+                <Typography>No transactions found</Typography>
+              )}
             </ul>
           </CardContent>
         </Card>

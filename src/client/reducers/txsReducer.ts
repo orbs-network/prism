@@ -16,10 +16,10 @@ export function txsByHash(state: ITxsByHash = {}, action: RootAction): ITxsByHas
   switch (action.type) {
     case 'LOAD_TX_COMPLETED': {
       const { tx } = action;
-      const { hash } = tx;
+      const { txHash } = tx;
       return {
         ...state,
-        [hash]: {
+        [txHash]: {
           isLoading: false,
           tx,
         },

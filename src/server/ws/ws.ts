@@ -1,7 +1,8 @@
-import * as socketIO from 'socket.io';
 import { Server } from 'http';
-import { IRawBlock, IBlockSummary } from '../../shared/IBlock';
-import { INewBlocksHandler } from '../orbs-adapter/IOrbsAdapter';
+import * as socketIO from 'socket.io';
+import { IBlockSummary } from '../../shared/IBlock';
+import { INewBlocksHandler, IRawBlock } from '../orbs-adapter/IOrbsAdapter';
+import { hashToString } from '../hash-converter/hashConverter';
 
 export class WS implements INewBlocksHandler {
   private sockets = {};
@@ -31,10 +32,10 @@ export class WS implements INewBlocksHandler {
 
   private blockToBlockSummary(rawBlock: IRawBlock): IBlockSummary {
     return {
-      hash: rawBlock.hash,
-      height: rawBlock.height,
-      countOfTx: rawBlock.countOfTx,
-      timestamp: rawBlock.timestamp,
+      blockHash: hashToString(rawBlock.blockHash),
+      blockHeight: rawBlock.blockHeight.toString(),
+      numTransactions: rawBlock.transactions.length,
+      blockTimestamp: rawBlock.timeStamp.getTime(),
     };
   }
 }

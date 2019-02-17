@@ -1,13 +1,13 @@
 import * as bodyParser from 'body-parser';
 import { Router } from 'express';
-import { IRawBlock, IBlock } from '../../shared/IBlock';
-import { Storage } from '../storage/storage';
+import { IBlock } from '../../shared/IBlock';
 import { ITx } from '../../shared/ITx';
+import { Storage } from '../storage/storage';
 
 export function apiRouter(storage: Storage) {
   const router = Router();
   router.use(bodyParser.json());
-
+  ``;
   router.get('/api/block/:blockHash', async (req, res) => {
     const blockHash: string = req.params.blockHash;
     const block: IBlock = await storage.getBlock(blockHash);

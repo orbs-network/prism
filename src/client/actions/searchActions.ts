@@ -11,10 +11,10 @@ export const searchAction = (term: string, history): ThunkAction<void, {}, {}, A
       const searchResult: ISearchResult = await search(term); // Call the server api
       dispatch(searchCompletedAction(searchResult));
       if (searchResult.type === 'block') {
-        console.log(`going to /block/${searchResult.block.hash}`, history);
-        history.push(`/block/${searchResult.block.hash}`);
+        console.log(`going to /block/${searchResult.block.blockHash}`, history);
+        history.push(`/block/${searchResult.block.blockHash}`);
       } else {
-        history.push(`/tx/${searchResult.tx.hash}`);
+        history.push(`/tx/${searchResult.tx.txHash}`);
       }
       // navigate to the result
     } catch (e) {

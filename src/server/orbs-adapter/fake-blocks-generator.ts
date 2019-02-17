@@ -1,29 +1,33 @@
-import * as genHash from 'object-hash';
-import { IRawBlock } from '../../shared/IBlock';
-import { ITx } from '../../shared/ITx';
+import { IRawBlock, IRawTx } from './IOrbsAdapter';
 
-let blockHeight = 1;
-export function generateFakeTx(blockHash: string): ITx {
+let lastBlockHeight: bigint = BigInt(1);
+function genHash(): Uint8Array {
+  const result = new Uint8Array(32);
+  for (let i: number = 0; i < 32; i++) {
+    result[i] = Math.floor(Math.random() * 255);
+  }
+  return result;
+}
+
+export function generateFakeTx(): IRawTx {
   return {
-    blockHash,
-    hash: genHash(Math.random()),
+    txHash: genHash(),
     data: Math.random().toString(),
   };
 }
 
 export function generateRandomFakeBlock(): IRawBlock {
-  const hash: string = genHash(Math.random());
-  const txs: ITx[] = [];
-  const countOfTx = Math.floor(Math.random() * 10 + 6);
-  for (let i = 0; i < countOfTx; i++) {
-    txs.push(generateFakeTx(hash));
+  const blockHash: Uint8Array = genHash();
+  const transactions: IRawTx[] = [];
+  const numTransactions = Math.floor(Math.random() * 10 + 6);
+  for (let i = 0; i < numTransactions; i++) {
+    transactions.push(generateFakeTx());
   }
 
   return {
-    height: ++blockHeight,
-    hash,
-    countOfTx,
-    timestamp: Date.now(),
-    txs,
+    blockHeight: ++lastBlockHeight,
+    blockHash,
+    timeStamp: new Date(),
+    transactions,
   };
 }

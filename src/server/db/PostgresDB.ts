@@ -52,9 +52,9 @@ export class PostgresDB implements IDB {
     await this.query(`
     INSERT INTO blocks (hash, height, time, txs_hashes)
     VALUES (
-      '${block.hash}',
-      ${block.height},
-      ${block.timestamp},
+      '${block.blockHash}',
+      ${block.blockHeight},
+      ${block.blockTimestamp},
       '{${block.txsHashes.map(t => `"${t}"`).join(',')}}'
     );
   `);
@@ -76,12 +76,12 @@ export class PostgresDB implements IDB {
     await this.query(`
     INSERT INTO txs (hash, block_hash, data)
     VALUES (
-      '${tx.hash}',
+      '${tx.txHash}',
       '${tx.blockHash}',
       '${tx.data}'
     );
   `);
-}
+  }
 
   private async initTables(): Promise<void> {
     await this.createBlocksTable();

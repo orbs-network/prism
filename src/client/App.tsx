@@ -14,7 +14,7 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 const store = configureStore();
-store.dispatch(listenToBlocksSummaryAction());
+store.dispatch(listenToBlocksSummaryAction() as any);
 
 const theme = createMuiTheme({
   palette: {

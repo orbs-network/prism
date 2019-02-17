@@ -1,13 +1,12 @@
-import { IRawBlock } from '../../shared/IBlock';
 import { generateRandomFakeBlock } from './fake-blocks-generator';
-import { IOrbsAdapter, NewBlockCallback, INewBlocksHandler } from './IOrbsAdapter';
+import { INewBlocksHandler, IOrbsAdapter, IRawBlock } from './IOrbsAdapter';
 
 export class MockOrbsAdapter implements IOrbsAdapter {
   private blockChain: IRawBlock[] = [];
   private blocksGeneratorIntervalId: NodeJS.Timeout;
   private listeners: Map<INewBlocksHandler, INewBlocksHandler> = new Map();
 
-  constructor() {
+  public async init(): Promise<void> {
     this.generateBlocks();
   }
 

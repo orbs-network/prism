@@ -16,18 +16,18 @@ export class InMemoryDB implements IDB {
   }
 
   public async storeBlock(block: IBlock): Promise<void> {
-    this.blocks.set(block.hash, block);
+    this.blocks.set(block.blockHash, block);
   }
 
-  public async getBlockByHash(hash: string): Promise<IBlock> {
-    return this.blocks.get(hash);
+  public async getBlockByHash(blockHash: string): Promise<IBlock> {
+    return this.blocks.get(blockHash);
   }
 
   public async storeTx(tx: ITx | ITx[]): Promise<void> {
     if (Array.isArray(tx)) {
-      tx.map(t => this.txs.set(t.hash, t));
+      tx.map(t => this.txs.set(t.txHash, t));
     } else {
-      this.txs.set(tx.hash, tx);
+      this.txs.set(tx.txHash, tx);
     }
   }
 
