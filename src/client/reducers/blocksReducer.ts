@@ -13,11 +13,11 @@ export interface IBlockEntry {
   blockData?: IBlockData;
 }
 
-export interface IBlocksByHash {
-  [blockHash: string]: IBlockEntry;
+export interface IBlocksByHeight {
+  [blockHeight: string]: IBlockEntry;
 }
 
-function appendBlockToState(state: IBlocksByHash, block: IBlock): IBlocksByHash {
+function appendBlockToState(state: IBlocksByHeight, block: IBlock): IBlocksByHeight {
   const { blockHash } = block;
   const summary = state[blockHash] && state[blockHash].summary;
   return {
@@ -32,7 +32,7 @@ function appendBlockToState(state: IBlocksByHash, block: IBlock): IBlocksByHash 
   };
 }
 
-export function blocksByHash(state: IBlocksByHash = {}, action: RootAction): IBlocksByHash {
+export function blocksByHash(state: IBlocksByHeight = {}, action: RootAction): IBlocksByHeight {
   switch (action.type) {
     case 'NEW_BLOCK_SUMMARY':
       return {

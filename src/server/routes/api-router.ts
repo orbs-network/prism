@@ -9,7 +9,7 @@ export function apiRouter(storage: Storage) {
   router.use(bodyParser.json());
   router.get('/api/block/:blockHash', async (req, res) => {
     const blockHash: string = req.params.blockHash;
-    const block: IBlock = await storage.getBlock(blockHash);
+    const block: IBlock = await storage.getBlockByHash(blockHash);
     if (!block) {
       res.send(404);
     } else {
@@ -29,7 +29,6 @@ export function apiRouter(storage: Storage) {
   router.get('/api/search/:term', async (req, res) => {
     const term: string = req.params.term;
     const searchResult = await storage.search(term);
-    console.log(`search results`, searchResult);
     if (searchResult) {
       res.json(searchResult);
     } else {

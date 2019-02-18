@@ -1,16 +1,16 @@
 import { Client, NetworkType } from 'orbs-client-sdk';
 import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
+import { ORBS_ENDPOINT, ORBS_NETWORK_TYPE, ORBS_VIRTUAL_CHAIN_ID, POOLING_INTERVAL } from '../config';
 import { INewBlocksHandler, IOrbsAdapter, IRawBlock } from './IOrbsAdapter';
-import { ORBS_ENDPOINT, ORBS_VIRTUAL_CHAIN_ID, ORBS_NETWORK_TYPE, POOLING_INTERVAL } from '../config';
 
 export class OrbsAdapter implements IOrbsAdapter {
-  private latestKnownHeight: bigint = BigInt(1);
+  private latestKnownHeight: bigint = BigInt(0);
   private orbsClient: Client;
   private listeners: Map<INewBlocksHandler, INewBlocksHandler> = new Map();
 
   public async init(): Promise<void> {
     this.orbsClient = new Client(ORBS_ENDPOINT, ORBS_VIRTUAL_CHAIN_ID, ORBS_NETWORK_TYPE as NetworkType);
-    this.startPooling();
+    this.schedualNextRequest();
   }
 
   public RegisterToNewBlocks(handler: INewBlocksHandler): void {
@@ -30,11 +30,19 @@ export class OrbsAdapter implements IOrbsAdapter {
   }
 
   private async checkForNewBlocks(): Promise<void> {
-    console.log(`calling getBlock at ${this.latestKnownHeight}`);
-    const getBlockResponse: GetBlockResponse = await this.orbsClient.getBlock(this.latestKnownHeight);
-    console.log(`done reading getBlockResponse:`, getBlockResponse);
-    this.listeners.forEach(handler => handler.handleNewBlock(this.blockResponseToRawBlock(getBlockResponse)));
-    this.latestKnownHeight++;
+    try {
+      console.log(`-------------------------- requesting block: `, this.latestKnownHeight + BigInt(1));
+      const getBlockResponse: GetBlockResponse = await this.orbsClient.getBlock(this.latestKnownHeight + BigInt(1));
+      const newHeight = getBlockResponse.blockHeight;
+      console.log(`-------------------------- response height: `, newHeight);
+      if (newHeight > this.latestKnownHeight) {
+        this.listeners.forEach(handler => handler.handleNewBlock(this.blockResponseToRawBlock(getBlockResponse)));
+        this.latestKnownHeight = newHeight;
+      }
+      this.schedualNextRequest();
+    } catch (e) {
+      console.log(`-------------------------- error on checkForNewBlocks`, e);
+    }
   }
 
   private blockResponseToRawBlock(getBlockResponse: GetBlockResponse): IRawBlock {
@@ -49,7 +57,7 @@ export class OrbsAdapter implements IOrbsAdapter {
     };
   }
 
-  private startPooling(): void {
-    setInterval(() => this.checkForNewBlocks(), POOLING_INTERVAL);
+  private schedualNextRequest(): void {
+    setTimeout(() => this.checkForNewBlocks(), POOLING_INTERVAL);
   }
 }

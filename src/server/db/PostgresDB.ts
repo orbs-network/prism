@@ -55,16 +55,28 @@ export class PostgresDB implements IDB {
       '${block.blockHash}',
       ${block.blockHeight},
       ${block.blockTimestamp},
-      '{${block.txsHashes.map(t => `"${t}"`).join(',')}}'
+      '{${block.txIds.map(t => `"${t}"`).join(',')}}'
     );
   `);
   }
 
-  public async getBlockByHash(hash: string): Promise<IBlock> {
+  public async getBlockByHash(blockHash: string): Promise<IBlock> {
     const query = `
-      SELECT hash, height, time, txs_hashes as "txsHashes"
+      SELECT hash, height, time, txs_hashes as "txIds"
       FROM blocks
-      WHERE hash = '${hash}';
+      WHERE hash = '${blockHash}';
+    `;
+    const rows = await this.query(query);
+
+    console.log(rows[0]);
+    return rows.length === 0 ? null : rows[0];
+  }
+
+  public async getBlockByHeight(blockHeight: string): Promise<IBlock> {
+    const query = `
+      SELECT hash, height, time, txs_hashes as "txIds"
+      FROM blocks
+      WHERE height = '${blockHeight}';
     `;
     const rows = await this.query(query);
 

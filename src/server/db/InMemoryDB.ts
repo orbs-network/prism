@@ -19,6 +19,15 @@ export class InMemoryDB implements IDB {
     this.blocks.set(block.blockHash, block);
   }
 
+  public async getBlockByHeight(blockHeight: string): Promise<IBlock> {
+    for (const block of this.blocks.values()) {
+      if (block.blockHeight === blockHeight) {
+        return block;
+      }
+    }
+    return null;
+  }
+
   public async getBlockByHash(blockHash: string): Promise<IBlock> {
     return this.blocks.get(blockHash);
   }

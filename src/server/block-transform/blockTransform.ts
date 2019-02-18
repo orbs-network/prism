@@ -8,7 +8,7 @@ export function rawBlockToBlock(block: IRawBlock): IBlock {
     blockHash: uint8ArrayToString(block.blockHash),
     blockHeight: block.blockHeight.toString(),
     blockTimestamp: block.timeStamp.getTime(),
-    txsHashes: block.transactions.map(tx => uint8ArrayToString(tx.txId)),
+    txIds: block.transactions.map(tx => uint8ArrayToString(tx.txId)),
   };
 }
 

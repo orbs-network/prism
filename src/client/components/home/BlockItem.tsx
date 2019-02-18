@@ -20,7 +20,7 @@ export const BlockItem = withStyles(styles)(({ classes, block }: IProps) => (
     <div>
       Height: <span data-type='block-height'>{block.blockHeight}</span>
     </div>
-    <div>
+    <div data-type='block-hash'>
       Block Hash: <Link to={`/block/${block.blockHash}`}>{block.blockHash}</Link>
     </div>
     <div>Txns: {block.numTransactions}</div>

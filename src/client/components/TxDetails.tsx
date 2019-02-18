@@ -46,7 +46,7 @@ const TxDetailsImpl = withStyles(styles)(
       const { tx } = this.props.txData;
       return (
         <Card>
-          <CardHeader title='Tx' />
+          <CardHeader title='Tx' id='tx-details' />
           <CardContent>
             <Typography>
               block:<Link to={`/block/${tx.blockHash}`}>{tx.blockHash}</Link>

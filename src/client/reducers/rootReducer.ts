@@ -1,11 +1,11 @@
 import { combineReducers, Reducer } from 'redux';
-import { blocksByHash, IBlocksByHash } from './blocksReducer';
+import { blocksByHash, IBlocksByHeight } from './blocksReducer';
 import { txsById, ITxsById } from './txsReducer';
 import { recentBlocksHashs, RecentBlocksHashes } from './recentBlocksReducer';
 
 export interface IRootState {
   txsById: ITxsById;
-  blocksByHash: IBlocksByHash;
+  blocksByHash: IBlocksByHeight;
   recentBlocksHashs: RecentBlocksHashes;
 }
 

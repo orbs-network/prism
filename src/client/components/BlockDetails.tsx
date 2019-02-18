@@ -46,18 +46,18 @@ const BlockDetailsImpl = withStyles(styles)(
       const { block } = this.props.blockData;
       return (
         <Card>
-          <CardHeader title='Block' />
+          <CardHeader title='Block' id='block-details' />
           <CardContent>
             <Typography>blockHash:{block.blockHash}</Typography>
             <Typography>height:{block.blockHeight}</Typography>
-            <Typography>numTransactions:{block.txsHashes.length}</Typography>
+            <Typography>numTransactions:{block.txIds.length}</Typography>
             <Typography>TimeStamp: {block.blockTimestamp}</Typography>
             <Typography>Txs</Typography>
             <ul>
-              {block.txsHashes ? (
-                block.txsHashes.map((hash, id) => (
-                  <li key={id}>
-                    <Link to={`/tx/${hash}`}>{hash}</Link>
+              {block.txIds ? (
+                block.txIds.map((txId, idx) => (
+                  <li key={idx} id={`tx-${txId.toLowerCase()}`}>
+                    <Link to={`/tx/${txId}`}>{txId}</Link>
                   </li>
                 ))
               ) : (

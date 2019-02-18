@@ -8,8 +8,12 @@ import { IRawBlock } from '../orbs-adapter/IOrbsAdapter';
 export class Storage {
   constructor(private db: IDB) {}
 
-  public getBlock(blockHash: string): Promise<IBlock> {
+  public getBlockByHash(blockHash: string): Promise<IBlock> {
     return this.db.getBlockByHash(blockHash);
+  }
+
+  public getBlockByHeight(blockHeight: string): Promise<IBlock> {
+    return this.db.getBlockByHeight(blockHeight);
   }
 
   public getTx(txId: string): Promise<ITx> {
@@ -22,7 +26,15 @@ export class Storage {
   }
 
   public async search(term: string): Promise<ISearchResult> {
-    const block = await this.getBlock(term);
+    let block = await this.getBlockByHeight(term);
+    if (block) {
+      return {
+        block,
+        type: 'block',
+      };
+    }
+
+    block = await this.getBlockByHash(term);
     if (block) {
       return {
         block,

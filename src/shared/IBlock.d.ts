@@ -11,5 +11,5 @@ export interface IBlockSummary extends IBlockHeader {
 }
 
 export interface IBlock extends IBlockHeader {
-  txsHashes: string[];
+  txIds: string[];
 }

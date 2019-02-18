@@ -11,7 +11,6 @@ export const searchAction = (term: string, history): ThunkAction<void, {}, {}, A
       const searchResult: ISearchResult = await search(term); // Call the server api
       dispatch(searchCompletedAction(searchResult));
       if (searchResult.type === 'block') {
-        console.log(`going to /block/${searchResult.block.blockHash}`, history);
         history.push(`/block/${searchResult.block.blockHash}`);
       } else {
         history.push(`/tx/${searchResult.tx.txId}`);

@@ -5,6 +5,26 @@ export class MainPageDriver {
     await page.goto('http://localhost:3000');
   }
 
+  public async waitForBlockHeight(blockHeight: bigint, navigateToBlock: boolean): Promise<void> {
+    const element = await page.waitForSelector(`#block-${blockHeight.toString()}`);
+    if (navigateToBlock) {
+      const link = await element.$('a');
+      await link.click();
+    }
+  }
+
+  public async waitForBlockDetailsPage(): Promise<void> {
+    await page.waitForSelector('#block-details');
+  }
+
+  public async clickOnTx(txId: string): Promise<void> {
+    console.log(`--------------------------#tx-${txId}`);
+    const element = await page.waitForSelector(`#tx-${txId.toLowerCase()}`);
+    const link = await element.$('a');
+    await link.click();
+    await page.waitForSelector('#tx-details');
+  }
+
   public async waitForBlocks(countOfBlocks: number): Promise<void> {
     await waitUntil(async () => (await this.getCountOfBlocks()) === countOfBlocks);
   }
