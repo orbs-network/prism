@@ -14,7 +14,7 @@ describe('storage', () => {
     await storage.handleNewBlock(block);
 
     const expected = rawBlockToBlock(block);
-    const actual = await storage.getBlock(uint8ArrayToString(block.blockHash));
+    const actual = await storage.getBlockByHash(uint8ArrayToString(block.blockHash));
     expect(expected).toEqual(actual);
   });
 
