@@ -98,7 +98,7 @@ const HeaderImpl = withStyles(styles)(
           <Toolbar>
             <Link>
               <Typography className={classes.title} variant='h6' noWrap>
-                OrbsPrizm.com
+                OrbsPrism.com
               </Typography>
             </Link>
             {/* <Typography className={classes.title} variant='h6' noWrap /> */}

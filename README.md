@@ -1,1 +1,1 @@
-# Prizm - ORBS block explorer
+# Prism - ORBS block explorer
