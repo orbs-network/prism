@@ -1,5 +1,5 @@
 import { Client, NetworkType } from 'orbs-client-sdk';
-import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
+// import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import { ORBS_ENDPOINT, ORBS_NETWORK_TYPE, ORBS_VIRTUAL_CHAIN_ID, POOLING_INTERVAL } from '../config';
 import { INewBlocksHandler, IOrbsAdapter, IRawBlock } from './IOrbsAdapter';
 
@@ -32,7 +32,7 @@ export class OrbsAdapter implements IOrbsAdapter {
   private async checkForNewBlocks(): Promise<void> {
     try {
       console.log(`-------------------------- requesting block: `, this.latestKnownHeight + BigInt(1));
-      const getBlockResponse: GetBlockResponse = await this.orbsClient.getBlock(this.latestKnownHeight + BigInt(1));
+      const getBlockResponse = await this.orbsClient.getBlock(this.latestKnownHeight + BigInt(1));
       const newHeight = getBlockResponse.blockHeight;
       console.log(`-------------------------- response height: `, newHeight);
       if (newHeight > this.latestKnownHeight) {
@@ -45,7 +45,7 @@ export class OrbsAdapter implements IOrbsAdapter {
     }
   }
 
-  private blockResponseToRawBlock(getBlockResponse: GetBlockResponse): IRawBlock {
+  private blockResponseToRawBlock(getBlockResponse): IRawBlock {
     return {
       blockHeight: getBlockResponse.resultsBlockHeader.blockHeight,
       blockHash: getBlockResponse.resultsBlockHash,
