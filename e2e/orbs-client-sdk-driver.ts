@@ -1,5 +1,5 @@
-import { Client, createAccount, ArgUint64, ArgAddress, NetworkType } from 'orbs-client-sdk';
-import { Account } from 'orbs-client-sdk/dist/orbs/Account';
+import { ArgAddress, ArgUint64, Client, createAccount, NetworkType } from 'orbs-client-sdk';
+// import { Account } from 'orbs-client-sdk/dist/orbs/Account';
 import * as path from 'path';
 import { stringToUint8Array } from '../src/server/hash-converter/hashConverter';
 
@@ -18,7 +18,7 @@ const sender = {
 };
 
 export class OrbsClientSdkDriver {
-  private receiver: Account;
+  private receiver; // : Account;
   private client: Client;
 
   constructor() {
