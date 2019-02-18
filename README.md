@@ -1,1 +1,1 @@
-# Hubble - ORBS block explorer
+# Prizm - ORBS block explorer

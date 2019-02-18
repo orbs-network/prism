@@ -8,7 +8,7 @@ const nodeModulesPath = path.resolve(__dirname, 'node_modules');
 
 const plugins = [
   new HtmlWebpackPlugin({
-    title: 'Hubble',
+    title: 'Prizm',
     favicon: './src/client/favicon.ico',
     filename: 'index.html',
     template: './src/client/index.ejs',

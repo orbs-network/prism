@@ -24,7 +24,7 @@ interface IProps extends WithStyles<typeof styles> {}
 export const Home = withStyles(styles)(({ classes }: IProps) => (
   <div className={classes.root}>
     <Typography className={classes.headTableTitle} variant='h3' id='pageTitle'>
-      Hubble - The ORBS Blockchain Explorer
+      Prizm - The ORBS Blockchain Explorer
     </Typography>
     <Grid container spacing={24}>
       <Grid item xs={12}>
