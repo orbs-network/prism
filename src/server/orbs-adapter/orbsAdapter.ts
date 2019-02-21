@@ -33,7 +33,7 @@ export class OrbsAdapter implements IOrbsAdapter {
     try {
       console.log(`-------------------------- requesting block: `, this.latestKnownHeight + BigInt(1));
       const getBlockResponse = await this.orbsClient.getBlock(this.latestKnownHeight + BigInt(1));
-      const newHeight = getBlockResponse.blockHeight;
+      const newHeight = getBlockResponse.resultsBlockHeader.blockHeight;
       console.log(`-------------------------- response height: `, newHeight);
       if (newHeight > this.latestKnownHeight) {
         this.listeners.forEach(handler => handler.handleNewBlock(this.blockResponseToRawBlock(getBlockResponse)));

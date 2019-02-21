@@ -1,5 +1,5 @@
-import { ArgAddress, ArgUint64, Client, createAccount, NetworkType } from 'orbs-client-sdk';
-// import { Account } from 'orbs-client-sdk/dist/orbs/Account';
+import { Client, createAccount, NetworkType, argAddress, argUint64 } from 'orbs-client-sdk';
+import { Account } from 'orbs-client-sdk/dist/orbs/Account';
 import * as path from 'path';
 import { stringToUint8Array } from '../src/server/hash-converter/hashConverter';
 
@@ -18,7 +18,7 @@ const sender = {
 };
 
 export class OrbsClientSdkDriver {
-  private receiver; // : Account;
+  private receiver: Account;
   private client: Client;
 
   constructor() {
@@ -32,7 +32,7 @@ export class OrbsClientSdkDriver {
       sender.privateKey,
       'BenchmarkToken',
       'transfer',
-      [new ArgUint64(1), new ArgAddress(this.receiver.address)],
+      [argUint64(1), argAddress(this.receiver.address)],
     );
 
     const transferResponse = await this.client.sendTransaction(tx);
