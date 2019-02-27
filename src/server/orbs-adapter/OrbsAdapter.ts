@@ -1,7 +1,44 @@
 import { Client, NetworkType } from 'orbs-client-sdk';
-// import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
+import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import { ORBS_ENDPOINT, ORBS_NETWORK_TYPE, ORBS_VIRTUAL_CHAIN_ID, POOLING_INTERVAL } from '../config';
-import { INewBlocksHandler, IOrbsAdapter, IRawBlock } from './IOrbsAdapter';
+import { INewBlocksHandler, IOrbsAdapter, IRawBlock, IRawArgument, IRawEvent } from './IOrbsAdapter';
+import { uint8ArrayToHexString } from '../hash-converter/hashConverter';
+import { Argument } from 'orbs-client-sdk/dist/codec/Arguments';
+import { Event } from 'orbs-client-sdk/dist/codec/Events';
+
+function convertToRawArgument(argument: Argument): IRawArgument {
+  switch (argument.type) {
+    case 'uint64':
+    case 'uint32':
+      return {
+        type: argument.type,
+        value: argument.value.toString(),
+      };
+
+    case 'string':
+      return {
+        type: argument.type,
+        value: argument.value,
+      };
+
+    case 'bytes':
+      return {
+        type: argument.type,
+        value: uint8ArrayToHexString(argument.value),
+      };
+
+    default:
+      break;
+  }
+}
+
+function convertToRawEvent(event: Event): IRawEvent {
+  return {
+    eventName: event.eventName,
+    contractName: event.contractName,
+    arguments: event.arguments.map(convertToRawArgument),
+  };
+}
 
 export class OrbsAdapter implements IOrbsAdapter {
   private latestKnownHeight: bigint = BigInt(0);
@@ -45,14 +82,25 @@ export class OrbsAdapter implements IOrbsAdapter {
     }
   }
 
-  private blockResponseToRawBlock(getBlockResponse): IRawBlock {
+  private blockResponseToRawBlock(getBlockResponse: GetBlockResponse): IRawBlock {
+    const blockHash = uint8ArrayToHexString(getBlockResponse.resultsBlockHash);
     return {
-      blockHeight: getBlockResponse.resultsBlockHeader.blockHeight,
-      blockHash: getBlockResponse.resultsBlockHash,
-      timeStamp: getBlockResponse.blockTimestamp,
+      blockHeight: getBlockResponse.resultsBlockHeader.blockHeight.toString(),
+      blockHash,
+      timeStamp: getBlockResponse.blockTimestamp.getTime(),
       transactions: getBlockResponse.transactions.map(tx => ({
-        txId: tx.txId,
-        data: 'Dummy_Data',
+        txId: uint8ArrayToHexString(tx.txId),
+        blockHash,
+        protocolVersion: tx.protocolVersion,
+        virtualChainId: tx.virtualChainId,
+        timestamp: tx.timestamp.getTime(),
+        signerPublicKey: uint8ArrayToHexString(tx.signerPublicKey),
+        contractName: tx.contractName,
+        methodName: tx.methodName,
+        inputArguments: tx.inputArguments.map(convertToRawArgument),
+        executionResult: tx.executionResult,
+        outputArguments: tx.outputArguments.map(convertToRawArgument),
+        outputEvents: tx.outputEvents.map(convertToRawEvent),
       })),
     };
   }

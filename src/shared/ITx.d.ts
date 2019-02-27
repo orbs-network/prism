@@ -1,5 +1,3 @@
-export interface ITx {
-  txId: string;
-  blockHash: string;
-  data: string;
-}
+import { IRawTx } from '../server/orbs-adapter/IOrbsAdapter';
+
+export type ITx = IRawTx;

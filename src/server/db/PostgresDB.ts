@@ -90,7 +90,7 @@ export class PostgresDB implements IDB {
     VALUES (
       '${tx.txId}',
       '${tx.blockHash}',
-      '${tx.data}'
+      'DUMMY_DATA'
     );
   `);
   }

@@ -1,7 +1,7 @@
 import { IBlock } from '../../shared/IBlock';
 import { ISearchResult } from '../../shared/ISearchResult';
 import { ITx } from '../../shared/ITx';
-import { rawBlockToBlock, rawTxToTx } from '../block-transform/blockTransform';
+import { rawBlockToBlock } from '../block-transform/blockTransform';
 import { IDB } from '../db/IDB';
 import { IRawBlock } from '../orbs-adapter/IOrbsAdapter';
 
@@ -22,7 +22,7 @@ export class Storage {
 
   public async handleNewBlock(rawBlock: IRawBlock): Promise<void> {
     await this.db.storeBlock(rawBlockToBlock(rawBlock));
-    await this.db.storeTx(rawBlock.transactions.map(tx => rawTxToTx(rawBlock, tx)));
+    await this.db.storeTx(rawBlock.transactions);
   }
 
   public async search(term: string): Promise<ISearchResult> {

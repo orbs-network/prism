@@ -52,7 +52,62 @@ const TxDetailsImpl = withStyles(styles)(
               block:<Link to={`/block/${tx.blockHash}`}>{tx.blockHash}</Link>
             </Typography>
             <Typography>txId:{tx.txId}</Typography>
-            <Typography>data:{tx.data}</Typography>
+            <Typography>timestamp:{tx.timestamp}</Typography>
+            <Typography>protocolVersion:{tx.protocolVersion}</Typography>
+            <Typography>signerPublicKey:{tx.signerPublicKey}</Typography>
+            <Typography>contractName:{tx.contractName}</Typography>
+            <Typography>methodName:{tx.methodName}</Typography>
+            <Typography>executionResult:{tx.executionResult}</Typography>
+
+            <Typography>inputArguments:</Typography>
+            <div>
+              {tx.inputArguments &&
+                tx.inputArguments.map((i, idx) => {
+                  return (
+                    <div key={idx}>
+                      <Typography>Type: {i.type}</Typography>
+                      <Typography>Value: {i.value}</Typography>
+                    </div>
+                  );
+                })}
+            </div>
+
+            <Typography>outputArguments:</Typography>
+            <div>
+              {tx.outputArguments &&
+                tx.outputArguments.map((i, idx) => {
+                  return (
+                    <div key={idx}>
+                      <Typography>Type: {i.type}</Typography>
+                      <Typography>Value: {i.value}</Typography>
+                    </div>
+                  );
+                })}
+            </div>
+
+            <Typography>outputEvents:</Typography>
+            <div>
+              {tx.outputEvents &&
+                tx.outputEvents.map((e, eventIdx) => {
+                  return (
+                    <div key={eventIdx}>
+                      <Typography>Contract name: {e.contractName}</Typography>
+                      <Typography>Event name: {e.eventName}</Typography>
+                      <Typography>Arguments:</Typography>
+                      <div>
+                        {e.arguments.map((a, argIdx) => {
+                          return (
+                            <div key={argIdx}>
+                              <Typography>Type: {a.type}</Typography>
+                              <Typography>Value: {a.value}</Typography>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
           </CardContent>
         </Card>
       );

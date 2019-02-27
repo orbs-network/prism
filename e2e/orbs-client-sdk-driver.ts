@@ -1,7 +1,7 @@
 import { Client, createAccount, NetworkType, argAddress, argUint64 } from 'orbs-client-sdk';
 import { Account } from 'orbs-client-sdk/dist/orbs/Account';
 import * as path from 'path';
-import { stringToUint8Array } from '../src/server/hash-converter/hashConverter';
+import { hexStringToUint8Array } from '../src/server/hash-converter/hashConverter';
 
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const ORBS_ENDPOINT = process.env.ORBS_ENDPOINT;
@@ -10,8 +10,8 @@ const ORBS_NETWORK_TYPE = process.env.ORBS_NETWORK_TYPE;
 
 // We use the same sender because he is the token holder (the first address that does a transaction of the token contract)
 const sender = {
-  publicKey: stringToUint8Array('b72c9fe0f78b5b27769a1007fb6b77fe6743beef92d1cb6e262163cbd13c0e11'),
-  privateKey: stringToUint8Array(
+  publicKey: hexStringToUint8Array('b72c9fe0f78b5b27769a1007fb6b77fe6743beef92d1cb6e262163cbd13c0e11'),
+  privateKey: hexStringToUint8Array(
     '479cfc81fb55cf1ce75f66cd8549c4efef2ee585a4c19a34947c1e095d159aa5b72c9fe0f78b5b27769a1007fb6b77fe6743beef92d1cb6e262163cbd13c0e11',
   ),
   address: '0x960B27df51146BD3dE815EEa7B9464307AbEe433',
@@ -32,7 +32,7 @@ export class OrbsClientSdkDriver {
       sender.privateKey,
       'BenchmarkToken',
       'transfer',
-      [argUint64(1), argAddress(this.receiver.address)],
+      [argUint64(7), argAddress(this.receiver.address)],
     );
 
     const transferResponse = await this.client.sendTransaction(tx);
