@@ -1,9 +1,8 @@
+import { ISearchResult } from '../../shared/ISearchResult';
+import { rawBlockToBlock } from '../block-transform/blockTransform';
 import { InMemoryDB } from '../db/InMemoryDB';
 import { generateRandomFakeBlock } from '../orbs-adapter/fake-blocks-generator';
 import { Storage } from './storage';
-import { rawBlockToBlock, rawTxToTx } from '../block-transform/blockTransform';
-import { ISearchResult } from '../../shared/ISearchResult';
-import { uint8ArrayToString } from '../hash-converter/hashConverter';
 
 describe('storage', () => {
   it('should store and retrive blocks', async () => {
@@ -14,7 +13,7 @@ describe('storage', () => {
     await storage.handleNewBlock(block);
 
     const expected = rawBlockToBlock(block);
-    const actual = await storage.getBlockByHash(uint8ArrayToString(block.blockHash));
+    const actual = await storage.getBlockByHash(block.blockHash);
     expect(expected).toEqual(actual);
   });
 
@@ -26,8 +25,8 @@ describe('storage', () => {
     await storage.handleNewBlock(block);
 
     for (const tx of block.transactions) {
-      const actual = await storage.getTx(uint8ArrayToString(tx.txId));
-      expect(rawTxToTx(block, tx)).toEqual(actual);
+      const actual = await storage.getTx(tx.txId);
+      expect(tx).toEqual(actual);
     }
   });
 
@@ -42,7 +41,7 @@ describe('storage', () => {
       await storage.handleNewBlock(block2);
 
       const expected: ISearchResult = { type: 'block', block: rawBlockToBlock(block2) };
-      const actual = await storage.search(uint8ArrayToString(block2.blockHash));
+      const actual = await storage.search(block2.blockHash);
       expect(expected).toEqual(actual);
     });
 
@@ -58,13 +57,9 @@ describe('storage', () => {
       const tx = block2.transactions[0];
       const expected: ISearchResult = {
         type: 'tx',
-        tx: {
-          txId: uint8ArrayToString(tx.txId),
-          blockHash: uint8ArrayToString(block2.blockHash),
-          data: tx.data,
-        },
+        tx,
       };
-      const actual = await storage.search(uint8ArrayToString(block2.transactions[0].txId));
+      const actual = await storage.search(block2.transactions[0].txId);
       expect(expected).toEqual(actual);
     });
 
