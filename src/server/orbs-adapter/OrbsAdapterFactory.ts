@@ -1,6 +1,6 @@
 import { IOrbsAdapter } from './IOrbsAdapter';
 import { MockOrbsAdapter } from './MockOrbsAdapter';
-import { OrbsAdapter } from './orbsAdapter';
+import { OrbsAdapter } from './OrbsAdapter';
 
 export function genOrbsAdapter(): IOrbsAdapter {
   // return new OrbsAdapter();
