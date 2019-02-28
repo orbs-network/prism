@@ -4,22 +4,25 @@ import { ITx } from '../../shared/ITx';
 import * as url from 'url';
 import * as pg from 'pg';
 
-const params = url.parse(process.env.DATABASE_URL);
-const auth = params.auth.split(':');
-const config: pg.PoolConfig = {
-  user: auth[0],
-  password: auth[1],
-  host: params.hostname,
-  port: parseInt(params.port, 10),
-  database: params.pathname.split('/')[1],
-  ssl: process.env.NODE_ENV === 'production',
-};
-
 export class PostgresDB implements IDB {
-  public pool: pg.Pool;
+  private config: pg.PoolConfig;
+  private pool: pg.Pool;
+
+  constructor(connectionUrl: string) {
+    const params = url.parse(connectionUrl);
+    const auth = params.auth.split(':');
+    this.config = {
+      user: auth[0],
+      password: auth[1],
+      host: params.hostname,
+      port: parseInt(params.port, 10),
+      database: params.pathname.split('/')[1],
+      ssl: process.env.NODE_ENV === 'production',
+    };
+  }
 
   public async init(): Promise<void> {
-    this.pool = new pg.Pool(config);
+    this.pool = new pg.Pool(this.config);
     await this.initTables();
   }
 
