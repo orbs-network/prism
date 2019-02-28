@@ -1,4 +1,4 @@
-import { ExecutionResult } from 'orbs-client-sdk/dist/codec/ExecutionResult';
+import { ExecutionResult } from 'orbs-client-sdk';
 import { IRawBlock, IRawTx } from './IOrbsAdapter';
 import { uint8ArrayToHexString } from '../hash-converter/hashConverter';
 
