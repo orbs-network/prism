@@ -1,6 +1,6 @@
 import { ITx } from './ITx';
 
-export interface IBlockHeader {
+interface IBlockHeader {
   blockHash: string;
   blockHeight: string;
   blockTimestamp: number;
