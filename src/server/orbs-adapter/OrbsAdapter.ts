@@ -47,7 +47,7 @@ export class OrbsAdapter implements IOrbsAdapter {
 
   public async init(): Promise<void> {
     this.orbsClient = new Client(ORBS_ENDPOINT, ORBS_VIRTUAL_CHAIN_ID, ORBS_NETWORK_TYPE as NetworkType);
-    this.schedualNextRequest();
+    this.initSchedualer();
   }
 
   public RegisterToNewBlocks(handler: INewBlocksHandler): void {
@@ -80,6 +80,22 @@ export class OrbsAdapter implements IOrbsAdapter {
     } catch (e) {
       console.log(`-------------------------- error on checkForNewBlocks`, e);
     }
+  }
+
+  private async initSchedualer(): Promise<void> {
+    if (this.latestKnownHeight === 0n) {
+      this.latestKnownHeight = await this.queryOrbsForTheLatestHeight();
+    }
+    this.schedualNextRequest();
+  }
+
+  private async queryOrbsForTheLatestHeight(): Promise<bigint> {
+    const getBlockResponse = await this.orbsClient.getBlock(0n);
+    if (typeof getBlockResponse.blockHeight === 'bigint') {
+      return getBlockResponse.blockHeight;
+    }
+
+    return 0n;
   }
 
   private blockResponseToRawBlock(getBlockResponse: GetBlockResponse): IRawBlock {
