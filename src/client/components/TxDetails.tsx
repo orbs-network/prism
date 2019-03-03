@@ -1,4 +1,15 @@
-import { createStyles, Theme, withStyles } from '@material-ui/core';
+import {
+  createStyles,
+  Theme,
+  withStyles,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Chip,
+  Avatar,
+} from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -9,6 +20,8 @@ import { IRootState } from '../reducers/rootReducer';
 import { getTxData, isTxLoading, ITxData } from '../reducers/txsReducer';
 import { loadTxAction } from '../actions/txActions';
 import { Link } from 'react-router-dom';
+import { ITx } from '../../shared/ITx';
+import { IRawArgument, IRawEvent } from '../../server/orbs-adapter/IOrbsAdapter';
 
 const styles = (theme: Theme) => createStyles({});
 
@@ -48,68 +61,90 @@ const TxDetailsImpl = withStyles(styles)(
         <Card>
           <CardHeader title='Tx' id='tx-details' />
           <CardContent>
-            <Typography>
-              block:<Link to={`/block/${tx.blockHash}`}>{tx.blockHash}</Link>
-            </Typography>
-            <Typography>txId:{tx.txId}</Typography>
-            <Typography>timestamp:{tx.timestamp}</Typography>
-            <Typography>protocolVersion:{tx.protocolVersion}</Typography>
-            <Typography>signerPublicKey:{tx.signerPublicKey}</Typography>
-            <Typography>contractName:{tx.contractName}</Typography>
-            <Typography>methodName:{tx.methodName}</Typography>
-            <Typography>executionResult:{tx.executionResult}</Typography>
-
-            <Typography>inputArguments:</Typography>
-            <div>
-              {tx.inputArguments &&
-                tx.inputArguments.map((i, idx) => {
-                  return (
-                    <div key={idx}>
-                      <Typography>Type: {i.type}</Typography>
-                      <Typography>Value: {i.value}</Typography>
-                    </div>
-                  );
-                })}
-            </div>
-
-            <Typography>outputArguments:</Typography>
-            <div>
-              {tx.outputArguments &&
-                tx.outputArguments.map((i, idx) => {
-                  return (
-                    <div key={idx}>
-                      <Typography>Type: {i.type}</Typography>
-                      <Typography>Value: {i.value}</Typography>
-                    </div>
-                  );
-                })}
-            </div>
-
-            <Typography>outputEvents:</Typography>
-            <div>
-              {tx.outputEvents &&
-                tx.outputEvents.map((e, eventIdx) => {
-                  return (
-                    <div key={eventIdx}>
-                      <Typography>Contract name: {e.contractName}</Typography>
-                      <Typography>Event name: {e.eventName}</Typography>
-                      <Typography>Arguments:</Typography>
-                      <div>
-                        {e.arguments.map((a, argIdx) => {
-                          return (
-                            <div key={argIdx}>
-                              <Typography>Type: {a.type}</Typography>
-                              <Typography>Value: {a.value}</Typography>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
-            </div>
+            <Table>
+              <TableBody>
+                <TableRow>
+                  <TableCell>block</TableCell>
+                  <TableCell align='left'>
+                    <Link to={`/block/${tx.blockHash}`}>{tx.blockHash}</Link>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>txId</TableCell>
+                  <TableCell align='left'>{tx.txId}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Time stamp</TableCell>
+                  <TableCell align='left'>{tx.timestamp}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Protocol Version</TableCell>
+                  <TableCell align='left'>{tx.protocolVersion}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Signer public key</TableCell>
+                  <TableCell align='left'>{tx.signerPublicKey}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Contract</TableCell>
+                  <TableCell align='left'>{tx.contractName}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Method</TableCell>
+                  <TableCell align='left'>{tx.methodName}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Execution result</TableCell>
+                  <TableCell align='left'>{tx.executionResult}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Input arguments</TableCell>
+                  <TableCell>{this.renderArgs(tx.inputArguments)}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Ouput arguments</TableCell>
+                  <TableCell>{this.renderArgs(tx.outputArguments)}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Ouput events</TableCell>
+                  <TableCell>{this.renderEvents(tx.outputEvents)}</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
+      );
+    }
+
+    private renderEvents(events: IRawEvent[]) {
+      if (!events || events.length === 0) {
+        return <div>None</div>;
+      }
+
+      return (
+        <ul>
+          {events.map((i, idx) => {
+            return (
+              <li key={idx}>
+                {i.eventName}, ${i.contractName}, {this.renderArgs(i.arguments)}
+              </li>
+            );
+          })}
+        </ul>
+      );
+    }
+
+    private renderArgs(args: IRawArgument[]) {
+      if (!args || args.length === 0) {
+        return <div>None</div>;
+      }
+
+      return (
+        <>
+          {args.map((i, idx) => {
+            return <Chip key={idx} label={`${i.value} - [${i.type}]`} />;
+          })}
+        </>
       );
     }
   },
