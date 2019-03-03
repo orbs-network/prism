@@ -6,4 +6,3 @@ export NVM_DIR="/opt/circleci/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 nvm install 11.2.0
-node -v

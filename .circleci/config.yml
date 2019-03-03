@@ -5,10 +5,11 @@ jobs:
     steps:
       - checkout
       - run: ./.circleci/setup.sh
-      # - run: npm install
-      # - run: npm test
-      # - run: docker pull orbsnetwork/gamma:experimental
-      # - run: docker run -d -p "9000:8080" orbsnetwork/gamma:experimental
-      # - run: npm run build
-      # - run: npm run test-e2e
-      # - run: docker ps -qa | xargs docker rm -fv
+      - run: node -v
+      - run: npm install
+      - run: npm test
+      - run: docker pull orbsnetwork/gamma:experimental
+      - run: docker run -d -p "9000:8080" orbsnetwork/gamma:experimental
+      - run: npm run build
+      - run: npm run test-e2e
+      - run: docker ps -qa | xargs docker rm -fv
