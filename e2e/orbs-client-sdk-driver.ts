@@ -26,13 +26,16 @@ export class OrbsClientSdkDriver {
     this.client = new Client(ORBS_ENDPOINT, ORBS_VIRTUAL_CHAIN_ID, ORBS_NETWORK_TYPE as NetworkType);
   }
 
-  public async transferTokensTx(amount: number): Promise<{ txId: string; blockHeight: bigint }> {
+  public async transferTokensTx(
+    amount: number,
+  ): Promise<{ txId: string; blockHeight: bigint; receiverAddress: string }> {
+    const receiverAddress = this.receiver.address;
     const [tx, txId] = this.client.createTransaction(
       sender.publicKey,
       sender.privateKey,
       'BenchmarkToken',
       'transfer',
-      [argUint64(amount), argAddress(this.receiver.address)],
+      [argUint64(amount), argAddress(receiverAddress)],
     );
 
     const transferResponse = await this.client.sendTransaction(tx);
@@ -49,6 +52,6 @@ export class OrbsClientSdkDriver {
     }
 
     const { blockHeight } = transferResponse;
-    return { txId, blockHeight };
+    return { txId, blockHeight, receiverAddress };
   }
 }

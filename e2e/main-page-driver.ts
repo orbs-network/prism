@@ -25,6 +25,10 @@ export class MainPageDriver {
     await page.waitForSelector('#tx-details');
   }
 
+  public async getInputArg(idx: number): Promise<string> {
+    return await getElementText(`#arg_${idx}`);
+  }
+
   public async waitForBlocks(countOfBlocks: number): Promise<void> {
     await waitUntil(async () => (await this.getCountOfBlocks()) === countOfBlocks);
   }

@@ -11,9 +11,15 @@ describe.only('Full cycle', () => {
   });
 
   it('should display the block that holds my transaction', async () => {
-    const { txId, blockHeight } = await orbsClientSdkDriver.transferTokensTx(7);
+    const amountToSend = 7;
+    const { txId, blockHeight, receiverAddress } = await orbsClientSdkDriver.transferTokensTx(amountToSend);
     await mainPageDriver.waitForBlockHeight(blockHeight, true);
     await mainPageDriver.waitForBlockDetailsPage();
     await mainPageDriver.clickOnTx(txId);
+    const sentAmountArg = await mainPageDriver.getInputArg(0);
+    const targetAddressArg = await mainPageDriver.getInputArg(1);
+
+    expect(sentAmountArg).toEqual(amountToSend.toString());
+    expect(receiverAddress.toLowerCase()).toEqual(targetAddressArg.toLowerCase());
   });
 });
