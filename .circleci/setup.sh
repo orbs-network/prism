@@ -13,7 +13,7 @@ EXITCODE=$?
 
 if [ $EXITCODE != 0 ]; then
     exit 1
-if
+fi
 
 docker pull orbsnetwork/gamma:experimental
 docker run --name gamma -d -p "9000:8080" orbsnetwork/gamma:experimental
@@ -22,7 +22,7 @@ EXITCODE=$?
 
 if [ $EXITCODE != 0 ]; then
     exit 1
-if
+fi
 
 npm run test-e2e
 
@@ -30,6 +30,8 @@ EXITCODE=$?
 
 if [ $EXITCODE != 0 ]; then
     exit 1
-if
+fi
 
 docker rm -fv gamma
+
+exit 0
