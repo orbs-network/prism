@@ -26,13 +26,13 @@ export class OrbsClientSdkDriver {
     this.client = new Client(ORBS_ENDPOINT, ORBS_VIRTUAL_CHAIN_ID, ORBS_NETWORK_TYPE as NetworkType);
   }
 
-  public async transferTokensTx(): Promise<{ txId: string; blockHeight: bigint }> {
+  public async transferTokensTx(amount: number): Promise<{ txId: string; blockHeight: bigint }> {
     const [tx, txId] = this.client.createTransaction(
       sender.publicKey,
       sender.privateKey,
       'BenchmarkToken',
       'transfer',
-      [argUint64(7), argAddress(this.receiver.address)],
+      [argUint64(amount), argAddress(this.receiver.address)],
     );
 
     const transferResponse = await this.client.sendTransaction(tx);

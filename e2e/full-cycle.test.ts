@@ -11,7 +11,7 @@ describe.only('Full cycle', () => {
   });
 
   it('should display the block that holds my transaction', async () => {
-    const { txId, blockHeight } = await orbsClientSdkDriver.transferTokensTx();
+    const { txId, blockHeight } = await orbsClientSdkDriver.transferTokensTx(7);
     await mainPageDriver.waitForBlockHeight(blockHeight, true);
     await mainPageDriver.waitForBlockDetailsPage();
     await mainPageDriver.clickOnTx(txId);
