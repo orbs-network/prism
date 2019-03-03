@@ -9,7 +9,7 @@ nvm install 11.2.0
 npm install
 npm test
 
-EXITCODE = $?
+EXITCODE=$?
 
 if [ $EXITCODE != 0 ]; then
     exit 1
@@ -18,7 +18,7 @@ if
 docker pull orbsnetwork/gamma:experimental
 docker run --name gamma -d -p "9000:8080" orbsnetwork/gamma:experimental
 npm run build
-EXITCODE = $?
+EXITCODE=$?
 
 if [ $EXITCODE != 0 ]; then
     exit 1
@@ -26,7 +26,7 @@ if
 
 npm run test-e2e
 
-EXITCODE = $?
+EXITCODE=$?
 
 if [ $EXITCODE != 0 ]; then
     exit 1
