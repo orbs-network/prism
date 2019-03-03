@@ -6,3 +6,30 @@ export NVM_DIR="/opt/circleci/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 nvm install 11.2.0
+npm install
+npm test
+
+EXITCODE = $?
+
+if [ $EXITCODE != 0 ]; then
+    exit 1
+if
+
+docker pull orbsnetwork/gamma:experimental
+docker run --name gamma -d -p "9000:8080" orbsnetwork/gamma:experimental
+npm run build
+EXITCODE = $?
+
+if [ $EXITCODE != 0 ]; then
+    exit 1
+if
+
+npm run test-e2e
+
+EXITCODE = $?
+
+if [ $EXITCODE != 0 ]; then
+    exit 1
+if
+
+docker rm -fv gamma
