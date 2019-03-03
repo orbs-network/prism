@@ -9,6 +9,7 @@ import {
   TableBody,
   Chip,
   Avatar,
+  WithStyles,
 } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -23,13 +24,18 @@ import { Link } from 'react-router-dom';
 import { ITx } from '../../shared/ITx';
 import { IRawArgument, IRawEvent } from '../../server/orbs-adapter/IOrbsAdapter';
 
-const styles = (theme: Theme) => createStyles({});
+const styles = (theme: Theme) =>
+  createStyles({
+    chips: {
+      marginRight: 10,
+    },
+  });
 
 interface IOwnProps {
   txId: string;
 }
 
-interface IProps {
+interface IProps extends WithStyles<typeof styles> {
   txData: ITxData;
   isTxLoading: boolean;
   loadTx: (txId: string) => void;
@@ -65,37 +71,37 @@ const TxDetailsImpl = withStyles(styles)(
               <TableBody>
                 <TableRow>
                   <TableCell>block</TableCell>
-                  <TableCell align='left'>
+                  <TableCell>
                     <Link to={`/block/${tx.blockHash}`}>{tx.blockHash}</Link>
                   </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>txId</TableCell>
-                  <TableCell align='left'>{tx.txId}</TableCell>
+                  <TableCell>{tx.txId}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>Time stamp</TableCell>
-                  <TableCell align='left'>{tx.timestamp}</TableCell>
+                  <TableCell>{tx.timestamp}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>Protocol Version</TableCell>
-                  <TableCell align='left'>{tx.protocolVersion}</TableCell>
+                  <TableCell>{tx.protocolVersion}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>Signer public key</TableCell>
-                  <TableCell align='left'>{tx.signerPublicKey}</TableCell>
+                  <TableCell>{tx.signerPublicKey}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>Contract</TableCell>
-                  <TableCell align='left'>{tx.contractName}</TableCell>
+                  <TableCell>{tx.contractName}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>Method</TableCell>
-                  <TableCell align='left'>{tx.methodName}</TableCell>
+                  <TableCell>{tx.methodName}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>Execution result</TableCell>
-                  <TableCell align='left'>{tx.executionResult}</TableCell>
+                  <TableCell>{tx.executionResult}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>Input arguments</TableCell>
@@ -142,7 +148,7 @@ const TxDetailsImpl = withStyles(styles)(
       return (
         <>
           {args.map((i, idx) => {
-            return <Chip key={idx} label={`${i.value} - [${i.type}]`} />;
+            return <Chip key={idx} id={`arg_${idx}`} label={i.value} className={this.props.classes.chips} />;
           })}
         </>
       );
