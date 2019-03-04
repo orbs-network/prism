@@ -1,22 +1,22 @@
 import { rawBlockToBlock } from '../block-transform/blockTransform';
 import { generateRandomFakeBlock } from '../orbs-adapter/fake-blocks-generator';
-import { InMemoryDB } from './InMemoryDB';
+import { MongoDB } from './MongoDB';
 
-describe('InMemoryDB', () => {
-  let db: InMemoryDB;
+describe.only('MongoDB', () => {
+  let db: MongoDB;
   beforeEach(async () => {
-    db = new InMemoryDB();
+    db = new MongoDB('mongodb://localhost:27017/prism');
     await db.init();
     await db.clearAll();
   });
 
   it('should store and retrive blocks', async () => {
-    const rawBlock = generateRandomFakeBlock();
+    const block = rawBlockToBlock(generateRandomFakeBlock());
 
-    await db.storeBlock(rawBlockToBlock(rawBlock));
+    await db.storeBlock(block);
 
-    const actual = await db.getBlockByHash(rawBlock.blockHash);
-    expect(rawBlockToBlock(rawBlock)).toEqual(actual);
+    const actual: any = await db.getBlockByHash(block.blockHash);
+    expect(actual).toEqual(block);
   });
 
   it('should be able to retrive blocks by height', async () => {

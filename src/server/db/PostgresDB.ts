@@ -30,6 +30,10 @@ export class PostgresDB implements IDB {
     await this.pool.end();
   }
 
+  public async clearAll(): Promise<void> {
+    // TODO: implement
+  }
+
   public async storeTx(tx: ITx | ITx[]): Promise<void> {
     if (Array.isArray(tx)) {
       for (const t of tx) {

@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "lib": ["esnext", "esnext.bigint", "dom"],
+    "jsx": "react",
+    "types": ["node", "jest"],
+    "noEmit": true
+  }
+}

@@ -7,7 +7,9 @@
     "node": ">=10.6.0"
   },
   "scripts": {
-    "test": "jest --config ./src/jest.config.js",
+    "test": "npm run test-server && npm run test-client",
+    "test-server": "jest --config ./src/server/jest.config.js",
+    "test-client": "jest --config ./src/client/jest.config.js",
     "test-e2e": "jest --config ./e2e/jest-e2e.config.js",
     "clean": "rimraf dist",
     "postinstall": "npm run build",
@@ -49,6 +51,7 @@
   "author": "Gil Amran",
   "dependencies": {
     "@types/gsap": "^1.20.1",
+    "@types/mongoose": "^5.3.20",
     "@types/pg": "^7.4.11",
     "@types/react-redux": "^7.0.1",
     "@types/three": "^0.93.19",
@@ -58,6 +61,7 @@
     "express": "^4.16.4",
     "gsap": "^2.0.2",
     "http-proxy-middleware": "^0.19.1",
+    "mongoose": "^5.4.17",
     "object-hash": "^1.3.1",
     "orbs-client-sdk": "0.0.4",
     "pg": "^7.8.0",

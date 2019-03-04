@@ -15,6 +15,11 @@ export class InMemoryDB implements IDB {
     // nothing to destroy...
   }
 
+  public async clearAll(): Promise<void> {
+    this.blocks = new Map();
+    this.txs = new Map();
+  }
+
   public async storeBlock(block: IBlock): Promise<void> {
     this.blocks.set(block.blockHash, block);
   }
