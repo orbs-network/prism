@@ -12,7 +12,7 @@ export class InMemoryDB implements IDB {
   }
 
   public async destroy(): Promise<void> {
-    // nothing to destroy,,,
+    // nothing to destroy...
   }
 
   public async storeBlock(block: IBlock): Promise<void> {
