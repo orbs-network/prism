@@ -1,12 +1,12 @@
 import { rawBlockToBlock } from '../block-transform/blockTransform';
 import { generateRandomFakeBlock } from '../orbs-adapter/fake-blocks-generator';
 import { MongoDB } from './MongoDB';
-import { MONGO_URL } from '../config';
+import { MONGODB_URI } from '../config';
 
 describe.only('MongoDB', () => {
   let db: MongoDB;
   beforeEach(async () => {
-    db = new MongoDB(MONGO_URL);
+    db = new MongoDB(MONGODB_URI);
     await db.init();
     await db.clearAll();
   });
