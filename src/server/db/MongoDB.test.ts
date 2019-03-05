@@ -1,11 +1,12 @@
 import { rawBlockToBlock } from '../block-transform/blockTransform';
 import { generateRandomFakeBlock } from '../orbs-adapter/fake-blocks-generator';
 import { MongoDB } from './MongoDB';
+import { MONGO_URL } from '../config';
 
 describe.only('MongoDB', () => {
   let db: MongoDB;
   beforeEach(async () => {
-    db = new MongoDB('mongodb://localhost:27017/prism');
+    db = new MongoDB(MONGO_URL);
     await db.init();
     await db.clearAll();
   });
