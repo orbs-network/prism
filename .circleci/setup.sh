@@ -17,6 +17,8 @@ fi
 
 docker pull orbsnetwork/gamma:experimental
 docker run --name gamma -d -p "9000:8080" orbsnetwork/gamma:experimental
+docker run --name mongo -d -p "27017:27017" mongo:3.3
+
 npm run build
 EXITCODE=$?
 
@@ -32,6 +34,6 @@ if [ $EXITCODE != 0 ]; then
     exit 1
 fi
 
-docker rm -fv gamma
+docker rm -fv gamma mongo
 
 exit 0
