@@ -37,7 +37,7 @@ export class MongoDB implements IDB {
     mongoose.connection.once('connected', () => console.log('mongoose connected'));
     mongoose.connection.once('disconnecting', () => console.log('mongoose disconnecting'));
     mongoose.connection.once('disconnected', () => console.log('mongoose disconnected'));
-    mongoose.connection.once('error', () => console.log('mongoose error'));
+    mongoose.connection.once('error', e => console.log('mongoose error:', e));
 
     this.db = await mongoose.connect(this.connectionUrl, { useNewUrlParser: true });
 
