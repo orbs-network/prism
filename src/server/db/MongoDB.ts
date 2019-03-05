@@ -33,13 +33,13 @@ export class MongoDB implements IDB {
   constructor(private connectionUrl: string) {}
 
   public async init(): Promise<void> {
+    mongoose.connection.once('connecting', () => console.log('mongoose connecting'));
+    mongoose.connection.once('connected', () => console.log('mongoose connected'));
+    mongoose.connection.once('disconnecting', () => console.log('mongoose disconnecting'));
+    mongoose.connection.once('disconnected', () => console.log('mongoose disconnected'));
+    mongoose.connection.once('error', () => console.log('mongoose error'));
+
     this.db = await mongoose.connect(this.connectionUrl, { useNewUrlParser: true });
-    // mongoose.once('connecting', () => console.log('mongoose connecting'));
-    // mongoose.once('connected', () => console.log('mongoose connected'));
-    // mongoose.once('disconnecting', () => console.log('mongoose disconnecting'));
-    // mongoose.once('disconnected', () => console.log('mongoose disconnected'));
-    // mongoose.once('error', () => console.log('mongoose error'));
-    // schema
 
     // model
     this.BlockModel = mongoose.model('Block', blockSchema);
