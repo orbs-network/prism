@@ -5,30 +5,34 @@ export NVM_DIR="/opt/circleci/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-nvm install 11.2.0
-npm install
-npm test
-
-EXITCODE=$?
-
-if [ $EXITCODE != 0 ]; then
-    exit 1
-fi
-
-echo "Preparing for E2E (Getting gamma and MongoDB)..."
-docker pull orbsnetwork/gamma:experimental
-echo "Running gamma-server on port 9000"
-docker run --name gamma -d -p "9000:8080" orbsnetwork/gamma:experimental
 echo "Running MongoDB server on port 27017"
 docker run --name mongo -d -p "27017:27017" mongo:3.3
+
+nvm install 11.2.0
+npm install
 
 npm run build
 EXITCODE=$?
 
 if [ $EXITCODE != 0 ]; then
+    echo "npm build failed so exiting.."
     exit 1
 fi
 
+npm test
+
+EXITCODE=$?
+
+if [ $EXITCODE != 0 ]; then
+    echo "npm test failed so exiting.."
+    exit 1
+fi
+
+docker pull orbsnetwork/gamma:experimental
+echo "Running gamma-server on port 9000"
+docker run --name gamma -d -p "9000:8080" orbsnetwork/gamma:experimental
+
+echo "running E2E tests"
 npm run test-e2e
 
 EXITCODE=$?
