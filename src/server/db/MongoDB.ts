@@ -69,12 +69,18 @@ export class MongoDB implements IDB {
     const result = await this.BlockModel.findOne({ blockHash }, { _id: false, __v: false })
       .lean()
       .exec();
+
+    // in the db we store the blockHeight as long (For better search), here we convert it back to string
+    result.blockHeight = result.blockHeight.toString();
     return result;
   }
   public async getBlockByHeight(blockHeight: string): Promise<IBlock> {
     const result = await this.BlockModel.findOne({ blockHeight }, { _id: false, __v: false })
       .lean()
       .exec();
+
+    // in the db we store the blockHeight as long (For better search), here we convert it back to string
+    result.blockHeight = result.blockHeight.toString();
     return result;
   }
 
