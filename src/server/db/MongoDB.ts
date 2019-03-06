@@ -3,9 +3,11 @@ import * as mongoose from 'mongoose';
 import { IBlock } from '../../shared/IBlock';
 import { IRawTx } from '../orbs-adapter/IOrbsAdapter';
 
+require('mongoose-long')(mongoose);
+
 const blockSchema = new mongoose.Schema({
   blockHash: String,
-  blockHeight: String,
+  blockHeight: (mongoose.Schema.Types as any).Long,
   blockTimestamp: Number,
   txIds: [String],
 });
