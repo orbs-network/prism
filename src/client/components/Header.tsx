@@ -96,11 +96,11 @@ const HeaderImpl = withStyles(styles)(
       return (
         <AppBar position='static'>
           <Toolbar>
-            <Link>
+            <RouterLink to={'/'}>
               <Typography className={classes.title} variant='h6' noWrap>
                 OrbsPrism.com
               </Typography>
-            </Link>
+            </RouterLink>
             {/* <Typography className={classes.title} variant='h6' noWrap /> */}
             <div className={classes.grow} />
             <div className={classes.search}>
