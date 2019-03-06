@@ -8,7 +8,7 @@ export function recentBlocksHashs(state: RecentBlocksHashes = [], action: Blocks
   switch (action.type) {
     case 'NEW_BLOCK_SUMMARY':
       const result = [action.blockSummary.blockHash, ...state];
-      return result.length > 5 ? result.splice(1, 5) : result;
+      return result.length > 5 ? result.splice(0, 5) : result;
     default:
       return state;
   }
