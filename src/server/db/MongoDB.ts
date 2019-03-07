@@ -61,23 +61,30 @@ export class MongoDB implements IDB {
   }
 
   public async storeBlock(block: IBlock): Promise<void> {
+    console.log(`Storing block #${block.blockHeight}`);
     const blockInstance = new this.BlockModel(block);
     await blockInstance.save();
   }
 
   public async getBlockByHash(blockHash: string): Promise<IBlock> {
+    console.log(`Searching for block by hash: ${blockHash}`);
     const result = await this.BlockModel.findOne({ blockHash }, { _id: false, __v: false })
       .lean()
       .exec();
+
+    console.log(`block found`);
 
     // in the db we store the blockHeight as long (For better search), here we convert it back to string
     result.blockHeight = result.blockHeight.toString();
     return result;
   }
   public async getBlockByHeight(blockHeight: string): Promise<IBlock> {
+    console.log(`Searching for block by height: ${blockHeight}`);
     const result = await this.BlockModel.findOne({ blockHeight }, { _id: false, __v: false })
       .lean()
       .exec();
+
+    console.log(`block found`);
 
     // in the db we store the blockHeight as long (For better search), here we convert it back to string
     result.blockHeight = result.blockHeight.toString();
@@ -94,9 +101,11 @@ export class MongoDB implements IDB {
   }
 
   public async getTxById(txId: string): Promise<IRawTx> {
+    console.log(`Searching for tx by txId: ${txId}`);
     const result = await this.TxModel.findOne({ txId }, { _id: false, __v: false })
       .lean()
       .exec();
+    console.log(`tx found`);
     return result;
   }
 }
