@@ -76,10 +76,10 @@ export class OrbsAdapter implements IOrbsAdapter {
         this.listeners.forEach(handler => handler.handleNewBlock(this.blockResponseToRawBlock(getBlockResponse)));
         this.latestKnownHeight = newHeight;
       }
-      this.schedualNextRequest();
     } catch (e) {
       console.log(`-------------------------- error on checkForNewBlocks`, e);
     }
+    this.schedualNextRequest();
   }
 
   private async initSchedualer(): Promise<void> {
