@@ -84,7 +84,9 @@ export class OrbsAdapter implements IOrbsAdapter {
 
   private async initSchedualer(): Promise<void> {
     if (this.latestKnownHeight === 0n) {
+      console.log(`Asking Orbs for the lastest height`);
       this.latestKnownHeight = await this.queryOrbsForTheLatestHeight();
+      console.log(`Lastest height is ${this.latestKnownHeight}`);
     }
     this.schedualNextRequest();
   }

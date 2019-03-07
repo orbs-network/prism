@@ -1,8 +1,7 @@
-import { IDB } from './IDB';
 import * as mongoose from 'mongoose';
 import { IBlock } from '../../shared/IBlock';
 import { IRawTx } from '../orbs-adapter/IOrbsAdapter';
-import { staticsRouter } from '../routes/statics-router';
+import { IDB } from './IDB';
 
 require('mongoose-long')(mongoose);
 

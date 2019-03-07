@@ -40,14 +40,33 @@ export class OrbsClientSdkDriver {
 
     const transferResponse = await this.client.sendTransaction(tx);
     if (transferResponse.requestStatus !== 'COMPLETED') {
-      throw new Error(`Got transferResponse.requestStatus: ${transferResponse.requestStatus}, expected COMPLETED`);
+      delete transferResponse.blockHeight;
+      throw new Error(
+        `transferResponse.requestStatus !== 'COMPLETED', Got transferResponse ${JSON.stringify(
+          transferResponse,
+          null,
+          2,
+        )}`,
+      );
     }
     if (transferResponse.executionResult !== 'SUCCESS') {
-      throw new Error(`Got transferResponse.executionResult: ${transferResponse.executionResult}, expected SUCCESS`);
+      delete transferResponse.blockHeight;
+      throw new Error(
+        `transferResponse.executionResult !== 'SUCCESS', Got transferResponse ${JSON.stringify(
+          transferResponse,
+          null,
+          2,
+        )}`,
+      );
     }
     if (transferResponse.transactionStatus !== 'COMMITTED') {
+      delete transferResponse.blockHeight;
       throw new Error(
-        `Got transferResponse.transactionStatus: ${transferResponse.transactionStatus}, expected COMMITTED`,
+        `transferResponse.transactionStatus !== 'COMMITTED', Got transferResponse ${JSON.stringify(
+          transferResponse,
+          null,
+          2,
+        )}`,
       );
     }
 
