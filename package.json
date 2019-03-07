@@ -8,8 +8,8 @@
   },
   "scripts": {
     "test": "npm run test-server && npm run test-client",
-    "test-server": "jest --config ./src/server/jest.config.js",
-    "test-client": "jest --config ./src/client/jest.config.js",
+    "test-server": "jest --detectOpenHandles --config ./src/server/jest.config.js",
+    "test-client": "jest --detectOpenHandles --config ./src/client/jest.config.js",
     "test-e2e": "jest --config ./e2e/jest-e2e.config.js",
     "clean": "rimraf dist",
     "postinstall": "npm run build",
