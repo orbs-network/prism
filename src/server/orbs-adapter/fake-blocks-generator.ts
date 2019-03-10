@@ -28,7 +28,7 @@ export function generateFakeTx(blockHash: string): IRawTx {
   };
 }
 
-export function generateRandomFakeBlock(): IRawBlock {
+export function generateRandomFakeBlock(forceBlockHeight?: number): IRawBlock {
   const blockHash: string = uint8ArrayToHexString(genUint8Array(32));
   const transactions: IRawTx[] = [];
   const numTransactions = Math.floor(Math.random() * 10 + 6);
@@ -36,8 +36,9 @@ export function generateRandomFakeBlock(): IRawBlock {
     transactions.push(generateFakeTx(blockHash));
   }
 
+  const blockHeight = typeof forceBlockHeight !== 'undefined' ? forceBlockHeight : lastBlockHeight++;
   return {
-    blockHeight: (++lastBlockHeight).toString(),
+    blockHeight: blockHeight.toString(),
     blockHash,
     timeStamp: Date.now(),
     transactions,

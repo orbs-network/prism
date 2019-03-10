@@ -7,6 +7,19 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Debug server tests",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": ["--config", "./src/server/jest.config.js", "--runInBand"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "disableOptimisticBPs": true,
+      "windows": {
+        "program": "${workspaceFolder}/node_modules/jest/bin/jest"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Debug server",
       "program": "${workspaceFolder}/index.js"
     },

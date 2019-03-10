@@ -3,11 +3,10 @@ import { INewBlocksHandler, IOrbsAdapter, IRawBlock } from './IOrbsAdapter';
 
 export class MockOrbsAdapter implements IOrbsAdapter {
   private blockChain: IRawBlock[] = [];
-  private blocksGeneratorIntervalId: NodeJS.Timeout;
   private listeners: Map<INewBlocksHandler, INewBlocksHandler> = new Map();
 
   public async init(): Promise<void> {
-    this.generateBlocks();
+    // nothing to do
   }
 
   public RegisterToNewBlocks(handler: INewBlocksHandler): void {
@@ -19,9 +18,6 @@ export class MockOrbsAdapter implements IOrbsAdapter {
   }
 
   public dispose(): void {
-    if (this.blocksGeneratorIntervalId) {
-      clearInterval(this.blocksGeneratorIntervalId);
-    }
     this.listeners = new Map();
   }
 
@@ -35,13 +31,9 @@ export class MockOrbsAdapter implements IOrbsAdapter {
     });
   }
 
-  private emitNewBlock(): void {
-    const newBlock = generateRandomFakeBlock();
+  public emitNewBlock(forceBlockHeight?: number): void {
+    const newBlock = generateRandomFakeBlock(forceBlockHeight);
     this.blockChain.push(newBlock);
     this.listeners.forEach(handler => handler.handleNewBlock(newBlock));
-  }
-
-  private generateBlocks() {
-    this.blocksGeneratorIntervalId = setInterval(() => this.emitNewBlock(), 1500);
   }
 }
