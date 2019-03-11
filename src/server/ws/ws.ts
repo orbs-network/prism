@@ -1,7 +1,7 @@
 import { Server } from 'http';
 import * as socketIO from 'socket.io';
 import { IBlockSummary } from '../../shared/IBlock';
-import { INewBlocksHandler, IRawBlock } from '../orbs-adapter/IOrbsAdapter';
+import { INewBlocksHandler, IRawBlock } from '../orbs-adapter/OrbsAdapter';
 
 export class WS implements INewBlocksHandler {
   private sockets = {};

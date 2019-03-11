@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 import { IBlock } from '../../shared/IBlock';
-import { IRawTx } from '../orbs-adapter/IOrbsAdapter';
+import { IRawTx } from '../orbs-adapter/OrbsAdapter';
 import { IDB } from './IDB';
 
 require('mongoose-long')(mongoose);
@@ -88,10 +88,14 @@ export class MongoDB implements IDB {
       .lean()
       .exec();
 
-    console.log(`block found [${Date.now() - startTime}]`);
+    if (result) {
+      console.log(`block found [${Date.now() - startTime}]`);
 
-    // in the db we store the blockHeight as long (For better search), here we convert it back to string
-    result.blockHeight = result.blockHeight.toString();
+      // in the db we store the blockHeight as long (For better search), here we convert it back to string
+      result.blockHeight = result.blockHeight.toString();
+    } else {
+      console.log(`block not found [${Date.now() - startTime}]`);
+    }
     return result;
   }
 

@@ -1,5 +1,5 @@
 import { ExecutionResult } from 'orbs-client-sdk';
-import { IRawBlock, IRawTx } from './IOrbsAdapter';
+import { IRawBlock, IRawTx } from './OrbsAdapter';
 import { uint8ArrayToHexString } from '../hash-converter/hashConverter';
 
 let lastBlockHeight: bigint = BigInt(1);
@@ -28,7 +28,7 @@ export function generateFakeTx(blockHash: string): IRawTx {
   };
 }
 
-export function generateRandomFakeBlock(forceBlockHeight?: number): IRawBlock {
+export function generateRandomFakeBlock(blockHeight: bigint): IRawBlock {
   const blockHash: string = uint8ArrayToHexString(genUint8Array(32));
   const transactions: IRawTx[] = [];
   const numTransactions = Math.floor(Math.random() * 10 + 6);
@@ -36,7 +36,6 @@ export function generateRandomFakeBlock(forceBlockHeight?: number): IRawBlock {
     transactions.push(generateFakeTx(blockHash));
   }
 
-  const blockHeight = typeof forceBlockHeight !== 'undefined' ? forceBlockHeight : lastBlockHeight++;
   return {
     blockHeight: blockHeight.toString(),
     blockHash,

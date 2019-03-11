@@ -1,53 +1,52 @@
-import { Client, NetworkType } from 'orbs-client-sdk';
-import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
-import { ORBS_ENDPOINT, ORBS_NETWORK_TYPE, ORBS_VIRTUAL_CHAIN_ID, POOLING_INTERVAL } from '../config';
-import { INewBlocksHandler, IOrbsAdapter, IRawBlock, IRawArgument, IRawEvent } from './IOrbsAdapter';
-import { uint8ArrayToHexString } from '../hash-converter/hashConverter';
-import { Argument } from 'orbs-client-sdk/dist/codec/Arguments';
-import { Event } from 'orbs-client-sdk/dist/codec/Events';
+import { blockResponseToRawBlock } from '../block-transform/blockTransform';
+import { IOrbsClient } from '../orbs-client/IOrbsClient';
 
-function convertToRawArgument(argument: Argument): IRawArgument {
-  switch (argument.type) {
-    case 'uint64':
-    case 'uint32':
-      return {
-        type: argument.type,
-        value: argument.value.toString(),
-      };
-
-    case 'string':
-      return {
-        type: argument.type,
-        value: argument.value,
-      };
-
-    case 'bytes':
-      return {
-        type: argument.type,
-        value: uint8ArrayToHexString(argument.value),
-      };
-
-    default:
-      break;
-  }
+export interface IRawArgument {
+  type: string;
+  value: string;
 }
 
-function convertToRawEvent(event: Event): IRawEvent {
-  return {
-    eventName: event.eventName,
-    contractName: event.contractName,
-    arguments: event.arguments.map(convertToRawArgument),
-  };
+export interface IRawEvent {
+  contractName: string;
+  eventName: string;
+  arguments: IRawArgument[];
 }
 
-export class OrbsAdapter implements IOrbsAdapter {
+export interface IRawTx {
+  txId: string;
+  blockHash: string;
+  protocolVersion: number;
+  virtualChainId: number;
+  timestamp: number;
+  signerPublicKey: string;
+  contractName: string;
+  methodName: string;
+  inputArguments: IRawArgument[];
+  executionResult: string;
+  outputArguments: IRawArgument[];
+  outputEvents: IRawEvent[];
+}
+
+export interface IRawBlock {
+  blockHeight: string;
+  blockHash: string;
+  timeStamp: number;
+  transactions: IRawTx[];
+}
+
+export type NewBlockCallback = (block: IRawBlock) => void;
+
+export interface INewBlocksHandler {
+  handleNewBlock(block: IRawBlock): Promise<void>;
+}
+
+export class OrbsAdapter {
   private latestKnownHeight: bigint = BigInt(0);
-  private orbsClient: Client;
   private listeners: Map<INewBlocksHandler, INewBlocksHandler> = new Map();
 
+  constructor(private orbsClient: IOrbsClient, private poolingInterval: number) {}
   public async init(): Promise<void> {
-    this.orbsClient = new Client(ORBS_ENDPOINT, ORBS_VIRTUAL_CHAIN_ID, ORBS_NETWORK_TYPE as NetworkType);
-    this.initSchedualer();
+    this.initScheduler();
   }
 
   public RegisterToNewBlocks(handler: INewBlocksHandler): void {
@@ -62,19 +61,21 @@ export class OrbsAdapter implements IOrbsAdapter {
     this.listeners = new Map();
   }
 
-  public async getBlockAt(height: number): Promise<IRawBlock> {
-    return null;
+  public async getBlockAt(height: bigint): Promise<IRawBlock> {
+    const getBlockResponse = await this.orbsClient.getBlock(height);
+    return blockResponseToRawBlock(getBlockResponse);
   }
 
   private async checkForNewBlocks(): Promise<void> {
     try {
-      console.log(`-------------------------- requesting block: `, this.latestKnownHeight + BigInt(1));
-      const getBlockResponse = await this.orbsClient.getBlock(this.latestKnownHeight + BigInt(1));
-      const newHeight = getBlockResponse.resultsBlockHeader.blockHeight;
-      console.log(`-------------------------- response height: `, newHeight);
-      if (newHeight > this.latestKnownHeight) {
-        this.listeners.forEach(handler => handler.handleNewBlock(this.blockResponseToRawBlock(getBlockResponse)));
-        this.latestKnownHeight = newHeight;
+      const nextHeight = this.latestKnownHeight + 1n;
+      console.log(`-------------------------- requesting block: `, nextHeight);
+      const rawBlock = await this.getBlockAt(nextHeight);
+      const blockHeight: bigint = BigInt(rawBlock.blockHeight);
+      console.log(`-------------------------- response height: `, blockHeight);
+      if (blockHeight > this.latestKnownHeight) {
+        this.listeners.forEach(handler => handler.handleNewBlock(rawBlock));
+        this.latestKnownHeight = blockHeight;
       }
     } catch (e) {
       console.log(`-------------------------- error on checkForNewBlocks`, e);
@@ -82,7 +83,7 @@ export class OrbsAdapter implements IOrbsAdapter {
     this.schedualNextRequest();
   }
 
-  private async initSchedualer(): Promise<void> {
+  private async initScheduler(): Promise<void> {
     if (this.latestKnownHeight === 0n) {
       console.log(`Asking Orbs for the lastest height`);
       this.latestKnownHeight = await this.queryOrbsForTheLatestHeight();
@@ -100,30 +101,7 @@ export class OrbsAdapter implements IOrbsAdapter {
     return 0n;
   }
 
-  private blockResponseToRawBlock(getBlockResponse: GetBlockResponse): IRawBlock {
-    const blockHash = uint8ArrayToHexString(getBlockResponse.resultsBlockHash);
-    return {
-      blockHeight: getBlockResponse.resultsBlockHeader.blockHeight.toString(),
-      blockHash,
-      timeStamp: getBlockResponse.blockTimestamp.getTime(),
-      transactions: getBlockResponse.transactions.map(tx => ({
-        txId: uint8ArrayToHexString(tx.txId),
-        blockHash,
-        protocolVersion: tx.protocolVersion,
-        virtualChainId: tx.virtualChainId,
-        timestamp: tx.timestamp.getTime(),
-        signerPublicKey: uint8ArrayToHexString(tx.signerPublicKey),
-        contractName: tx.contractName,
-        methodName: tx.methodName,
-        inputArguments: tx.inputArguments.map(convertToRawArgument),
-        executionResult: tx.executionResult,
-        outputArguments: tx.outputArguments.map(convertToRawArgument),
-        outputEvents: tx.outputEvents.map(convertToRawEvent),
-      })),
-    };
-  }
-
   private schedualNextRequest(): void {
-    setTimeout(() => this.checkForNewBlocks(), POOLING_INTERVAL);
+    setTimeout(() => this.checkForNewBlocks(), this.poolingInterval);
   }
 }

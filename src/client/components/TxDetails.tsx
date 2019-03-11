@@ -1,14 +1,12 @@
 import {
+  Chip,
   createStyles,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
   Theme,
   withStyles,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Chip,
-  Avatar,
   WithStyles,
 } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
@@ -17,12 +15,11 @@ import CardHeader from '@material-ui/core/CardHeader';
 import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { IRawArgument, IRawEvent } from '../../server/orbs-adapter/OrbsAdapter';
+import { loadTxAction } from '../actions/txActions';
 import { IRootState } from '../reducers/rootReducer';
 import { getTxData, isTxLoading, ITxData } from '../reducers/txsReducer';
-import { loadTxAction } from '../actions/txActions';
-import { Link } from 'react-router-dom';
-import { ITx } from '../../shared/ITx';
-import { IRawArgument, IRawEvent } from '../../server/orbs-adapter/IOrbsAdapter';
 
 const styles = (theme: Theme) =>
   createStyles({

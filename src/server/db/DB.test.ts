@@ -16,7 +16,7 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should store and retrive blocks', async () => {
-      const rawBlock = generateRandomFakeBlock();
+      const rawBlock = generateRandomFakeBlock(1n);
 
       await db.storeBlock(rawBlockToBlock(rawBlock));
 
@@ -25,7 +25,7 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should be able to retrive blocks by height', async () => {
-      const block = rawBlockToBlock(generateRandomFakeBlock());
+      const block = rawBlockToBlock(generateRandomFakeBlock(1n));
 
       await db.storeBlock(block);
 
@@ -34,7 +34,7 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should store and retrive txs', async () => {
-      const rawBlock = generateRandomFakeBlock();
+      const rawBlock = generateRandomFakeBlock(1n);
 
       await db.storeTx(rawBlock.transactions);
 
@@ -45,9 +45,9 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should be able to retrive the last block height', async () => {
-      const block10 = rawBlockToBlock(generateRandomFakeBlock(10));
-      const block11 = rawBlockToBlock(generateRandomFakeBlock(11));
-      const block12 = rawBlockToBlock(generateRandomFakeBlock(12));
+      const block10 = rawBlockToBlock(generateRandomFakeBlock(10n));
+      const block11 = rawBlockToBlock(generateRandomFakeBlock(11n));
+      const block12 = rawBlockToBlock(generateRandomFakeBlock(12n));
 
       await db.storeBlock(block10);
       await db.storeBlock(block11);

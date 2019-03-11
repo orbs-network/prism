@@ -3,7 +3,7 @@
     "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
-    "lib": ["esnext", "esnext.bigint", "dom"],
+    "lib": ["esnext", "dom"],
     "jsx": "react",
     "types": ["node", "jest"],
     "noEmit": true

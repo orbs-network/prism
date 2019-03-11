@@ -3,6 +3,7 @@ import { genOrbsAdapter } from './orbs-adapter/OrbsAdapterFactory';
 import { initServer } from './server';
 import { Storage } from './storage/storage';
 import { WS } from './ws/ws';
+import { GapsFiller } from './gaps-filler/GapsFiller';
 
 async function main() {
   // externals
@@ -19,6 +20,8 @@ async function main() {
   orbsAdapter.RegisterToNewBlocks(ws);
   orbsAdapter.RegisterToNewBlocks(storage);
   await orbsAdapter.init();
+
+  const gapsFiller = new GapsFiller(storage, orbsAdapter);
 }
 
 main()

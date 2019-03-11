@@ -7,7 +7,7 @@
     "allowJs": true,
     "outDir": "../../dist/server-root",
     "rootDir": "..",
-    "lib": ["esnext", "esnext.bigint"],
+    "lib": ["esnext"],
     "moduleResolution": "node",
     "types": ["node"]
   },
