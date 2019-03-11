@@ -1,7 +1,7 @@
 import { ISearchResult } from '../../shared/ISearchResult';
 import { rawBlockToBlock } from '../block-transform/blockTransform';
 import { InMemoryDB } from '../db/InMemoryDB';
-import { generateRandomFakeBlock } from '../orbs-adapter/fake-blocks-generator';
+import { generateRandomRawBlock } from '../orbs-adapter/fake-blocks-generator';
 import { Storage } from './storage';
 
 describe('storage', () => {
@@ -9,7 +9,7 @@ describe('storage', () => {
     const db = new InMemoryDB();
     await db.init();
     const storage = new Storage(db);
-    const block = generateRandomFakeBlock(1n);
+    const block = generateRandomRawBlock(1n);
     await storage.handleNewBlock(block);
 
     const expected = rawBlockToBlock(block);
@@ -21,7 +21,7 @@ describe('storage', () => {
     const db = new InMemoryDB();
     await db.init();
     const storage = new Storage(db);
-    const block = generateRandomFakeBlock(1n);
+    const block = generateRandomRawBlock(1n);
     await storage.handleNewBlock(block);
 
     for (const tx of block.transactions) {
@@ -35,8 +35,8 @@ describe('storage', () => {
       const db = new InMemoryDB();
       await db.init();
       const storage = new Storage(db);
-      const block1 = generateRandomFakeBlock(1n);
-      const block2 = generateRandomFakeBlock(2n);
+      const block1 = generateRandomRawBlock(1n);
+      const block2 = generateRandomRawBlock(2n);
       await storage.handleNewBlock(block1);
       await storage.handleNewBlock(block2);
 
@@ -49,8 +49,8 @@ describe('storage', () => {
       const db = new InMemoryDB();
       await db.init();
       const storage = new Storage(db);
-      const block1 = generateRandomFakeBlock(1n);
-      const block2 = generateRandomFakeBlock(2n);
+      const block1 = generateRandomRawBlock(1n);
+      const block2 = generateRandomRawBlock(2n);
       await storage.handleNewBlock(block1);
       await storage.handleNewBlock(block2);
 

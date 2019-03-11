@@ -1,5 +1,5 @@
 import { rawBlockToBlock } from '../block-transform/blockTransform';
-import { generateRandomFakeBlock } from '../orbs-adapter/fake-blocks-generator';
+import { generateRandomRawBlock } from '../orbs-adapter/fake-blocks-generator';
 import { InMemoryDB } from './InMemoryDB';
 import { IDB } from './IDB';
 import { MongoDB } from './MongoDB';
@@ -16,7 +16,7 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should store and retrive blocks', async () => {
-      const rawBlock = generateRandomFakeBlock(1n);
+      const rawBlock = generateRandomRawBlock(1n);
 
       await db.storeBlock(rawBlockToBlock(rawBlock));
 
@@ -25,7 +25,7 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should be able to retrive blocks by height', async () => {
-      const block = rawBlockToBlock(generateRandomFakeBlock(1n));
+      const block = rawBlockToBlock(generateRandomRawBlock(1n));
 
       await db.storeBlock(block);
 
@@ -34,7 +34,7 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should store and retrive txs', async () => {
-      const rawBlock = generateRandomFakeBlock(1n);
+      const rawBlock = generateRandomRawBlock(1n);
 
       await db.storeTx(rawBlock.transactions);
 
@@ -45,9 +45,9 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should be able to retrive the last block height', async () => {
-      const block10 = rawBlockToBlock(generateRandomFakeBlock(10n));
-      const block11 = rawBlockToBlock(generateRandomFakeBlock(11n));
-      const block12 = rawBlockToBlock(generateRandomFakeBlock(12n));
+      const block10 = rawBlockToBlock(generateRandomRawBlock(10n));
+      const block11 = rawBlockToBlock(generateRandomRawBlock(11n));
+      const block12 = rawBlockToBlock(generateRandomRawBlock(12n));
 
       await db.storeBlock(block10);
       await db.storeBlock(block11);
