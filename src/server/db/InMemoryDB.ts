@@ -37,6 +37,18 @@ export class InMemoryDB implements IDB {
     return this.blocks.get(blockHash);
   }
 
+  public async getLatestBlockHeight(): Promise<bigint> {
+    let result: bigint = 0n;
+    for (const block of this.blocks.values()) {
+      const currentBlockHeight = BigInt(block.blockHeight);
+      if (currentBlockHeight > result) {
+        result = currentBlockHeight;
+      }
+    }
+
+    return result;
+  }
+
   public async storeTx(tx: ITx | ITx[]): Promise<void> {
     if (Array.isArray(tx)) {
       tx.map(t => this.txs.set(t.txId, t));

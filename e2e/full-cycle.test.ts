@@ -1,7 +1,7 @@
 import { MainPageDriver } from './main-page-driver';
 import { OrbsClientSdkDriver } from './orbs-client-sdk-driver';
 
-describe.only('Full cycle', () => {
+describe('Full cycle', () => {
   const orbsClientSdkDriver = new OrbsClientSdkDriver();
   const mainPageDriver = new MainPageDriver();
 

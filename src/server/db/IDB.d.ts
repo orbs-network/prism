@@ -8,6 +8,7 @@ export interface IDB {
   storeBlock(block: IBlock): Promise<void>;
   getBlockByHash(blockHash: string): Promise<IBlock>;
   getBlockByHeight(blockHeight: string): Promise<IBlock>;
+  getLatestBlockHeight(): Promise<bigint>;
   storeTx(tx: ITx | ITx[]): Promise<void>;
   getTxById(txId: string): Promise<ITx>;
 }

@@ -95,6 +95,15 @@ export class MongoDB implements IDB {
     return result;
   }
 
+  public async getLatestBlockHeight(): Promise<bigint> {
+    const result = await this.BlockModel.findOne()
+      .sort('-blockHeight')
+      .lean()
+      .exec();
+
+    return result.blockHeight;
+  }
+
   public async storeTx(tx: IRawTx | IRawTx[]): Promise<any> {
     if (Array.isArray(tx)) {
       return Promise.all(tx.map(t => this.storeTx(t)));
