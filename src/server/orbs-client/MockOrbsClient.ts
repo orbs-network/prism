@@ -1,4 +1,5 @@
 import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
+import { generateOverflowGetBlockRespose, generateRandomGetBlockRespose } from '../orbs-adapter/fake-blocks-generator';
 import { IOrbsClient } from './IOrbsClient';
 
 export class MockOrbsClient implements IOrbsClient {
@@ -6,20 +7,25 @@ export class MockOrbsClient implements IOrbsClient {
 
   public async getBlock(blockHeight: bigint): Promise<GetBlockResponse> {
     return new Promise((resolve, reject) => {
+      let response: GetBlockResponse;
       if (blockHeight === 0n || blockHeight > this.orbsBlockChain.size) {
-        resolve(this.orbsBlockChain.size);
+        response = generateOverflowGetBlockRespose(BigInt(this.orbsBlockChain.size));
       } else {
-        const result = this.orbsBlockChain.get(blockHeight);
-        if (result) {
-          resolve(result);
-        } else {
+        response = this.orbsBlockChain.get(blockHeight);
+        if (!response) {
           reject();
+          return;
         }
       }
+
+      resolve(response);
     });
   }
 
-  public setOrbsBlock(block: GetBlockResponse): void {
-    this.orbsBlockChain.set(BigInt(block.blockHeight), block);
+  public generateBlocks(count: number): void {
+    for (let i = 0; i < count; i++) {
+      const block = generateRandomGetBlockRespose(BigInt(this.orbsBlockChain.size + 1));
+      this.orbsBlockChain.set(BigInt(block.blockHeight), block);
+    }
   }
 }

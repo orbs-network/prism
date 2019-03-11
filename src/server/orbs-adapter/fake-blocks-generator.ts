@@ -5,13 +5,25 @@ import {
   ResultsBlockHeader,
   TransactionsBlockHeader,
 } from 'orbs-client-sdk/dist/codec/OpGetBlock';
-import { RequestStatus } from 'orbs-client-sdk/dist/codec/RequestStatus';
 import { blockResponseToRawBlock } from '../block-transform/blockTransform';
 import { IRawBlock } from './OrbsAdapter';
 
 export function generateRandomRawBlock(blockHeight: bigint): IRawBlock {
   const getBlockResponse: GetBlockResponse = generateRandomGetBlockRespose(blockHeight);
   return blockResponseToRawBlock(getBlockResponse);
+}
+
+export function generateOverflowGetBlockRespose(blockHeight: bigint): GetBlockResponse {
+  return {
+    requestStatus: 'BAD_REQUEST' as any,
+    blockHeight,
+    blockTimestamp: new Date(),
+    transactionsBlockHash: new Uint8Array(0),
+    transactionsBlockHeader: null,
+    resultsBlockHash: new Uint8Array(0),
+    resultsBlockHeader: null,
+    transactions: [],
+  };
 }
 
 export function generateRandomGetBlockRespose(blockHeight: bigint): GetBlockResponse {
@@ -47,7 +59,7 @@ export function generateRandomGetBlockRespose(blockHeight: bigint): GetBlockResp
   }
 
   return {
-    requestStatus: RequestStatus.REQUEST_STATUS_COMPLETED,
+    requestStatus: 'COMPLETED' as any,
     blockHeight,
     blockTimestamp: now,
     transactionsBlockHash,

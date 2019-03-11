@@ -70,11 +70,11 @@ export class OrbsAdapter {
     try {
       const nextHeight = this.latestKnownHeight + 1n;
       console.log(`-------------------------- requesting block: `, nextHeight);
-      const rawBlock = await this.getBlockAt(nextHeight);
-      const blockHeight: bigint = BigInt(rawBlock.blockHeight);
+      const getBlockResponse = await this.orbsClient.getBlock(nextHeight);
+      const blockHeight: bigint = BigInt(getBlockResponse.blockHeight);
       console.log(`-------------------------- response height: `, blockHeight);
       if (blockHeight > this.latestKnownHeight) {
-        this.listeners.forEach(handler => handler.handleNewBlock(rawBlock));
+        this.listeners.forEach(handler => handler.handleNewBlock(blockResponseToRawBlock(getBlockResponse)));
         this.latestKnownHeight = blockHeight;
       }
     } catch (e) {
