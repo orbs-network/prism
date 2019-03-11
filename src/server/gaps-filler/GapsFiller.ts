@@ -6,7 +6,7 @@ export class GapsFiller {
 
   public async fillGaps(): Promise<void> {
     const latestHeight = await this.storage.getLatestBlockHeight();
-    for (let height: bigint = 1n; height < latestHeight; height++) {
+    for (let height = 1n; height < latestHeight; height++) {
       const storageBlock = await this.storage.getBlockByHeight(height.toString());
       if (!storageBlock) {
         const block = await this.orbsAdapter.getBlockAt(height);

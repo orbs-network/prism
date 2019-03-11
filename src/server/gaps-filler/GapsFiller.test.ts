@@ -53,7 +53,7 @@ describe('Gaps Filler', () => {
     // let the scheduler catch up with the 5 new blocks
     await waitUntil(async () => (await storage.getLatestBlockHeight()) === 15n);
 
-    // make sure that the storage holds the 5 new blocks
+    // make sure that the storage holds the 5 new blocks [11..15]
     for (let i = 11; i <= 15; i++) {
       const block = await storage.getBlockByHeight(i.toString());
       expect(block).not.toBeNull();
