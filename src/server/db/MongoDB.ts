@@ -105,7 +105,11 @@ export class MongoDB implements IDB {
       .lean()
       .exec();
 
-    return result.blockHeight;
+    if (result) {
+      return result.blockHeight;
+    }
+
+    return 0n;
   }
 
   public async storeTx(tx: IRawTx | IRawTx[]): Promise<any> {

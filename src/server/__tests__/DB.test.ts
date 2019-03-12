@@ -56,5 +56,10 @@ function testDb(db: IDB, dbName: string) {
       const actual = await db.getLatestBlockHeight();
       expect(actual.toString()).toEqual('12');
     });
+
+    it('should return 0n if there are no blocks', async () => {
+      const actual = await db.getLatestBlockHeight();
+      expect(actual.toString()).toEqual('0');
+    });
   });
 }
