@@ -6,7 +6,8 @@ export class GapsFiller {
   constructor(private storage: Storage, private orbsAdapter: OrbsAdapter) {}
 
   public async fillGaps(): Promise<void> {
-    const gaps = await detectBlockChainGaps(this.storage, 1n);
+    const latestHeight = await this.storage.getLatestBlockHeight();
+    const gaps = await detectBlockChainGaps(this.storage, 1n, latestHeight);
     console.log(`${gaps} missing blocks to fill`);
     for (const height of gaps) {
       const block = await this.orbsAdapter.getBlockAt(height);

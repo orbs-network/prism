@@ -1,6 +1,6 @@
 import { Storage } from '../storage/storage';
 
-export async function detectBlockChainGaps(storage: Storage, fromHeight: bigint): Promise<Array<bigint>> {
+export async function detectBlockChainGaps(storage: Storage, fromHeight: bigint, toHeight: bigint): Promise<Array<bigint>> {
   const result: Array<bigint> = [];
   const latestHeight = await storage.getLatestBlockHeight();
   console.log(`[Gaps Detector], latestHeight:${latestHeight}`);
