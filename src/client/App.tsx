@@ -1,6 +1,5 @@
 import Grid from '@material-ui/core/Grid';
 import * as React from 'react';
-import { hot } from 'react-hot-loader';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { listenToBlocksSummaryAction } from './actions/blocksSummaryActions';
@@ -28,7 +27,7 @@ const theme = createMuiTheme({
   },
 });
 
-class AppImpl extends React.Component {
+export class App extends React.Component {
   public render() {
     return (
       <BrowserRouter>
@@ -53,5 +52,3 @@ class AppImpl extends React.Component {
     );
   }
 }
-
-export const App = hot(module)(AppImpl);
