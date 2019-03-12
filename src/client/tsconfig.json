@@ -5,10 +5,11 @@
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
-    "outDir": "./dist",
+    "outDir": "../../dist/client",
     "lib": ["esnext", "dom"],
     "types": [],
     "jsx": "react"
   },
-  "files": ["./types.d.ts", "./src/client/client.tsx"]
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["**/*.test.ts", "**/*.test.tsx"]
 }

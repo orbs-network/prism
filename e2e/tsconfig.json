@@ -7,6 +7,5 @@
     "types": ["node", "jest", "jest-environment-puppeteer", "expect-puppeteer"],
     "noEmit": true
   },
-  "include": ["*.test.ts"],
-  "files": ["types.d.ts"]
+  "include": ["**/*.test.ts", "types.d.ts"]
 }
