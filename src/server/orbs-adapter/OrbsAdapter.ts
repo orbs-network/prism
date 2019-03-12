@@ -62,10 +62,17 @@ export class OrbsAdapter {
 
   private async queryOrbsForTheLatestHeight(): Promise<bigint> {
     const getBlockResponse = await this.orbsClient.getBlock(0n);
+    if (!getBlockResponse) {
+      console.log(`Orbs responded with no getBlockResponse. probably a connection issue with the orbs node.`);
+      return 0n;
+    }
+
     if (typeof getBlockResponse.blockHeight === 'bigint') {
+      console.log(`Orbs responded blockHeight: ${getBlockResponse.blockHeight}`);
       return getBlockResponse.blockHeight;
     }
 
+    console.log(`Orbs responded with no blockHeight.`);
     return 0n;
   }
 
