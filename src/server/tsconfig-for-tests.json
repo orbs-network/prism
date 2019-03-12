@@ -7,5 +7,6 @@
     "jsx": "react",
     "types": ["node", "jest"],
     "noEmit": true
-  }
+  },
+  "include": ["**/*.test.ts"]
 }
