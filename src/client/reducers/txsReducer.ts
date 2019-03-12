@@ -1,11 +1,11 @@
-import { ITx } from '../../shared/ITx';
+import { IRawTx } from '../../shared/IRawData';
 import { RootAction } from '../actions/rootAction';
 import { IRootState } from './rootReducer';
 
 export interface ITxData {
   error?: string;
   isLoading: boolean;
-  tx?: ITx;
+  tx?: IRawTx;
 }
 
 export interface ITxsById {

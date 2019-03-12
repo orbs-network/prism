@@ -1,7 +1,7 @@
 import * as bodyParser from 'body-parser';
 import { Router } from 'express';
 import { IBlock } from '../../shared/IBlock';
-import { ITx } from '../../shared/ITx';
+import { IRawTx } from '../../shared/IRawData';
 import { Storage } from '../storage/storage';
 
 export function apiRouter(storage: Storage) {
@@ -19,7 +19,7 @@ export function apiRouter(storage: Storage) {
 
   router.get('/api/tx/:txId', async (req, res) => {
     const txId: string = req.params.txId;
-    const tx: ITx = await storage.getTx(txId);
+    const tx: IRawTx = await storage.getTx(txId);
     if (!tx) {
       return res.send(404);
     }

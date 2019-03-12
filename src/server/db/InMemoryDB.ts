@@ -1,10 +1,10 @@
 import { IDB } from './IDB';
 import { IBlock } from '../../shared/IBlock';
-import { ITx } from '../../shared/ITx';
+import { IRawTx } from '../../shared/IRawData';
 
 export class InMemoryDB implements IDB {
   private blocks: Map<string, IBlock>;
-  private txs: Map<string, ITx>;
+  private txs: Map<string, IRawTx>;
 
   public async init(): Promise<void> {
     this.blocks = new Map();
@@ -49,7 +49,7 @@ export class InMemoryDB implements IDB {
     return result;
   }
 
-  public async storeTx(tx: ITx | ITx[]): Promise<void> {
+  public async storeTx(tx: IRawTx | IRawTx[]): Promise<void> {
     if (Array.isArray(tx)) {
       tx.map(t => this.txs.set(t.txId, t));
     } else {
@@ -57,7 +57,7 @@ export class InMemoryDB implements IDB {
     }
   }
 
-  public async getTxById(txId: string): Promise<ITx> {
+  public async getTxById(txId: string): Promise<IRawTx> {
     return this.txs.get(txId);
   }
 }

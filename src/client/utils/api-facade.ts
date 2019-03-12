@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { IBlock } from '../../shared/IBlock';
-import { ITx } from '../../shared/ITx';
+import { IRawTx } from '../../shared/IRawData';
 import { ISearchResult } from '../../shared/ISearchResult';
 
 export async function loadBlock(blockHash: string): Promise<IBlock> {
@@ -8,9 +8,9 @@ export async function loadBlock(blockHash: string): Promise<IBlock> {
   return res.data as IBlock;
 }
 
-export async function loadTx(txId: string): Promise<ITx> {
+export async function loadTx(txId: string): Promise<IRawTx> {
   const res = await axios.get(`/api/tx/${txId}`);
-  return res.data as ITx;
+  return res.data as IRawTx;
 }
 
 export async function search(term: string): Promise<ISearchResult> {

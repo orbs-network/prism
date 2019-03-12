@@ -1,5 +1,3 @@
-import { ITx } from './ITx';
-
 interface IBlockHeader {
   blockHash: string;
   blockHeight: string;

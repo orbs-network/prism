@@ -1,5 +1,5 @@
 import { IBlock } from '../../shared/IBlock';
-import { IRawBlock, IRawArgument, IRawEvent } from '../orbs-adapter/OrbsAdapter';
+import { IRawBlock, IRawArgument, IRawEvent } from '../../shared/IRawData';
 import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import { uint8ArrayToHexString } from '../hash-converter/hashConverter';
 import { Argument } from 'orbs-client-sdk/dist/codec/Arguments';

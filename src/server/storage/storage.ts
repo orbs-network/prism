@@ -1,9 +1,8 @@
 import { IBlock } from '../../shared/IBlock';
 import { ISearchResult } from '../../shared/ISearchResult';
-import { ITx } from '../../shared/ITx';
+import { IRawTx, IRawBlock } from '../../shared/IRawData';
 import { rawBlockToBlock } from '../block-transform/blockTransform';
 import { IDB } from '../db/IDB';
-import { IRawBlock } from '../orbs-adapter/OrbsAdapter';
 
 export class Storage {
   constructor(private db: IDB) {}
@@ -20,7 +19,7 @@ export class Storage {
     return this.db.getLatestBlockHeight();
   }
 
-  public getTx(txId: string): Promise<ITx> {
+  public getTx(txId: string): Promise<IRawTx> {
     return this.db.getTxById(txId);
   }
 

@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 import { IBlock } from '../../shared/IBlock';
-import { IRawTx } from '../orbs-adapter/OrbsAdapter';
+import { IRawTx } from '../../shared/IRawData';
 import { IDB } from './IDB';
 
 require('mongoose-long')(mongoose);

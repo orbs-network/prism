@@ -16,7 +16,7 @@ import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { IRawArgument, IRawEvent } from '../../server/orbs-adapter/OrbsAdapter';
+import { IRawArgument, IRawEvent } from '../../shared/IRawData';
 import { loadTxAction } from '../actions/txActions';
 import { IRootState } from '../reducers/rootReducer';
 import { getTxData, isTxLoading, ITxData } from '../reducers/txsReducer';

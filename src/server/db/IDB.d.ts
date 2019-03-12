@@ -1,5 +1,5 @@
 import { IBlock } from '../../shared/IBlock';
-import { ITx } from '../../shared/ITx';
+import { IRawTx } from '../../shared/IRawData';
 
 export interface IDB {
   init(): Promise<void>;
@@ -9,6 +9,6 @@ export interface IDB {
   getBlockByHash(blockHash: string): Promise<IBlock>;
   getBlockByHeight(blockHeight: string): Promise<IBlock>;
   getLatestBlockHeight(): Promise<bigint>;
-  storeTx(tx: ITx | ITx[]): Promise<void>;
-  getTxById(txId: string): Promise<ITx>;
+  storeTx(tx: IRawTx | IRawTx[]): Promise<void>;
+  getTxById(txId: string): Promise<IRawTx>;
 }

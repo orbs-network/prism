@@ -6,7 +6,7 @@ import {
   TransactionsBlockHeader,
 } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import { blockResponseToRawBlock } from '../block-transform/blockTransform';
-import { IRawBlock } from './OrbsAdapter';
+import { IRawBlock } from '../../shared/IRawData';
 
 export function generateRandomRawBlock(blockHeight: bigint): IRawBlock {
   const getBlockResponse: GetBlockResponse = generateRandomGetBlockRespose(blockHeight);
