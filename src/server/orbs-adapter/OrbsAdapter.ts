@@ -72,7 +72,7 @@ export class OrbsAdapter {
       return getBlockResponse.blockHeight;
     }
 
-    console.log(`Orbs responded with no blockHeight.`);
+    console.log(`Orbs responded with no blockHeight. requestStatus: ${getBlockResponse.requestStatus}`);
     return 0n;
   }
 
