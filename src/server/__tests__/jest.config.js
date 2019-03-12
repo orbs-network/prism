@@ -3,11 +3,11 @@ module.exports = {
     '^.+\\.tsx?$': 'ts-jest',
   },
   testEnvironment: 'node',
-  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$',
+  testRegex: '.*test.ts$',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   globals: {
     'ts-jest': {
-      tsConfig: '<rootDir>/tsconfig-for-tests.json',
+      tsConfig: '<rootDir>/tsconfig.json',
     },
   },
 };

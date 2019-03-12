@@ -2,13 +2,13 @@ module.exports = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
-  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$',
+  testRegex: '.*test.tsx?$',
   snapshotSerializers: ['enzyme-to-json/serializer'],
   setupTestFrameworkScriptFile: '<rootDir>/setupEnzyme.ts',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   globals: {
     'ts-jest': {
-      tsConfig: '<rootDir>/tsconfig-for-tests.json',
+      tsConfig: '<rootDir>/tsconfig.json',
     },
   },
 };

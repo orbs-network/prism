@@ -2,7 +2,7 @@ import { ISearchResult } from '../../shared/ISearchResult';
 import { rawBlockToBlock } from '../block-transform/blockTransform';
 import { InMemoryDB } from '../db/InMemoryDB';
 import { generateRandomRawBlock } from '../orbs-adapter/fake-blocks-generator';
-import { Storage } from './storage';
+import { Storage } from '../storage/storage';
 
 describe('storage', () => {
   it('should store and retrive blocks', async () => {

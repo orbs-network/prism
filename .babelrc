@@ -1,7 +1,6 @@
 {
   "presets": [["@babel/env", { "modules": false }], "@babel/react", "@babel/typescript"],
   "plugins": [
-    "react-hot-loader/babel",
     "@babel/proposal-numeric-separator",
     "@babel/plugin-transform-runtime",
     "@babel/proposal-class-properties",

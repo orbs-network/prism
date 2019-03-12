@@ -1,8 +1,8 @@
 import { rawBlockToBlock } from '../block-transform/blockTransform';
 import { generateRandomRawBlock } from '../orbs-adapter/fake-blocks-generator';
-import { InMemoryDB } from './InMemoryDB';
-import { IDB } from './IDB';
-import { MongoDB } from './MongoDB';
+import { InMemoryDB } from '../db/InMemoryDB';
+import { IDB } from '../db/IDB';
+import { MongoDB } from '../db/MongoDB';
 import { MONGODB_URI } from '../config';
 
 testDb(new InMemoryDB(), 'InMemoryDB');

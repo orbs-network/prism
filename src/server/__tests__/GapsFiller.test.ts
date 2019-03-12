@@ -2,7 +2,7 @@ import { InMemoryDB } from '../db/InMemoryDB';
 import { OrbsAdapter } from '../orbs-adapter/OrbsAdapter';
 import { MockOrbsClient } from '../orbs-client/MockOrbsClient';
 import { Storage } from '../storage/storage';
-import { GapsFiller } from './GapsFiller';
+import { GapsFiller } from '../gaps-filler/GapsFiller';
 
 const delay = (time: number) => new Promise(resolve => setTimeout(() => resolve(), time));
 export async function waitUntil(

@@ -12,5 +12,5 @@
     "types": ["node"]
   },
   "include": ["**/*.ts"],
-  "exclude": ["**/*.test.ts"]
+  "exclude": ["__tests__"]
 }

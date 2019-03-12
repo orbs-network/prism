@@ -2,7 +2,7 @@ import { Storage } from '../storage/storage';
 import { IDB } from '../db/IDB';
 import { InMemoryDB } from '../db/InMemoryDB';
 import { generateRandomRawBlock } from '../orbs-adapter/fake-blocks-generator';
-import { detectBlockChainGaps } from './GapsDetector';
+import { detectBlockChainGaps } from '../gaps-filler/GapsDetector';
 
 describe('Gaps Filler', () => {
   it('should detect gaps in the storage', async () => {
