@@ -7,7 +7,7 @@ import { GapsFiller } from '../gaps-filler/GapsFiller';
 const delay = (time: number) => new Promise(resolve => setTimeout(() => resolve(), time));
 export async function waitUntil(
   predicate: () => Promise<boolean>,
-  timeout: number = 2_000,
+  timeout: number = 5_000,
   interval: number = 50,
 ): Promise<void> {
   const endTime = Date.now() + timeout;
@@ -67,5 +67,26 @@ describe('Gaps Filler', () => {
       const block = await storage.getBlockByHeight(i.toString());
       expect(block).not.toBeNull();
     }
+  });
+
+  it('should update the heighest consecutive block height after filling the gap', async () => {
+    // append 10 blocks to orbs block chain (No one is listenning)
+    orbsClient.generateBlocks(10);
+
+    // start orbs adapter scheduler (Will start from height 10 + 1)
+    await orbsAdapter.init();
+
+    // append 5 blocks to orbs block chain
+    orbsClient.generateBlocks(5);
+
+    // let the scheduler catch up with the 5 new blocks
+    await waitUntil(async () => (await storage.getLatestBlockHeight()) === 15n);
+
+    // fill the gap from 1 to 10
+    await gapsFiller.fillGaps();
+
+    // make sure that the storage holds the all 15 blocks
+    const actual = await storage.getHeighestConsecutiveBlockHeight();
+    expect(actual).toBe(15n);
   });
 });

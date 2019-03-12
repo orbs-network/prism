@@ -29,9 +29,9 @@ describe('Gaps Filler', () => {
     await storage.handleNewBlock(generateRandomRawBlock(6n));
     await storage.handleNewBlock(generateRandomRawBlock(7n));
     await storage.handleNewBlock(generateRandomRawBlock(10n));
+    await storage.handleNewBlock(generateRandomRawBlock(20n));
 
-    const latestHeight = await storage.getLatestBlockHeight();
-    const actual = await detectBlockChainGaps(storage, 4n, latestHeight);
-    expect(actual).toEqual([4n, 5n, 8n, 9n]);
+    const actual = await detectBlockChainGaps(storage, 4n, 15n);
+    expect(actual).toEqual([4n, 5n, 8n, 9n, 11n, 12n, 13n, 14n, 15n]);
   });
 });
