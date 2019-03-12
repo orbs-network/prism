@@ -1,6 +1,6 @@
 const findUp = require('find-up');
-const path = findUp.sync('.env');
-require('dotenv').config({ path });
+const dotEnvPath = findUp.sync('.env');
+require('dotenv').config({ path: dotEnvPath });
 
 module.exports = {
   IS_PRODUCTION: process.env.NODE_ENV === 'production',

@@ -1,9 +1,11 @@
-import { Client, createAccount, NetworkType, argAddress, argUint64 } from 'orbs-client-sdk';
+import { argAddress, argUint64, Client, createAccount, NetworkType } from 'orbs-client-sdk';
 import { Account } from 'orbs-client-sdk/dist/orbs/Account';
-import * as path from 'path';
 import { hexStringToUint8Array } from '../src/server/hash-converter/hashConverter';
+import * as findUp from 'find-up';
+import * as dotEnv from 'dotenv';
 
-require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+dotEnv.config({ path: findUp.sync('.env') });
+
 const ORBS_ENDPOINT = process.env.ORBS_ENDPOINT;
 const ORBS_VIRTUAL_CHAIN_ID = parseInt(process.env.ORBS_VIRTUAL_CHAIN_ID, 10);
 const ORBS_NETWORK_TYPE = process.env.ORBS_NETWORK_TYPE;

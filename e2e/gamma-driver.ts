@@ -1,5 +1,6 @@
-const util = require('util');
-const execFile = util.promisify(require('child_process').execFile);
+import util from 'util';
+import processChild from 'child_process';
+const execFile = util.promisify(processChild.execFile);
 
 export class GammaDriver {
   constructor(private endpoint: string, private port: number) {}
@@ -12,7 +13,7 @@ export class GammaDriver {
         '-env',
         'experimental',
         '-port',
-        this.port,
+        this.port.toString(),
       ]);
       console.log(stdout);
       if (stderr) {
@@ -25,7 +26,12 @@ export class GammaDriver {
 
   public async stop() {
     try {
-      const { stdout, stderr } = await execFile('gamma-cli', ['stop-local', 'experimental', '-port', this.port]);
+      const { stdout, stderr } = await execFile('gamma-cli', [
+        'stop-local',
+        'experimental',
+        '-port',
+        this.port.toString(),
+      ]);
       console.log(stdout);
       if (stderr) {
         console.error(stderr);

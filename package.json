@@ -48,6 +48,8 @@
   "license": "MIT",
   "author": "Gil Amran",
   "dependencies": {
+    "@types/dotenv": "^6.1.0",
+    "@types/find-up": "^2.1.1",
     "@types/gsap": "^1.20.1",
     "@types/mongoose": "^5.3.20",
     "@types/pg": "^7.4.11",
