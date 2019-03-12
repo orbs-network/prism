@@ -22,6 +22,7 @@ async function main() {
   await orbsAdapter.init();
 
   const gapsFiller = new GapsFiller(storage, orbsAdapter);
+  await gapsFiller.fillGaps();
 }
 
 main()
