@@ -13,6 +13,5 @@ export class GapsFiller {
         await this.storage.handleNewBlock(block);
       }
     }
-    //
   }
 }
