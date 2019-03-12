@@ -5,6 +5,7 @@ import { IRawTx } from '../../shared/IRawData';
 export class InMemoryDB implements IDB {
   private blocks: Map<string, IBlock>;
   private txs: Map<string, IRawTx>;
+  private heighestConsecutiveBlockHeight: bigint = 0n;
 
   public async init(): Promise<void> {
     this.blocks = new Map();
@@ -31,6 +32,14 @@ export class InMemoryDB implements IDB {
       }
     }
     return null;
+  }
+
+  public async getHeighestConsecutiveBlockHeight(): Promise<bigint> {
+    return this.heighestConsecutiveBlockHeight;
+  }
+
+  public async setHeighestConsecutiveBlockHeight(value: bigint): Promise<void> {
+    this.heighestConsecutiveBlockHeight = value;
   }
 
   public async getBlockByHash(blockHash: string): Promise<IBlock> {

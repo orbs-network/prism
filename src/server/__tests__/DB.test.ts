@@ -54,12 +54,18 @@ function testDb(db: IDB, dbName: string) {
       await db.storeBlock(block12);
 
       const actual = await db.getLatestBlockHeight();
-      expect(actual.toString()).toEqual('12');
+      expect(actual).toEqual(12n);
     });
 
     it('should return 0n if there are no blocks', async () => {
       const actual = await db.getLatestBlockHeight();
-      expect(actual.toString()).toEqual('0');
+      expect(actual).toEqual(0n);
+    });
+
+    it('should store and retrive the heighest consecutive block height ', async () => {
+      await db.setHeighestConsecutiveBlockHeight(123n);
+      const actual = await db.getHeighestConsecutiveBlockHeight();
+      expect(actual).toEqual(123n);
     });
   });
 }

@@ -5,6 +5,11 @@ import { IDB } from './IDB';
 
 require('mongoose-long')(mongoose);
 
+const cacheSchema = new mongoose.Schema({
+  _id: Number,
+  heighestConsecutiveBlockHeight: (mongoose.Schema.Types as any).Long,
+});
+
 const blockSchema = new mongoose.Schema({
   blockHash: String,
   blockHeight: (mongoose.Schema.Types as any).Long,
@@ -31,6 +36,7 @@ export class MongoDB implements IDB {
   private db: any;
   private BlockModel: any;
   private TxModel: any;
+  private CacheModel: any;
 
   constructor(private connectionUrl: string) {}
 
@@ -46,6 +52,7 @@ export class MongoDB implements IDB {
     // model
     this.BlockModel = mongoose.model('Block', blockSchema);
     this.TxModel = mongoose.model('Tx', txSchema);
+    this.CacheModel = mongoose.model('Cache', cacheSchema);
   }
 
   public async destroy() {
@@ -58,6 +65,7 @@ export class MongoDB implements IDB {
   public async clearAll(): Promise<void> {
     await this.BlockModel.remove({});
     await this.TxModel.remove({});
+    await this.CacheModel.remove({});
   }
 
   public async storeBlock(block: IBlock): Promise<void> {
@@ -81,6 +89,7 @@ export class MongoDB implements IDB {
     result.blockHeight = result.blockHeight.toString();
     return result;
   }
+
   public async getBlockByHeight(blockHeight: string): Promise<IBlock> {
     const startTime = Date.now();
     console.log(`Searching for block by height: ${blockHeight}`);
@@ -99,6 +108,16 @@ export class MongoDB implements IDB {
     return result;
   }
 
+  public async getHeighestConsecutiveBlockHeight(): Promise<bigint> {
+    const result = await this.CacheModel.findOne({ _id: 1 });
+    return BigInt(result.heighestConsecutiveBlockHeight);
+  }
+
+  public async setHeighestConsecutiveBlockHeight(value: bigint): Promise<void> {
+    const blockInstance = new this.CacheModel({ _id: 1, heighestConsecutiveBlockHeight: value });
+    await blockInstance.save();
+  }
+
   public async getLatestBlockHeight(): Promise<bigint> {
     const result = await this.BlockModel.findOne()
       .sort('-blockHeight')
@@ -106,7 +125,7 @@ export class MongoDB implements IDB {
       .exec();
 
     if (result) {
-      return result.blockHeight;
+      return BigInt(result.blockHeight);
     }
 
     return 0n;

@@ -34,7 +34,7 @@ describe('Gaps Filler', () => {
     await db.init();
 
     orbsClient = new MockOrbsClient();
-    orbsAdapter = new OrbsAdapter(orbsClient, 10); // fast pooling, every 10ms.
+    orbsAdapter = new OrbsAdapter(orbsClient, 25); // fast pooling, every 25ms.
     storage = new Storage(db);
     orbsAdapter.RegisterToNewBlocks(storage);
     gapsFiller = new GapsFiller(storage, orbsAdapter);

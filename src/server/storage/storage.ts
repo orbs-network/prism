@@ -19,6 +19,14 @@ export class Storage {
     return this.db.getLatestBlockHeight();
   }
 
+  public getHeighestConsecutiveBlockHeight(): Promise<bigint> {
+    return this.db.getHeighestConsecutiveBlockHeight();
+  }
+
+  public setHeighestConsecutiveBlockHeight(value: bigint): Promise<void> {
+    return this.db.setHeighestConsecutiveBlockHeight(value);
+  }
+
   public getTx(txId: string): Promise<IRawTx> {
     return this.db.getTxById(txId);
   }

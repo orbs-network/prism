@@ -9,6 +9,8 @@ export interface IDB {
   getBlockByHash(blockHash: string): Promise<IBlock>;
   getBlockByHeight(blockHeight: string): Promise<IBlock>;
   getLatestBlockHeight(): Promise<bigint>;
+  getHeighestConsecutiveBlockHeight(): Promise<bigint>;
+  setHeighestConsecutiveBlockHeight(value: bigint): Promise<void>;
   storeTx(tx: IRawTx | IRawTx[]): Promise<void>;
   getTxById(txId: string): Promise<IRawTx>;
 }
