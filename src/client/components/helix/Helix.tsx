@@ -1,6 +1,6 @@
 import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
 import { BloomEffect, EffectComposer, EffectPass, RenderPass } from 'postprocessing';
-import React, { MouseEvent } from 'react';
+import * as React from 'react';
 import { connect } from 'react-redux';
 import {
   AmbientLight,
@@ -101,7 +101,7 @@ const HelixImpl = withStyles(styles)(
       );
     }
 
-    private onDocumentMouseMove(e: MouseEvent): void {
+    private onDocumentMouseMove(e: React.MouseEvent): void {
       this.mouse.x = (e.nativeEvent.offsetX / this.mount.clientWidth) * 2 - 1;
       this.mouse.y = -(e.nativeEvent.offsetY / this.mount.clientHeight) * 2 + 1;
     }
