@@ -44,7 +44,7 @@ export class InMemoryDB implements IDB {
   }
 
   public async getBlockByHash(blockHash: string): Promise<IBlock> {
-    return this.blocks.get(blockHash);
+    return this.blocks.get(blockHash) || null;
   }
 
   public async getLatestBlockHeight(): Promise<bigint> {

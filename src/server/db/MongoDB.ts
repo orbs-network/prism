@@ -79,7 +79,7 @@ export class MongoDB implements IDB {
     console.log(`Storing block #${block.blockHeight}`);
     const blockInstance = new this.BlockModel(block);
     await blockInstance.save();
-    console.log(`block stored [${Date.now() - startTime}]`);
+    console.log(`block stored [${Date.now() - startTime}ms.]`);
   }
 
   public async getBlockByHash(blockHash: string): Promise<IBlock> {
@@ -89,11 +89,15 @@ export class MongoDB implements IDB {
       .lean()
       .exec();
 
-    console.log(`block found [${Date.now() - startTime}]`);
-
-    // in the db we store the blockHeight as long (For better search), here we convert it back to string
-    result.blockHeight = result.blockHeight.toString();
-    return result;
+    if (result) {
+      console.log(`block found [${Date.now() - startTime}ms.]`);
+      // in the db we store the blockHeight as long (For better search), here we convert it back to string
+      result.blockHeight = result.blockHeight.toString();
+      return result;
+    } else {
+      console.log(`block not found [${Date.now() - startTime}ms.]`);
+      return null;
+    }
   }
 
   public async getBlockByHeight(blockHeight: string): Promise<IBlock> {
@@ -104,14 +108,14 @@ export class MongoDB implements IDB {
       .exec();
 
     if (result) {
-      console.log(`block found [${Date.now() - startTime}]`);
-
+      console.log(`block found [${Date.now() - startTime}ms.]`);
       // in the db we store the blockHeight as long (For better search), here we convert it back to string
       result.blockHeight = result.blockHeight.toString();
+      return result;
     } else {
-      console.log(`block not found [${Date.now() - startTime}]`);
+      console.log(`block not found [${Date.now() - startTime}ms.]`);
+      return null;
     }
-    return result;
   }
 
   public async getHeighestConsecutiveBlockHeight(): Promise<bigint> {
@@ -160,7 +164,7 @@ export class MongoDB implements IDB {
       .lean()
       .exec();
 
-    console.log(`tx found [${Date.now() - startTime}]`);
+    console.log(`tx found [${Date.now() - startTime}ms.]`);
     return result;
   }
 }

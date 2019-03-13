@@ -15,13 +15,23 @@ function testDb(db: IDB, dbName: string) {
       await db.clearAll();
     });
 
-    it('should store and retrive blocks', async () => {
+    it('should store and retrive blocks by hash', async () => {
       const rawBlock = generateRandomRawBlock(1n);
 
       await db.storeBlock(rawBlockToBlock(rawBlock));
 
       const actual = await db.getBlockByHash(rawBlock.blockHash);
       expect(rawBlockToBlock(rawBlock)).toEqual(actual);
+    });
+
+    it('should return null if no block found when searching a block by hash', async () => {
+      const actual = await db.getBlockByHash('fake data');
+      expect(actual).toBeNull();
+    });
+
+    it('should return null if no block found when searching a block by height', async () => {
+      const actual = await db.getBlockByHeight('10');
+      expect(actual).toBeNull();
     });
 
     it('should be able to retrive blocks by height', async () => {
