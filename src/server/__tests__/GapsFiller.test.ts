@@ -1,33 +1,15 @@
 import { InMemoryDB } from '../db/InMemoryDB';
+import { fillGaps } from '../gaps-filler/GapsFiller';
 import { OrbsAdapter } from '../orbs-adapter/OrbsAdapter';
 import { MockOrbsClient } from '../orbs-client/MockOrbsClient';
 import { Storage } from '../storage/storage';
-import { GapsFiller } from '../gaps-filler/GapsFiller';
-
-const delay = (time: number) => new Promise(resolve => setTimeout(() => resolve(), time));
-export async function waitUntil(
-  predicate: () => Promise<boolean>,
-  timeout: number = 5_000,
-  interval: number = 50,
-): Promise<void> {
-  const endTime = Date.now() + timeout;
-  while (endTime > Date.now()) {
-    if (await predicate()) {
-      return;
-    }
-
-    await delay(interval);
-  }
-
-  throw new Error('waitUtil reached timeout');
-}
+import { waitUntil } from './TimeUtils';
 
 describe('Gaps Filler', () => {
   let db: InMemoryDB;
   let orbsAdapter: OrbsAdapter;
   let orbsClient: MockOrbsClient;
   let storage: Storage;
-  let gapsFiller: GapsFiller;
 
   beforeEach(async () => {
     db = new InMemoryDB();
@@ -37,7 +19,6 @@ describe('Gaps Filler', () => {
     orbsAdapter = new OrbsAdapter(orbsClient, 25); // fast pooling, every 25ms.
     storage = new Storage(db);
     orbsAdapter.RegisterToNewBlocks(storage);
-    gapsFiller = new GapsFiller(storage, orbsAdapter);
   });
 
   it('should fill all the missing blocks', async () => {
@@ -60,7 +41,7 @@ describe('Gaps Filler', () => {
     }
 
     // fill the gap from 1 to 10
-    await gapsFiller.fillGaps();
+    await fillGaps(storage, orbsAdapter);
 
     // make sure that the storage holds the all 15 blocks
     for (let i = 1; i <= 15; i++) {
@@ -83,7 +64,7 @@ describe('Gaps Filler', () => {
     await waitUntil(async () => (await storage.getLatestBlockHeight()) === 15n);
 
     // fill the gap from 1 to 10
-    await gapsFiller.fillGaps();
+    await fillGaps(storage, orbsAdapter);
 
     // make sure that the storage holds the all 15 blocks
     const actual = await storage.getHeighestConsecutiveBlockHeight();

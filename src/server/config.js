@@ -12,4 +12,5 @@ module.exports = {
   ORBS_VIRTUAL_CHAIN_ID: parseInt(process.env.ORBS_VIRTUAL_CHAIN_ID),
   ORBS_NETWORK_TYPE: process.env.ORBS_NETWORK_TYPE,
   POOLING_INTERVAL: parseInt(process.env.POOLING_INTERVAL),
+  GAP_FILLER_INTERVAL: process.env.GAP_FILLER_INTERVAL ? parseInt(process.env.GAP_FILLER_INTERVAL) : 30,
 };
