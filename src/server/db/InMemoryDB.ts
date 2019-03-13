@@ -19,6 +19,7 @@ export class InMemoryDB implements IDB {
   public async clearAll(): Promise<void> {
     this.blocks = new Map();
     this.txs = new Map();
+    this.heighestConsecutiveBlockHeight = 0n;
   }
 
   public async storeBlock(block: IBlock): Promise<void> {

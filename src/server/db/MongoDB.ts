@@ -5,6 +5,11 @@ import { IDB } from './IDB';
 
 require('mongoose-long')(mongoose);
 
+interface ICacheDocument extends mongoose.Document {
+  _id: number;
+  heighestConsecutiveBlockHeight: bigint;
+}
+
 const cacheSchema = new mongoose.Schema({
   _id: Number,
   heighestConsecutiveBlockHeight: (mongoose.Schema.Types as any).Long,
@@ -33,10 +38,10 @@ const txSchema = new mongoose.Schema({
 });
 
 export class MongoDB implements IDB {
-  private db: any;
-  private BlockModel: any;
-  private TxModel: any;
-  private CacheModel: any;
+  private db: mongoose.Mongoose;
+  private BlockModel: mongoose.Model<mongoose.Document>;
+  private TxModel: mongoose.Model<mongoose.Document>;
+  private CacheModel: mongoose.Model<ICacheDocument>;
 
   constructor(private connectionUrl: string) {}
 
@@ -118,8 +123,11 @@ export class MongoDB implements IDB {
   }
 
   public async setHeighestConsecutiveBlockHeight(value: bigint): Promise<void> {
-    const blockInstance = new this.CacheModel({ _id: 1, heighestConsecutiveBlockHeight: value });
-    await blockInstance.save();
+    await this.CacheModel.findOneAndUpdate(
+      { _id: 1 },
+      { _id: 1, heighestConsecutiveBlockHeight: value },
+      { upsert: true },
+    );
   }
 
   public async getLatestBlockHeight(): Promise<bigint> {
