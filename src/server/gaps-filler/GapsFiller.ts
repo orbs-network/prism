@@ -13,8 +13,8 @@ export class GapsFiller {
     for (const height of gaps) {
       const block = await this.orbsAdapter.getBlockAt(height);
       await this.storage.handleNewBlock(block);
+      await this.storage.setHeighestConsecutiveBlockHeight(height);
       console.log(`GapsFiller, block at ${height} stored`);
     }
-    await this.storage.setHeighestConsecutiveBlockHeight(toHeight);
   }
 }
