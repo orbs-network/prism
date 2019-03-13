@@ -4,6 +4,7 @@ import { IRawTx } from '../../shared/IRawData';
 import { IDB } from './IDB';
 
 require('mongoose-long')(mongoose);
+mongoose.set('useFindAndModify', false);
 
 interface ICacheDocument extends mongoose.Document {
   _id: number;
