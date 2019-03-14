@@ -4,8 +4,8 @@ import { IRootState } from './rootReducer';
 
 export interface IBlockData {
   isLoading: boolean;
-  error?: string;
-  block?: IBlock;
+  error: string;
+  block: IBlock;
 }
 
 export interface IBlocksByHash {
@@ -18,6 +18,7 @@ function appendBlockToState(state: IBlocksByHash, block: IBlock): IBlocksByHash 
     ...state,
     [blockHash]: {
       isLoading: false,
+      error: null,
       block,
     },
   };
@@ -44,6 +45,7 @@ export function blocksByHash(state: IBlocksByHash = {}, action: RootAction): IBl
         ...state,
         [blockHash]: {
           isLoading: true,
+          block: null,
           error: null,
         },
       };
@@ -55,6 +57,7 @@ export function blocksByHash(state: IBlocksByHash = {}, action: RootAction): IBl
         ...state,
         [blockHash]: {
           isLoading: false,
+          block: null,
           error,
         },
       };
