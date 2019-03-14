@@ -48,11 +48,11 @@ const TxDetailsImpl = withStyles(styles)(
 
     public render() {
       if (this.props.isTxLoading) {
-        return <div>Loading...</div>;
+        return <Typography>Loading...</Typography>;
       }
 
       if (!this.props.txData) {
-        return <div>Empty</div>;
+        return <Typography>Empty...</Typography>;
       }
 
       if (this.props.txData.error) {

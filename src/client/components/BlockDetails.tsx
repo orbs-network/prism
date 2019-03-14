@@ -32,11 +32,11 @@ const BlockDetailsImpl = withStyles(styles)(
 
     public render() {
       if (this.props.isBlockLoading) {
-        return <div>Loading...</div>;
+        return <Typography>Loading...</Typography>;
       }
 
       if (!this.props.blockData) {
-        return <div>empty</div>;
+        return <Typography>Empty...</Typography>;
       }
 
       if (this.props.blockData.error) {

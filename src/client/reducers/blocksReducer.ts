@@ -53,6 +53,22 @@ export function blocksByHash(state: IBlocksByHash = {}, action: RootAction): IBl
         return state;
       }
     }
+
+    case 'LOAD_BLOCK_STARTED': {
+      const { blockHash } = action;
+      const summary = state[blockHash] && state[blockHash].summary;
+      return {
+        ...state,
+        [blockHash]: {
+          summary,
+          blockData: {
+            isLoading: true,
+            error: null,
+          },
+        },
+      };
+    }
+
     case 'LOAD_BLOCK_ERROR': {
       const { error, blockHash } = action;
       const summary = state[blockHash] && state[blockHash].summary;
