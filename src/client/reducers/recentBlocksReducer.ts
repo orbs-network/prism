@@ -15,4 +15,4 @@ export function recentBlocksHashs(state: RecentBlocksHashes = [], action: Blocks
 }
 
 export const getRecentBlocksSummary = (state: IRootState): IBlockSummary[] =>
-  state.recentBlocksHashs.map(blockHash => state.blocksByHash[blockHash].summary);
+  state.recentBlocksHashs.map(blockHash => state.blocksSummaryByHash[blockHash]);
