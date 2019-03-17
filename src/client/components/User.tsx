@@ -15,8 +15,8 @@ export class User extends React.Component<IProps> {
       <Card>
         <CardHeader title={`User: ${this.props.user.userName}`} />
         <CardContent>
-          <Typography variant='subheading'>Id: {this.props.user.userId}</Typography>
-          <Typography variant='subheading'>Image Url: {this.props.user.imageUrl}</Typography>
+          <Typography variant='h3'>Id: {this.props.user.userId}</Typography>
+          <Typography variant='h3'>Image Url: {this.props.user.imageUrl}</Typography>
         </CardContent>
       </Card>
     );
