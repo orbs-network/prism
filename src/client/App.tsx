@@ -1,25 +1,25 @@
-import Grid from '@material-ui/core/Grid';
+import { common } from '@material-ui/core/colors';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import {
+  createMuiTheme,
+  createStyles,
+  MuiThemeProvider,
+  Theme,
+  withStyles,
+  WithStyles,
+} from '@material-ui/core/styles';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { listenToBlocksSummaryAction } from './actions/blocksSummaryActions';
+import { Background } from './components/Background';
 import { BlockDetails } from './components/BlockDetails';
 import { Header } from './components/Header';
 import { Home } from './components/Home';
 import { TermNotFound } from './components/TermNotFound';
 import { TxDetails } from './components/TxDetails';
 import { configureStore } from './store';
-import {
-  MuiThemeProvider,
-  createMuiTheme,
-  withStyles,
-  Theme,
-  createStyles,
-  WithStyles,
-} from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { fade } from '@material-ui/core/styles/colorManipulator';
-import { common } from '@material-ui/core/colors';
 
 const store = configureStore();
 store.dispatch(listenToBlocksSummaryAction() as any);
@@ -27,11 +27,11 @@ store.dispatch(listenToBlocksSummaryAction() as any);
 const baseTheme = createMuiTheme({
   palette: {
     type: 'dark',
-    primary: { main: '#0f235e' },
+    primary: { main: 'rgba(16, 34, 91, 0.7)' },
     secondary: { main: '#74f6fd' },
     background: {
       default: '#16317d',
-      paper: '#032573',
+      paper: 'rgba(0, 31, 107, 0.6)',
     },
   },
   typography: {
@@ -67,6 +67,7 @@ export const App = withStyles(styles)(({ classes }: IProps) => (
     <Provider store={store}>
       <MuiThemeProvider theme={baseTheme}>
         <CssBaseline />
+        <Background />
         <Header />
         <div className={classes.root}>
           <Switch>
