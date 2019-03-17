@@ -42,7 +42,7 @@ export const BlockItem = withStyles(styles)(({ classes, block }: IProps) => (
     </div>
     <div className={classes.line}>
       <Typography className={classes.label}>Transactions:</Typography>
-      <Typography>{block.numTransactions}</Typography>
+      <Typography>{block.numTransactions > 0 ? block.numTransactions : '-'}</Typography>
     </div>
     <div className={classes.line}>
       <Typography className={classes.label}>Time stamp:</Typography>
