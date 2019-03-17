@@ -28,10 +28,7 @@ const BlockBoxImpl = withStyles(styles)(
           <CardHeader title={'Blocks'} className={classes.header} />
           <CardContent>
             {this.props.blocks.map((block, idx) => (
-              <div key={idx}>
-                {idx > 0 ? <hr /> : null}
-                <BlockItem block={block} />
-              </div>
+              <BlockItem key={idx} block={block} />
             ))}
           </CardContent>
         </Card>

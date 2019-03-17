@@ -129,7 +129,7 @@ const TxDetailsImpl = withStyles(styles)(
 
     private renderEvents(events: IRawEvent[]) {
       if (!events || events.length === 0) {
-        return <div>None</div>;
+        return <div>-</div>;
       }
 
       return (
@@ -147,7 +147,7 @@ const TxDetailsImpl = withStyles(styles)(
 
     private renderArgs(args: IRawArgument[]) {
       if (!args || args.length === 0) {
-        return <div>None</div>;
+        return <div>-</div>;
       }
 
       return (

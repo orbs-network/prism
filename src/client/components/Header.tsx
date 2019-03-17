@@ -12,13 +12,16 @@ import { compose } from 'redux';
 import { searchAction } from '../actions/searchActions';
 import { PrismLink } from './PrismLink';
 
+const logo: string = require('../assets/logo.png');
+
 const styles = (theme: Theme) =>
   createStyles({
     root: {
       width: '100%',
     },
-    grow: {
+    title: {
       flexGrow: 1,
+      textAlign: 'center',
     },
     cleanLink: {
       textDecoration: 'none',
@@ -26,11 +29,8 @@ const styles = (theme: Theme) =>
         textDecoration: 'underline',
       },
     },
-    title: {
-      display: 'none',
-      [theme.breakpoints.up('sm')]: {
-        display: 'block',
-      },
+    logo: {
+      height: 45,
     },
     search: {
       position: 'relative',
@@ -97,12 +97,12 @@ const HeaderImpl = withStyles(styles)(
         <div className={classes.root}>
           <AppBar position='static'>
             <Toolbar>
-              <Typography className={classes.title} variant='h6' noWrap>
-                <PrismLink to={'/'} className={classes.cleanLink}>
-                  PRISM - ORBS Blockchain Explorer
-                </PrismLink>
-              </Typography>
-              <div className={classes.grow} />
+              <PrismLink to={'/'} className={classes.cleanLink}>
+                <img src={logo} alt='Logo' className={classes.logo} />
+              </PrismLink>
+              <div className={classes.title}>
+                <Typography variant='h5'>ORBS Blockchain Explorer</Typography>
+              </div>
               <div className={classes.search}>
                 <div className={classes.searchIcon}>
                   <SearchIcon />

@@ -3,11 +3,16 @@ import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/s
 import * as React from 'react';
 import { IBlockSummary } from '../../shared/IBlock';
 import { PrismLink } from './PrismLink';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 
 const styles = (theme: Theme) =>
   createStyles({
     root: {
-      padding: theme.spacing.unit,
+      padding: theme.spacing.unit * 2,
+      borderBottom: `1px solid ${fade(theme.palette.common.white, 0.15)}`,
+      '&:last-child': {
+        borderBottom: 'none',
+      },
     },
     line: {
       display: 'flex',
