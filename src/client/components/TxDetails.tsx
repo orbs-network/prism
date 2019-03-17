@@ -20,6 +20,7 @@ import { loadTxAction } from '../actions/txActions';
 import { IRootState } from '../reducers/rootReducer';
 import { getTxData, isTxLoading, ITxData } from '../reducers/txsReducer';
 import { PrismLink } from './PrismLink';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -149,7 +150,15 @@ const TxDetailsImpl = withStyles(styles)(
       return (
         <>
           {args.map((i, idx) => {
-            return <Chip key={idx} id={`arg_${idx}`} label={i.value} className={this.props.classes.chips} />;
+            return (
+              <Chip
+                key={idx}
+                id={`arg_${idx}`}
+                color='secondary'
+                label={i.value}
+                className={this.props.classes.chips}
+              />
+            );
           })}
         </>
       );

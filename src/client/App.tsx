@@ -18,6 +18,8 @@ import {
   WithStyles,
 } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { fade } from '@material-ui/core/styles/colorManipulator';
+import { common } from '@material-ui/core/colors';
 
 const store = configureStore();
 store.dispatch(listenToBlocksSummaryAction() as any);
@@ -30,6 +32,13 @@ const baseTheme = createMuiTheme({
     background: {
       default: '#16317d',
       paper: '#032573',
+    },
+  },
+  overrides: {
+    MuiTableCell: {
+      body: {
+        borderColor: fade(common.white, 0.15),
+      },
     },
   },
 });
