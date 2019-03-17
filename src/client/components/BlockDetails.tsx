@@ -1,4 +1,4 @@
-import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core';
+import { createStyles, Table, TableBody, TableCell, TableRow, Theme, withStyles, WithStyles } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -14,15 +14,8 @@ const styles = (theme: Theme) =>
     header: {
       backgroundColor: theme.palette.primary.main,
     },
-    line: {
-      display: 'flex',
-    },
     label: {
-      paddingRight: theme.spacing.unit,
       fontWeight: 900,
-    },
-    txes: {
-      paddingTop: theme.spacing.unit * 2,
     },
   });
 
@@ -63,22 +56,28 @@ const BlockDetailsImpl = withStyles(styles)(
         <Card>
           <CardHeader title='Block' id='block-details' className={classes.header} />
           <CardContent>
-            <div className={classes.line}>
-              <Typography className={classes.label}>Block Hash:</Typography>
-              <Typography>{block.blockHash}</Typography>
-            </div>
-            <div className={classes.line}>
-              <Typography className={classes.label}>Height:</Typography>
-              <Typography>{block.blockHeight}</Typography>
-            </div>
-            <div className={classes.line}>
-              <Typography className={classes.label}>TimeStamp:</Typography>
-              <Typography>{block.blockTimestamp}</Typography>
-            </div>
-            <div className={`${classes.line} ${classes.txes}`}>
-              <Typography className={classes.label}>Transactions:</Typography>
-            </div>
-            <TxesList txIds={block.txIds} />
+            <Table>
+              <TableBody>
+                <TableRow>
+                  <TableCell className={classes.label}>Block hash</TableCell>
+                  <TableCell>{block.blockHash}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className={classes.label}>Height</TableCell>
+                  <TableCell>{block.blockHeight}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className={classes.label}>Time stamp</TableCell>
+                  <TableCell>{block.blockTimestamp}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className={classes.label}>Transactions</TableCell>
+                  <TableCell>
+                    <TxesList txIds={block.txIds} />
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       );

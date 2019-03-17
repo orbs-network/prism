@@ -14,6 +14,7 @@ const styles = (theme: Theme) =>
     },
     label: {
       paddingRight: theme.spacing.unit,
+      minWidth: 150,
       fontWeight: 900,
     },
   });
@@ -29,17 +30,17 @@ export const BlockItem = withStyles(styles)(({ classes, block }: IProps) => (
       <Typography data-type='block-height'>{block.blockHeight}</Typography>
     </div>
     <div className={classes.line}>
-      <Typography className={classes.label}>Block Hash:</Typography>
+      <Typography className={classes.label}>Block hash:</Typography>
       <Typography data-type='block-hash'>
         <PrismLink to={`/block/${block.blockHash}`}>{block.blockHash}</PrismLink>
       </Typography>
     </div>
     <div className={classes.line}>
-      <Typography className={classes.label}>Txns:</Typography>
+      <Typography className={classes.label}>Transactions:</Typography>
       <Typography>{block.numTransactions}</Typography>
     </div>
     <div className={classes.line}>
-      <Typography className={classes.label}>TimeStamp:</Typography>
+      <Typography className={classes.label}>Time stamp:</Typography>
       <Typography>{block.blockTimestamp}</Typography>
     </div>
   </div>
