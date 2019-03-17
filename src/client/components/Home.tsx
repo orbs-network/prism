@@ -13,19 +13,12 @@ const styles = (theme: Theme) =>
       margin: 'auto',
       maxWidth: 1500,
     },
-    headTableTitle: {
-      textAlign: 'center',
-      marginBottom: theme.spacing.unit * 3,
-    },
   });
 
 interface IProps extends WithStyles<typeof styles> {}
 
 export const Home = withStyles(styles)(({ classes }: IProps) => (
   <div className={classes.root}>
-    <Typography className={classes.headTableTitle} variant='h3' id='pageTitle'>
-      Prism - The ORBS Blockchain Explorer
-    </Typography>
     <Grid container spacing={24}>
       <Grid item xs={12}>
         <BlockBox />

@@ -8,9 +8,9 @@ import SearchIcon from '@material-ui/icons/Search';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import { Link as RouterLink } from 'react-router-dom';
 import { compose } from 'redux';
 import { searchAction } from '../actions/searchActions';
+import { PrismLink } from './PrismLink';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -19,6 +19,12 @@ const styles = (theme: Theme) =>
     },
     grow: {
       flexGrow: 1,
+    },
+    cleanLink: {
+      textDecoration: 'none',
+      '&:hover': {
+        textDecoration: 'underline',
+      },
     },
     title: {
       display: 'none',
@@ -91,11 +97,11 @@ const HeaderImpl = withStyles(styles)(
         <div className={classes.root}>
           <AppBar position='static'>
             <Toolbar>
-              <RouterLink to={'/'}>
-                <Typography className={classes.title} variant='h6' noWrap>
-                  PRISM
-                </Typography>
-              </RouterLink>
+              <Typography className={classes.title} variant='h6' noWrap>
+                <PrismLink to={'/'} className={classes.cleanLink}>
+                  PRISM - ORBS Blockchain Explorer
+                </PrismLink>
+              </Typography>
               <div className={classes.grow} />
               <div className={classes.search}>
                 <div className={classes.searchIcon}>

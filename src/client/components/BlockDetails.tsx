@@ -21,9 +21,6 @@ const styles = (theme: Theme) =>
       paddingRight: theme.spacing.unit,
       fontWeight: 900,
     },
-    link: {
-      color: 'white',
-    },
     txes: {
       paddingTop: theme.spacing.unit * 2,
     },

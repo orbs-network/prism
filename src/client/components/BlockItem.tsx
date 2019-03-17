@@ -1,8 +1,8 @@
+import { Typography } from '@material-ui/core';
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 import { IBlockSummary } from '../../shared/IBlock';
-import { Typography } from '@material-ui/core';
+import { PrismLink } from './PrismLink';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -15,9 +15,6 @@ const styles = (theme: Theme) =>
     label: {
       paddingRight: theme.spacing.unit,
       fontWeight: 900,
-    },
-    link: {
-      color: 'white',
     },
   });
 
@@ -34,9 +31,7 @@ export const BlockItem = withStyles(styles)(({ classes, block }: IProps) => (
     <div className={classes.line}>
       <Typography className={classes.label}>Block Hash:</Typography>
       <Typography data-type='block-hash'>
-        <Link to={`/block/${block.blockHash}`} className={classes.link}>
-          {block.blockHash}
-        </Link>
+        <PrismLink to={`/block/${block.blockHash}`}>{block.blockHash}</PrismLink>
       </Typography>
     </div>
     <div className={classes.line}>

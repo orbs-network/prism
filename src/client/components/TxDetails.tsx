@@ -15,11 +15,11 @@ import CardHeader from '@material-ui/core/CardHeader';
 import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { IRawArgument, IRawEvent } from '../../shared/IRawData';
 import { loadTxAction } from '../actions/txActions';
 import { IRootState } from '../reducers/rootReducer';
 import { getTxData, isTxLoading, ITxData } from '../reducers/txsReducer';
+import { PrismLink } from './PrismLink';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -73,7 +73,7 @@ const TxDetailsImpl = withStyles(styles)(
                 <TableRow>
                   <TableCell>block</TableCell>
                   <TableCell>
-                    <Link to={`/block/${tx.blockHash}`}>{tx.blockHash}</Link>
+                    <PrismLink to={`/block/${tx.blockHash}`}>{tx.blockHash}</PrismLink>
                   </TableCell>
                 </TableRow>
                 <TableRow>
