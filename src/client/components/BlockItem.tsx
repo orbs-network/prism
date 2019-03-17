@@ -15,7 +15,7 @@ const styles = (theme: Theme) =>
     label: {
       paddingRight: theme.spacing.unit,
       minWidth: 150,
-      fontWeight: 900,
+      fontWeight: 700,
     },
   });
 

@@ -34,6 +34,9 @@ const baseTheme = createMuiTheme({
       paper: '#032573',
     },
   },
+  typography: {
+    fontFamily: 'Montserrat',
+  },
   overrides: {
     MuiTableCell: {
       body: {

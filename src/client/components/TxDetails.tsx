@@ -28,10 +28,10 @@ const styles = (theme: Theme) =>
       backgroundColor: theme.palette.primary.main,
     },
     label: {
-      fontWeight: 900,
+      fontWeight: 700,
     },
     chips: {
-      marginRight: 10,
+      marginRight: 12,
     },
   });
 
