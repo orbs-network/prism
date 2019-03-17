@@ -5,13 +5,12 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import SearchIcon from '@material-ui/icons/Search';
-import { searchAction } from '../actions/searchActions';
 import * as React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
 import { compose } from 'redux';
-import { Link } from '@material-ui/core';
+import { searchAction } from '../actions/searchActions';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -20,10 +19,6 @@ const styles = (theme: Theme) =>
     },
     grow: {
       flexGrow: 1,
-    },
-    menuButton: {
-      marginLeft: -12,
-      marginRight: 20,
     },
     title: {
       display: 'none',
@@ -46,7 +41,7 @@ const styles = (theme: Theme) =>
       },
     },
     searchIcon: {
-      width: theme.spacing.unit * 9,
+      width: theme.spacing.unit * 5,
       height: '100%',
       position: 'absolute',
       pointerEvents: 'none',
@@ -62,13 +57,13 @@ const styles = (theme: Theme) =>
       paddingTop: theme.spacing.unit,
       paddingRight: theme.spacing.unit,
       paddingBottom: theme.spacing.unit,
-      paddingLeft: theme.spacing.unit * 10,
+      paddingLeft: theme.spacing.unit * 5,
       transition: theme.transitions.create('width'),
       width: '100%',
       [theme.breakpoints.up('sm')]: {
-        width: 200,
+        width: 250,
         '&:focus': {
-          width: 240,
+          width: 350,
         },
       },
     },
@@ -92,35 +87,35 @@ const HeaderImpl = withStyles(styles)(
 
     public render() {
       const { classes } = this.props;
-      // const homeLink = props => <RouterLink to='/'>{props.children}</RouterLink>;
       return (
-        <AppBar position='static'>
-          <Toolbar>
-            <RouterLink to={'/'}>
-              <Typography className={classes.title} variant='h6' noWrap>
-                OrbsPrism.com
-              </Typography>
-            </RouterLink>
-            {/* <Typography className={classes.title} variant='h6' noWrap /> */}
-            <div className={classes.grow} />
-            <div className={classes.search}>
-              <div className={classes.searchIcon}>
-                <SearchIcon />
+        <div className={classes.root}>
+          <AppBar position='static'>
+            <Toolbar>
+              <RouterLink to={'/'}>
+                <Typography className={classes.title} variant='h6' noWrap>
+                  PRISM
+                </Typography>
+              </RouterLink>
+              <div className={classes.grow} />
+              <div className={classes.search}>
+                <div className={classes.searchIcon}>
+                  <SearchIcon />
+                </div>
+                <form onSubmit={e => this.onSubmitSearch(e)}>
+                  <InputBase
+                    placeholder='Block Height / Block Hash / Tx Id'
+                    classes={{
+                      root: classes.inputRoot,
+                      input: classes.inputInput,
+                    }}
+                    value={this.state.searchTerm}
+                    onChange={e => this.setState({ searchTerm: e.currentTarget.value })}
+                  />
+                </form>
               </div>
-              <form onSubmit={e => this.onSubmitSearch(e)}>
-                <InputBase
-                  placeholder='Block Height/ Block Hash / Tx Id'
-                  classes={{
-                    root: classes.inputRoot,
-                    input: classes.inputInput,
-                  }}
-                  value={this.state.searchTerm}
-                  onChange={e => this.setState({ searchTerm: e.currentTarget.value })}
-                />
-              </form>
-            </div>
-          </Toolbar>
-        </AppBar>
+            </Toolbar>
+          </AppBar>
+        </div>
       );
     }
 

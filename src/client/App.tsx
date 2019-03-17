@@ -18,11 +18,11 @@ store.dispatch(listenToBlocksSummaryAction() as any);
 const theme = createMuiTheme({
   palette: {
     type: 'dark',
-    primary: { main: '#09142c' },
+    primary: { main: '#0f235e' }, // v
     secondary: { main: '#74f6fd' },
     background: {
-      default: '#0a0f25',
-      paper: '#192a45',
+      default: '#16317d', // v
+      paper: '#032573', // v
     },
   },
 });
@@ -34,18 +34,16 @@ export class App extends React.Component {
         <Provider store={store}>
           <MuiThemeProvider theme={theme}>
             <CssBaseline />
-            <Grid container spacing={24}>
-              <Header />
-              <Switch>
-                <Route exact path='/' component={Home} />
-                <Route
-                  path='/block/:blockHash'
-                  render={({ match }) => <BlockDetails blockHash={match.params.blockHash} />}
-                />
-                <Route path='/tx/:txId' render={({ match }) => <TxDetails txId={match.params.txId} />} />
-                <Route path='/not-found/:term' render={({ match }) => <NotFound term={match.params.term} />} />
-              </Switch>
-            </Grid>
+            <Header />
+            <Switch>
+              <Route exact path='/' component={Home} />
+              <Route
+                path='/block/:blockHash'
+                render={({ match }) => <BlockDetails blockHash={match.params.blockHash} />}
+              />
+              <Route path='/tx/:txId' render={({ match }) => <TxDetails txId={match.params.txId} />} />
+              <Route path='/not-found/:term' render={({ match }) => <NotFound term={match.params.term} />} />
+            </Switch>
           </MuiThemeProvider>
         </Provider>
       </BrowserRouter>
