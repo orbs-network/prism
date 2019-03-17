@@ -1,4 +1,4 @@
-import { createStyles, Theme, withStyles } from '@material-ui/core';
+import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -9,14 +9,32 @@ import { Link } from 'react-router-dom';
 import { loadBlockAction } from '../actions/blockActions';
 import { getBlockData, IBlockData, isBlockLoading } from '../reducers/blocksReducer';
 import { IRootState } from '../reducers/rootReducer';
-
-const styles = (theme: Theme) => createStyles({});
+import { TxesList } from './home/TxesList';
+const styles = (theme: Theme) =>
+  createStyles({
+    header: {
+      backgroundColor: theme.palette.primary.main,
+    },
+    line: {
+      display: 'flex',
+    },
+    label: {
+      paddingRight: theme.spacing.unit,
+      fontWeight: 900,
+    },
+    link: {
+      color: 'white',
+    },
+    txes: {
+      paddingTop: theme.spacing.unit * 2,
+    },
+  });
 
 interface IOwnProps {
   blockHash: string;
 }
 
-interface IProps {
+interface IProps extends WithStyles<typeof styles> {
   blockData: IBlockData;
   isBlockLoading: boolean;
   loadBlock: (blockHash: string) => void;
@@ -43,27 +61,28 @@ const BlockDetailsImpl = withStyles(styles)(
         return <Typography variant='h4'>{this.props.blockData.error}</Typography>;
       }
 
+      const { classes } = this.props;
       const { block } = this.props.blockData;
       return (
         <Card>
-          <CardHeader title='Block' id='block-details' />
+          <CardHeader title='Block' id='block-details' className={classes.header} />
           <CardContent>
-            <Typography>blockHash:{block.blockHash}</Typography>
-            <Typography>height:{block.blockHeight}</Typography>
-            <Typography>numTransactions:{block.txIds.length}</Typography>
-            <Typography>TimeStamp: {block.blockTimestamp}</Typography>
-            <Typography>Txs</Typography>
-            <ul>
-              {block.txIds ? (
-                block.txIds.map((txId, idx) => (
-                  <li key={idx} id={`tx-${txId.toLowerCase()}`}>
-                    <Link to={`/tx/${txId}`}>{txId}</Link>
-                  </li>
-                ))
-              ) : (
-                <Typography>No transactions found</Typography>
-              )}
-            </ul>
+            <div className={classes.line}>
+              <Typography className={classes.label}>Block Hash:</Typography>
+              <Typography>{block.blockHash}</Typography>
+            </div>
+            <div className={classes.line}>
+              <Typography className={classes.label}>Height:</Typography>
+              <Typography>{block.blockHeight}</Typography>
+            </div>
+            <div className={classes.line}>
+              <Typography className={classes.label}>TimeStamp:</Typography>
+              <Typography>{block.blockTimestamp}</Typography>
+            </div>
+            <div className={`${classes.line} ${classes.txes}`}>
+              <Typography className={classes.label}>Transactions:</Typography>
+            </div>
+            <TxesList txIds={block.txIds} />
           </CardContent>
         </Card>
       );

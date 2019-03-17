@@ -28,14 +28,7 @@ export const Home = withStyles(styles)(({ classes }: IProps) => (
     </Typography>
     <Grid container spacing={24}>
       <Grid item xs={12}>
-        <Grid container spacing={16}>
-          <Grid item xs={12}>
-            {/* <HelixContainer /> */}
-          </Grid>
-          <Grid item xs={12}>
-            <BlockBox />
-          </Grid>
-        </Grid>
+        <BlockBox />
       </Grid>
     </Grid>
   </div>
