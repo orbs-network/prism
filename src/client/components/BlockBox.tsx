@@ -4,10 +4,10 @@ import CardHeader from '@material-ui/core/CardHeader';
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { IBlockSummary } from '../../../shared/IBlock';
-import { IRootState } from '../../reducers/rootReducer';
+import { IBlockSummary } from '../../shared/IBlock';
+import { IRootState } from '../reducers/rootReducer';
 import { BlockItem } from './BlockItem';
-import { getRecentBlocksSummary } from '../../reducers/recentBlocksReducer';
+import { getRecentBlocksSummary } from '../reducers/recentBlocksReducer';
 
 const styles = (theme: Theme) =>
   createStyles({

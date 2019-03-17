@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import { loadBlockAction } from '../actions/blockActions';
 import { getBlockData, IBlockData, isBlockLoading } from '../reducers/blocksReducer';
 import { IRootState } from '../reducers/rootReducer';
-import { TxesList } from './home/TxesList';
+import { TxesList } from './TxesList';
 const styles = (theme: Theme) =>
   createStyles({
     header: {

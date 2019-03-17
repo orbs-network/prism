@@ -5,11 +5,18 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { listenToBlocksSummaryAction } from './actions/blocksSummaryActions';
 import { BlockDetails } from './components/BlockDetails';
 import { Header } from './components/Header';
-import { Home } from './components/home/Home';
-import { NotFound } from './components/NotFound';
+import { Home } from './components/Home';
+import { TermNotFound } from './components/TermNotFound';
 import { TxDetails } from './components/TxDetails';
 import { configureStore } from './store';
-import { MuiThemeProvider, createMuiTheme, withStyles, Theme, createStyles, WithStyles } from '@material-ui/core/styles';
+import {
+  MuiThemeProvider,
+  createMuiTheme,
+  withStyles,
+  Theme,
+  createStyles,
+  WithStyles,
+} from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 const store = configureStore();
@@ -57,7 +64,7 @@ export const App = withStyles(styles)(({ classes }: IProps) => (
               render={({ match }) => <BlockDetails blockHash={match.params.blockHash} />}
             />
             <Route path='/tx/:txId' render={({ match }) => <TxDetails txId={match.params.txId} />} />
-            <Route path='/not-found/:term' render={({ match }) => <NotFound term={match.params.term} />} />
+            <Route path='/not-found/:term' render={({ match }) => <TermNotFound term={match.params.term} />} />
           </Switch>
         </div>
       </MuiThemeProvider>

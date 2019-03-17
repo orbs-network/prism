@@ -1,24 +1,24 @@
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { IBlockSummary } from '../../../shared/IBlock';
+import { IBlockSummary } from '../../shared/IBlock';
 import { Typography } from '@material-ui/core';
 
 const styles = (theme: Theme) =>
   createStyles({
     root: {
-      padding: theme.spacing.unit
+      padding: theme.spacing.unit,
     },
     line: {
       display: 'flex',
     },
     label: {
       paddingRight: theme.spacing.unit,
-      fontWeight: 900
+      fontWeight: 900,
     },
     link: {
-      color: 'white'
-    }
+      color: 'white',
+    },
   });
 
 interface IProps extends WithStyles<typeof styles> {
@@ -33,7 +33,11 @@ export const BlockItem = withStyles(styles)(({ classes, block }: IProps) => (
     </div>
     <div className={classes.line}>
       <Typography className={classes.label}>Block Hash:</Typography>
-      <Typography data-type='block-hash'><Link to={`/block/${block.blockHash}`} className={classes.link}>{block.blockHash}</Link></Typography>
+      <Typography data-type='block-hash'>
+        <Link to={`/block/${block.blockHash}`} className={classes.link}>
+          {block.blockHash}
+        </Link>
+      </Typography>
     </div>
     <div className={classes.line}>
       <Typography className={classes.label}>Txns:</Typography>
