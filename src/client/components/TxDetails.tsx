@@ -23,6 +23,9 @@ import { getTxData, isTxLoading, ITxData } from '../reducers/txsReducer';
 
 const styles = (theme: Theme) =>
   createStyles({
+    header: {
+      backgroundColor: theme.palette.primary.main,
+    },
     chips: {
       marginRight: 10,
     },
@@ -59,10 +62,11 @@ const TxDetailsImpl = withStyles(styles)(
         return <Typography variant='h4'>{this.props.txData.error}</Typography>;
       }
 
+      const { classes } = this.props;
       const { tx } = this.props.txData;
       return (
         <Card>
-          <CardHeader title='Tx' id='tx-details' />
+          <CardHeader title='Tx' id='tx-details' className={classes.header} />
           <CardContent>
             <Table>
               <TableBody>

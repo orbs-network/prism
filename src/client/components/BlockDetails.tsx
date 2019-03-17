@@ -5,7 +5,6 @@ import CardHeader from '@material-ui/core/CardHeader';
 import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { loadBlockAction } from '../actions/blockActions';
 import { getBlockData, IBlockData, isBlockLoading } from '../reducers/blocksReducer';
 import { IRootState } from '../reducers/rootReducer';
