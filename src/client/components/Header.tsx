@@ -11,8 +11,7 @@ import { withRouter } from 'react-router';
 import { compose } from 'redux';
 import { searchAction } from '../actions/searchActions';
 import { PrismLink } from './PrismLink';
-
-const logo: string = require('../assets/logo.png');
+import { Logo } from './Logo';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -98,7 +97,7 @@ const HeaderImpl = withStyles(styles)(
           <AppBar position='static'>
             <Toolbar>
               <PrismLink to={'/'} className={classes.cleanLink}>
-                <img src={logo} alt='Logo' className={classes.logo} />
+                <Logo />
               </PrismLink>
               <div className={classes.title}>
                 <Typography variant='h5'>ORBS Blockchain Explorer</Typography>

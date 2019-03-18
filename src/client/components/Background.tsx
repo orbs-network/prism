@@ -10,6 +10,10 @@ const styles = (theme: Theme) =>
       position: `absolute`,
       overflow: 'hidden',
     },
+    triangle: {
+      opacity: 0.25,
+      fill: '#08e4f4',
+    },
     svgElm: {
       top: -320,
       left: -80,
@@ -37,17 +41,18 @@ export const Background = withStyles(styles)(
       const { classes } = this.props;
       return (
         <div className={classes.root}>
-          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' className={classes.svgElm}>
-            <defs>
-              <style>{`.triangle { fill:#08e4f4;opacity:0.72; }`}</style>
-            </defs>
+          <svg xmlns='http://www.w3.org/2000/svg' className={classes.svgElm} viewBox='0 0 100 100'>
             <path
-              className='triangle'
-              d='M9.59172060251236,71.73279439210891 H69.38172060251236 a5.46,5.46 0 0 0 4.58,-8.41 L44.111720602512364,17.042794392108917 a5.45,5.45 0 0 0 -9.16,0 L5.02172060251236,63.32279439210892 A5.45,5.45 0 0 0 9.59172060251236,71.73279439210891 z'
+              className={classes.triangle}
+              d='m8.44388,72.186002l59.79,0a5.46,5.46 0 0 0 4.58,-8.41l-29.85,-46.28a5.45,5.45 0 0 0 -9.16,0l-29.93,46.28a5.45,5.45 0 0 0 4.57,8.41z'
             />
             <path
-              className='triangle'
-              d='M30.81172060251236,82.70279439210891 h58.6 a6.09,6.09 0 0 0 5.12,-9.4 L65.33172060251236,28.02279439210892 a5.45,5.45 0 0 0 -9.16,0 L26.24172060251236,74.29279439210892 A5.45,5.45 0 0 0 30.81172060251236,82.70279439210891 z'
+              className={classes.triangle}
+              d='m20.93,78.176003l58.6,0a6.09,6.09 0 0 0 5.12,-9.4l-29.2,-45.28a5.45,5.45 0 0 0 -9.16,0l-29.93,46.27a5.45,5.45 0 0 0 4.57,8.41z'
+            />
+            <path
+              className={classes.triangle}
+              d='m32.443882,84.176l58.6,0a6.09,6.09 0 0 0 5.12,-9.4l-29.2,-45.28a5.45,5.45 0 0 0 -9.16,0l-29.93,46.27a5.45,5.45 0 0 0 4.57,8.41z'
             />
           </svg>
         </div>
