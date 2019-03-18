@@ -30,7 +30,7 @@ const styles = (theme: Theme) =>
       },
     },
     logo: {
-      height: 45,
+      height: 30,
     },
     search: {
       position: 'relative',
