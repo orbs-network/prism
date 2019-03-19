@@ -15,6 +15,10 @@ function testDb(db: IDB, dbName: string) {
       await db.clearAll();
     });
 
+    afterEach(async () => {
+      await db.destroy();
+    });
+
     it('should store and retrive blocks by hash', async () => {
       const rawBlock = generateRandomRawBlock(1n);
 
