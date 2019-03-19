@@ -11,6 +11,7 @@ export interface INewBlocksHandler {
 export class OrbsAdapter {
   private latestKnownHeight: bigint = BigInt(0);
   private listeners: Map<INewBlocksHandler, INewBlocksHandler> = new Map();
+  private timeoutId: NodeJS.Timeout;
 
   constructor(private orbsClient: IOrbsClient, private poolingInterval: number) {}
   public async init(): Promise<void> {
@@ -27,6 +28,10 @@ export class OrbsAdapter {
 
   public dispose(): void {
     this.listeners = new Map();
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+      this.timeoutId = undefined;
+    }
   }
 
   public async getBlockAt(height: bigint): Promise<IRawBlock> {
@@ -77,6 +82,6 @@ export class OrbsAdapter {
   }
 
   private schedualNextRequest(): void {
-    setTimeout(() => this.checkForNewBlocks(), this.poolingInterval);
+    this.timeoutId = setTimeout(() => this.checkForNewBlocks(), this.poolingInterval);
   }
 }

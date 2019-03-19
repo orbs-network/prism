@@ -21,6 +21,10 @@ describe('Gaps Filler', () => {
     orbsAdapter.RegisterToNewBlocks(storage);
   });
 
+  afterEach(() => {
+    orbsAdapter.dispose();
+  });
+
   it('should fill all the missing blocks', async () => {
     // append 10 blocks to orbs block chain (No one is listenning)
     orbsClient.generateBlocks(10);
