@@ -5,6 +5,7 @@ import * as React from 'react';
 import { IBlockSummary } from '../../shared/IBlock';
 import { ConsoleText } from './ConsoleText';
 import { PrismLink } from './PrismLink';
+import { TimeStampField } from './TimeStampField';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -50,7 +51,9 @@ export const BlockItem = withStyles(styles)(({ classes, block }: IProps) => (
     </div>
     <div className={classes.line}>
       <Typography className={classes.label}>Timestamp:</Typography>
-      <Typography>{block.blockTimestamp}</Typography>
+      <Typography>
+        <TimeStampField timestamp={block.blockTimestamp} />
+      </Typography>
     </div>
   </div>
 ));

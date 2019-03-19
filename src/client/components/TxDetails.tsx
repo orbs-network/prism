@@ -11,6 +11,7 @@ import { IRootState } from '../reducers/rootReducer';
 import { getTxData, isTxLoading, ITxData } from '../reducers/txsReducer';
 import { ConsoleText } from './ConsoleText';
 import { PrismLink } from './PrismLink';
+import { TimeStampField } from './TimeStampField';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -80,7 +81,9 @@ const TxDetailsImpl = withStyles(styles)(
                 </TableRow>
                 <TableRow>
                   <TableCell className={classes.label}>Timestamp</TableCell>
-                  <TableCell>{tx.timestamp}</TableCell>
+                  <TableCell>
+                    <TimeStampField timestamp={tx.timestamp} />
+                  </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className={classes.label}>Protocol Version</TableCell>

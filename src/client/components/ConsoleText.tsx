@@ -5,7 +5,7 @@ const styles = (theme: Theme) =>
   createStyles({
     textField: {
       display: 'inline',
-      backgroundColor: '#b0b0b01c',
+      backgroundColor: '#b0b0b038',
       paddingLeft: theme.spacing.unit,
       paddingRight: theme.spacing.unit,
       paddingTop: theme.spacing.unit / 2,

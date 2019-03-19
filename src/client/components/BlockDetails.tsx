@@ -10,6 +10,8 @@ import { getBlockData, IBlockData, isBlockLoading } from '../reducers/blocksRedu
 import { IRootState } from '../reducers/rootReducer';
 import { TxesList } from './TxesList';
 import { ConsoleText } from './ConsoleText';
+import { TimeStampField } from './TimeStampField';
+
 const styles = (theme: Theme) =>
   createStyles({
     header: {
@@ -71,7 +73,9 @@ const BlockDetailsImpl = withStyles(styles)(
                 </TableRow>
                 <TableRow>
                   <TableCell className={classes.label}>Timestamp</TableCell>
-                  <TableCell>{block.blockTimestamp}</TableCell>
+                  <TableCell>
+                    <TimeStampField timestamp={block.blockTimestamp} />
+                  </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className={classes.label}>Transactions</TableCell>
