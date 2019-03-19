@@ -5,7 +5,11 @@ import { Link } from 'react-router-dom';
 const styles = (theme: Theme) =>
   createStyles({
     link: {
-      color: 'white',
+      color: theme.palette.secondary.main,
+      textDecoration: 'none',
+      '&:hover': {
+        textDecoration: 'underline',
+      },
     },
   });
 
