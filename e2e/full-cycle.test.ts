@@ -19,7 +19,7 @@ describe('Full cycle', () => {
     const sentAmountArg = await mainPageDriver.getInputArg(0);
     const targetAddressArg = await mainPageDriver.getInputArg(1);
 
-    expect(sentAmountArg).toEqual(amountToSend.toString());
-    expect(receiverAddress.toLowerCase()).toEqual(targetAddressArg.toLowerCase());
+    expect(sentAmountArg).toEqual(`${amountToSend.toString()} (uint64)`);
+    expect(targetAddressArg.toLowerCase()).toEqual(`${receiverAddress.toLowerCase()} (bytes)`);
   });
 });

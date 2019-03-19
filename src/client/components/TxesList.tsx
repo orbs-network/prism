@@ -17,10 +17,8 @@ export const TxesList = withStyles(styles)(({ classes, txIds }: IProps) => (
   <div className={classes.root}>
     {txIds.length > 0 ? (
       txIds.map((txId, idx) => (
-        <ConsoleText key={idx}>
-          <PrismLink to={`/tx/${txId}`} id={`tx-${txId.toLowerCase()}`}>
-            {txId}
-          </PrismLink>
+        <ConsoleText key={idx} id={`tx-${txId.toLowerCase()}`}>
+          <PrismLink to={`/tx/${txId}`}>{txId}</PrismLink>
         </ConsoleText>
       ))
     ) : (

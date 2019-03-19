@@ -20,6 +20,7 @@ export class MainPageDriver {
   public async clickOnTx(txId: string): Promise<void> {
     console.log(`--------------------------#tx-${txId}`);
     const element = await page.waitForSelector(`#tx-${txId.toLowerCase()}`);
+    await page.waitFor(1_000);
     const link = await element.$('a');
     await link.click();
     await page.waitForSelector('#tx-details');
