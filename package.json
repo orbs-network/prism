@@ -7,7 +7,7 @@
     "node": ">=10.6.0"
   },
   "scripts": {
-    "test": "npm run test-server && npm run test-client",
+    "test": "npm run test-server",
     "test-server": "jest --config ./src/server/__tests__/jest.config.js",
     "test-client": "jest --config ./src/client/__tests__/jest.config.js",
     "test-e2e": "jest --config ./e2e/jest-e2e.config.js",
