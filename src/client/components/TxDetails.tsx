@@ -1,14 +1,4 @@
-import {
-  Chip,
-  createStyles,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  Theme,
-  withStyles,
-  WithStyles,
-} from '@material-ui/core';
+import { createStyles, Table, TableBody, TableCell, TableRow, Theme, withStyles, WithStyles } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -19,8 +9,8 @@ import { IRawArgument, IRawEvent } from '../../shared/IRawData';
 import { loadTxAction } from '../actions/txActions';
 import { IRootState } from '../reducers/rootReducer';
 import { getTxData, isTxLoading, ITxData } from '../reducers/txsReducer';
+import { ConsoleText } from './ConsoleText';
 import { PrismLink } from './PrismLink';
-import { fade } from '@material-ui/core/styles/colorManipulator';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -77,12 +67,16 @@ const TxDetailsImpl = withStyles(styles)(
                 <TableRow>
                   <TableCell className={classes.label}>Block Hash</TableCell>
                   <TableCell>
-                    <PrismLink to={`/block/${tx.blockHash}`}>{tx.blockHash}</PrismLink>
+                    <ConsoleText>
+                      <PrismLink to={`/block/${tx.blockHash}`}>{tx.blockHash}</PrismLink>
+                    </ConsoleText>
                   </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className={classes.label}>Transaction Id</TableCell>
-                  <TableCell>{tx.txId}</TableCell>
+                  <TableCell>
+                    <ConsoleText>{tx.txId}</ConsoleText>
+                  </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className={classes.label}>Timestamp</TableCell>
@@ -94,15 +88,21 @@ const TxDetailsImpl = withStyles(styles)(
                 </TableRow>
                 <TableRow>
                   <TableCell className={classes.label}>Signer Public Key</TableCell>
-                  <TableCell>{tx.signerPublicKey}</TableCell>
+                  <TableCell>
+                    <ConsoleText>{tx.signerPublicKey}</ConsoleText>
+                  </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className={classes.label}>Contract</TableCell>
-                  <TableCell>{tx.contractName}</TableCell>
+                  <TableCell>
+                    <ConsoleText>{tx.contractName}</ConsoleText>
+                  </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className={classes.label}>Method</TableCell>
-                  <TableCell>{tx.methodName}</TableCell>
+                  <TableCell>
+                    <ConsoleText>{tx.methodName}</ConsoleText>
+                  </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className={classes.label}>Execution Result</TableCell>
@@ -154,13 +154,9 @@ const TxDetailsImpl = withStyles(styles)(
         <>
           {args.map((i, idx) => {
             return (
-              <Chip
-                key={idx}
-                id={`arg_${idx}`}
-                color='secondary'
-                label={i.value}
-                className={this.props.classes.chips}
-              />
+              <ConsoleText key={idx} id={`arg_${idx}`} className={this.props.classes.chips}>
+                {i.value} ({i.type})
+              </ConsoleText>
             );
           })}
         </>

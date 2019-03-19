@@ -1,9 +1,10 @@
 import { Typography } from '@material-ui/core';
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 import * as React from 'react';
 import { IBlockSummary } from '../../shared/IBlock';
+import { ConsoleText } from './ConsoleText';
 import { PrismLink } from './PrismLink';
-import { fade } from '@material-ui/core/styles/colorManipulator';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -16,6 +17,7 @@ const styles = (theme: Theme) =>
     },
     line: {
       display: 'flex',
+      marginBottom: theme.spacing.unit / 2,
     },
     label: {
       paddingRight: theme.spacing.unit,
@@ -37,7 +39,9 @@ export const BlockItem = withStyles(styles)(({ classes, block }: IProps) => (
     <div className={classes.line}>
       <Typography className={classes.label}>Block Hash:</Typography>
       <Typography data-type='block-hash'>
-        <PrismLink to={`/block/${block.blockHash}`}>{block.blockHash}</PrismLink>
+        <ConsoleText>
+          <PrismLink to={`/block/${block.blockHash}`}>{block.blockHash}</PrismLink>
+        </ConsoleText>
       </Typography>
     </div>
     <div className={classes.line}>

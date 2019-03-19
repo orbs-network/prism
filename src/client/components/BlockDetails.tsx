@@ -9,6 +9,7 @@ import { loadBlockAction } from '../actions/blockActions';
 import { getBlockData, IBlockData, isBlockLoading } from '../reducers/blocksReducer';
 import { IRootState } from '../reducers/rootReducer';
 import { TxesList } from './TxesList';
+import { ConsoleText } from './ConsoleText';
 const styles = (theme: Theme) =>
   createStyles({
     header: {
@@ -60,7 +61,9 @@ const BlockDetailsImpl = withStyles(styles)(
               <TableBody>
                 <TableRow>
                   <TableCell className={classes.label}>Block Hash</TableCell>
-                  <TableCell>{block.blockHash}</TableCell>
+                  <TableCell>
+                    <ConsoleText>{block.blockHash}</ConsoleText>
+                  </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className={classes.label}>Block Height</TableCell>
