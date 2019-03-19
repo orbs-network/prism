@@ -59,15 +59,15 @@ const BlockDetailsImpl = withStyles(styles)(
             <Table>
               <TableBody>
                 <TableRow>
-                  <TableCell className={classes.label}>Block hash</TableCell>
+                  <TableCell className={classes.label}>Block Hash</TableCell>
                   <TableCell>{block.blockHash}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className={classes.label}>Height</TableCell>
+                  <TableCell className={classes.label}>Block Height</TableCell>
                   <TableCell>{block.blockHeight}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className={classes.label}>Time stamp</TableCell>
+                  <TableCell className={classes.label}>Timestamp</TableCell>
                   <TableCell>{block.blockTimestamp}</TableCell>
                 </TableRow>
                 <TableRow>

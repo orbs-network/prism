@@ -56,6 +56,7 @@ const styles = (theme: Theme) =>
     },
     inputRoot: {
       color: 'inherit',
+      fontSize: 12,
       width: '100%',
     },
     inputInput: {
@@ -66,7 +67,7 @@ const styles = (theme: Theme) =>
       transition: theme.transitions.create('width'),
       width: '100%',
       [theme.breakpoints.up('sm')]: {
-        width: 250,
+        width: 270,
         '&:focus': {
           width: 350,
         },

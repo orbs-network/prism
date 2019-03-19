@@ -31,11 +31,11 @@ interface IProps extends WithStyles<typeof styles> {
 export const BlockItem = withStyles(styles)(({ classes, block }: IProps) => (
   <div id={`block-${block.blockHeight}`} data-type='block-item' className={classes.root}>
     <div className={classes.line}>
-      <Typography className={classes.label}>Height:</Typography>
+      <Typography className={classes.label}>Block Height:</Typography>
       <Typography data-type='block-height'>{block.blockHeight}</Typography>
     </div>
     <div className={classes.line}>
-      <Typography className={classes.label}>Block hash:</Typography>
+      <Typography className={classes.label}>Block Hash:</Typography>
       <Typography data-type='block-hash'>
         <PrismLink to={`/block/${block.blockHash}`}>{block.blockHash}</PrismLink>
       </Typography>
@@ -45,7 +45,7 @@ export const BlockItem = withStyles(styles)(({ classes, block }: IProps) => (
       <Typography>{block.numTransactions > 0 ? block.numTransactions : '-'}</Typography>
     </div>
     <div className={classes.line}>
-      <Typography className={classes.label}>Time stamp:</Typography>
+      <Typography className={classes.label}>Timestamp:</Typography>
       <Typography>{block.blockTimestamp}</Typography>
     </div>
   </div>

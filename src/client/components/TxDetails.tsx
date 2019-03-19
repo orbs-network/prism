@@ -70,12 +70,12 @@ const TxDetailsImpl = withStyles(styles)(
       const { tx } = this.props.txData;
       return (
         <Card>
-          <CardHeader title='Tx' id='tx-details' className={classes.header} />
+          <CardHeader title='Transaction' id='tx-details' className={classes.header} />
           <CardContent>
             <Table>
               <TableBody>
                 <TableRow>
-                  <TableCell className={classes.label}>Block hash</TableCell>
+                  <TableCell className={classes.label}>Block Hash</TableCell>
                   <TableCell>
                     <PrismLink to={`/block/${tx.blockHash}`}>{tx.blockHash}</PrismLink>
                   </TableCell>
@@ -85,7 +85,7 @@ const TxDetailsImpl = withStyles(styles)(
                   <TableCell>{tx.txId}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className={classes.label}>Time stamp</TableCell>
+                  <TableCell className={classes.label}>Timestamp</TableCell>
                   <TableCell>{tx.timestamp}</TableCell>
                 </TableRow>
                 <TableRow>
@@ -93,7 +93,7 @@ const TxDetailsImpl = withStyles(styles)(
                   <TableCell>{tx.protocolVersion}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className={classes.label}>Signer public key</TableCell>
+                  <TableCell className={classes.label}>Signer Public Key</TableCell>
                   <TableCell>{tx.signerPublicKey}</TableCell>
                 </TableRow>
                 <TableRow>
@@ -105,19 +105,19 @@ const TxDetailsImpl = withStyles(styles)(
                   <TableCell>{tx.methodName}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className={classes.label}>Execution result</TableCell>
+                  <TableCell className={classes.label}>Execution Result</TableCell>
                   <TableCell>{tx.executionResult}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className={classes.label}>Input arguments</TableCell>
+                  <TableCell className={classes.label}>Input Arguments</TableCell>
                   <TableCell>{this.renderArgs(tx.inputArguments)}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className={classes.label}>Ouput arguments</TableCell>
+                  <TableCell className={classes.label}>Ouput Arguments</TableCell>
                   <TableCell>{this.renderArgs(tx.outputArguments)}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className={classes.label}>Ouput events</TableCell>
+                  <TableCell className={classes.label}>Ouput Events</TableCell>
                   <TableCell>{this.renderEvents(tx.outputEvents)}</TableCell>
                 </TableRow>
               </TableBody>
