@@ -6,7 +6,7 @@ import { cron } from './Cron';
 export function fillGapsForever(storage: Storage, orbsAdapter: OrbsAdapter, interval: number): void {
   cron(async () => {
     console.log(`Cron Job started.`);
-    fillGaps(storage, orbsAdapter);
+    await fillGaps(storage, orbsAdapter);
   }, interval);
 }
 
