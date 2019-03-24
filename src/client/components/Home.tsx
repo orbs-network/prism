@@ -7,12 +7,7 @@ import { BlockBox } from './BlockBox';
 
 const styles = (theme: Theme) =>
   createStyles({
-    root: {
-      padding: theme.spacing.unit * 2,
-      marginTop: theme.spacing.unit * 3,
-      margin: 'auto',
-      maxWidth: 1500,
-    },
+    root: {},
   });
 
 interface IProps extends WithStyles<typeof styles> {}

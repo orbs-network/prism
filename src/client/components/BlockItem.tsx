@@ -10,13 +10,16 @@ import { animated } from 'react-spring/renderprops';
 
 const styles = (theme: Theme) =>
   createStyles({
-    root: {
-      padding: theme.spacing.unit * 2,
-      marginTop: theme.spacing.unit * 2,
+    paper: {
+      paddingLeft: theme.spacing.unit * 2,
+      paddingRight: theme.spacing.unit * 2,
+      paddingTop: theme.spacing.unit,
+      paddingBottom: theme.spacing.unit,
+      marginTop: theme.spacing.unit,
     },
     line: {
       display: 'flex',
-      marginBottom: theme.spacing.unit / 2,
+      marginBottom: theme.spacing.unit / 4,
     },
     label: {
       paddingRight: theme.spacing.unit,
@@ -32,7 +35,7 @@ interface IProps extends WithStyles<typeof styles> {
 
 export const BlockItem = withStyles(styles)(({ classes, block, style }: IProps) => (
   <animated.div id={`block-${block.blockHeight}`} data-type='block-item' style={style}>
-    <Paper className={classes.root}>
+    <Paper className={classes.paper}>
       <div className={classes.line}>
         <Typography className={classes.label}>Block Height:</Typography>
         <Typography data-type='block-height'>{block.blockHeight}</Typography>

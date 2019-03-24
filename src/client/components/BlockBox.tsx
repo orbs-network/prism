@@ -32,8 +32,8 @@ const BlockBoxImpl = withStyles(styles)(
             items={this.props.blocks}
             keys={block => block.blockHash}
             from={{ height: 0, opacity: 0, transform: `scale(0, 0) translate(0, 0px)` }}
-            enter={{ height: 130, opacity: 1, transform: `scale(1, 1) translate(0, 0px)` }}
-            leave={{ opacity: 0, transform: `scale(1, 1) translate(0, 130px)` }}
+            enter={{ height: 105, opacity: 1, transform: `scale(1, 1) translate(0, 0px)` }}
+            leave={{ opacity: 0, transform: `scale(1, 1) translate(0, 105px)` }}
           >
             {block => props => <BlockItem style={props} block={block} />}
           </Transition>

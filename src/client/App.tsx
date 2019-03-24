@@ -8,17 +8,17 @@ import { TermNotFound } from './components/TermNotFound';
 import { TxDetails } from './components/TxDetails';
 import { animated, Transition, config } from 'react-spring/renderprops';
 
-const animSpeed = 250;
 const styles = (theme: Theme) =>
   createStyles({
     root: {
-      padding: theme.spacing.unit * 2,
       marginTop: theme.spacing.unit * 3,
       margin: 'auto',
       position: 'relative',
-      maxWidth: 1500,
+      maxWidth: 1100,
     },
     swipeContainer: {
+      paddingLeft: theme.spacing.unit * 2,
+      paddingRight: theme.spacing.unit * 2,
       position: 'absolute',
       width: '100%',
     },
