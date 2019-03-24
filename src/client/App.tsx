@@ -2,11 +2,11 @@ import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/s
 import * as React from 'react';
 import { withRouter } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { BlockDetails } from './components/BlockDetails';
 import { Home } from './components/Home';
 import { TermNotFound } from './components/TermNotFound';
 import { TxDetails } from './components/TxDetails';
+import { animated, Transition, config } from 'react-spring/renderprops';
 
 const animSpeed = 250;
 const styles = (theme: Theme) =>
@@ -18,31 +18,9 @@ const styles = (theme: Theme) =>
       position: 'relative',
       maxWidth: 1500,
     },
-    headTableTitle: {
-      textAlign: 'center',
-      marginBottom: theme.spacing.unit * 3,
-    },
     swipeContainer: {
       position: 'absolute',
       width: '100%',
-    },
-    routeEnter: {
-      transform: 'translateX(-15%)',
-      opacity: 0,
-    },
-    routeEnterActive: {
-      transform: 'translateX(0%)',
-      opacity: 1,
-      transition: `all ${animSpeed}ms ease-out`,
-    },
-    routeExit: {
-      transform: 'translateX(0%)',
-      opacity: 1,
-    },
-    routeExitActive: {
-      transform: 'translateX(15%)',
-      opacity: 0,
-      transition: `all ${animSpeed}ms ease-out`,
     },
   });
 
@@ -50,33 +28,56 @@ interface IProps extends WithStyles<typeof styles> {
   location?: any;
 }
 
-const AppImpl = ({ classes, location }: IProps) => (
-  <div className={classes.root}>
-    <TransitionGroup>
-      <CSSTransition
-        key={location.key}
-        timeout={animSpeed}
-        classNames={{
-          enter: classes.routeEnter,
-          enterActive: classes.routeEnterActive,
-          exit: classes.routeExit,
-          exitActive: classes.routeExitActive,
-        }}
+const AppImpl = ({ classes, location }: IProps) => {
+  return (
+    <div className={classes.root}>
+      <Transition
+        config={config.slow}
+        keys={location.pathname}
+        from={{ opacity: 0, transform: 'translateX(-15%)' }}
+        enter={{ opacity: 1, transform: 'translateX(0%)' }}
+        leave={{ opacity: 0, transform: 'translateX(15%)' }}
       >
-        <div className={classes.swipeContainer}>
+        {style => props => (
           <Switch location={location}>
-            <Route exact path='/' component={Home} />
+            <Route
+              exact
+              path='/'
+              render={() => (
+                <div style={props} className={classes.swipeContainer}>
+                  <Home />
+                </div>
+              )}
+            />
             <Route
               path='/block/:blockHash'
-              render={({ match }) => <BlockDetails blockHash={match.params.blockHash} />}
+              render={({ match }) => (
+                <div style={props} className={classes.swipeContainer}>
+                  <BlockDetails blockHash={match.params.blockHash} />
+                </div>
+              )}
             />
-            <Route path='/tx/:txId' render={({ match }) => <TxDetails txId={match.params.txId} />} />
-            <Route path='/not-found/:term' render={({ match }) => <TermNotFound term={match.params.term} />} />
+            <Route
+              path='/tx/:txId'
+              render={({ match }) => (
+                <div style={props} className={classes.swipeContainer}>
+                  <TxDetails txId={match.params.txId} />
+                </div>
+              )}
+            />
+            <Route
+              path='/not-found/:term'
+              render={({ match }) => (
+                <div style={props} className={classes.swipeContainer}>
+                  <TermNotFound term={match.params.term} />
+                </div>
+              )}
+            />
           </Switch>
-        </div>
-      </CSSTransition>
-    </TransitionGroup>
-  </div>
-);
+        )}
+      </Transition>
+    </div>
+  );
+};
 
-export const App: any = withRouter(withStyles(styles)(AppImpl));
+export const App: any = withRouter(withStyles(styles)(AppImpl as any));
