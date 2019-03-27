@@ -66,6 +66,20 @@ function testDb(db: IDB, dbName: string) {
       }
     });
 
+    it('should ignore case when retrive txs', async () => {
+      const rawBlock = generateRandomRawBlock(1n);
+
+      // conver all to upper case
+      rawBlock.transactions.forEach(tx => (tx.txId = tx.txId.toUpperCase()));
+
+      await db.storeTx(rawBlock.transactions);
+
+      for (const tx of rawBlock.transactions) {
+        const actual = await db.getTxById(tx.txId.toLowerCase());
+        expect(tx).toEqual(actual);
+      }
+    });
+
     it('should be able to retrive the last block height', async () => {
       const block10 = rawBlockToBlock(generateRandomRawBlock(10n));
       const block11 = rawBlockToBlock(generateRandomRawBlock(11n));

@@ -160,6 +160,7 @@ export class MongoDB implements IDB {
     if (Array.isArray(tx)) {
       return Promise.all(tx.map(t => this.storeTx(t)));
     } else {
+      tx.txId = tx.txId.toLowerCase();
       const txInstance = new this.TxModel(tx);
       await txInstance.save();
     }
@@ -168,7 +169,7 @@ export class MongoDB implements IDB {
   public async getTxById(txId: string): Promise<IRawTx> {
     const startTime = Date.now();
     console.log(`Searching for tx by txId: ${txId}`);
-    const result = await this.TxModel.findOne({ txId }, { _id: false, __v: false })
+    const result = await this.TxModel.findOne({ txId: txId.toLowerCase() }, { _id: false, __v: false })
       .lean()
       .exec();
 

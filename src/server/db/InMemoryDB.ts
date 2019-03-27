@@ -69,13 +69,13 @@ export class InMemoryDB implements IDB {
 
   public async storeTx(tx: IRawTx | IRawTx[]): Promise<void> {
     if (Array.isArray(tx)) {
-      tx.map(t => this.txs.set(t.txId, t));
+      tx.map(t => this.txs.set(t.txId.toLowerCase(), t));
     } else {
-      this.txs.set(tx.txId, tx);
+      this.txs.set(tx.txId.toLowerCase(), tx);
     }
   }
 
   public async getTxById(txId: string): Promise<IRawTx> {
-    return this.txs.get(txId);
+    return this.txs.get(txId.toLowerCase());
   }
 }

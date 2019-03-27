@@ -19,7 +19,7 @@ const ORBS_VIRTUAL_CHAIN_ID = parseInt(process.env.ORBS_VIRTUAL_CHAIN_ID, 10);
 const ORBS_NETWORK_TYPE = process.env.ORBS_NETWORK_TYPE;
 
 // We use the same sender because he is the token holder (the first address that does a transaction of the token contract)
-const sender = {
+const sender: Account = {
   publicKey: hexStringToUint8Array('b72c9fe0f78b5b27769a1007fb6b77fe6743beef92d1cb6e262163cbd13c0e11'),
   privateKey: hexStringToUint8Array(
     '479cfc81fb55cf1ce75f66cd8549c4efef2ee585a4c19a34947c1e095d159aa5b72c9fe0f78b5b27769a1007fb6b77fe6743beef92d1cb6e262163cbd13c0e11',
