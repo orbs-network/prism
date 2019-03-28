@@ -76,6 +76,6 @@ export class InMemoryDB implements IDB {
   }
 
   public async getTxById(txId: string): Promise<IRawTx> {
-    return this.txs.get(txId.toLowerCase());
+    return this.txs.get(txId.toLowerCase()) || null;
   }
 }

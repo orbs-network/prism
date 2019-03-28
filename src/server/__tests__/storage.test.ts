@@ -38,6 +38,32 @@ describe('storage', () => {
     }
   });
 
+  describe('readonly mode', () => {
+    it('should store and retrive blocks', async () => {
+      const db = new InMemoryDB();
+      await db.init();
+      const storage = new Storage(db, true);
+      const block = generateRandomRawBlock(1n);
+      await storage.handleNewBlock(block);
+
+      const actual = await storage.getBlockByHash(block.blockHash);
+      expect(actual).toEqual(null);
+    });
+
+    it('should store and retrive txs', async () => {
+      const db = new InMemoryDB();
+      await db.init();
+      const storage = new Storage(db, true);
+      const block = generateRandomRawBlock(1n);
+      await storage.handleNewBlock(block);
+
+      for (const tx of block.transactions) {
+        const actual = await storage.getTx(tx.txId);
+        expect(actual).toEqual(null);
+      }
+    });
+  });
+
   describe('find', () => {
     it('should be able to find a block by hash', async () => {
       const db = new InMemoryDB();

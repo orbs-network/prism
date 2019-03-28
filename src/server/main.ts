@@ -11,7 +11,7 @@ import { genOrbsAdapter } from './orbs-adapter/OrbsAdapterFactory';
 import { initServer } from './server';
 import { Storage } from './storage/storage';
 import { WS } from './ws/ws';
-import { GAP_FILLER_INTERVAL } from './config';
+import { GAP_FILLER_INTERVAL, GAP_FILLER_ACTIVE, READONLY_MODE } from './config';
 import { fillGapsForever } from './gaps-filler/GapsFiller';
 
 async function main() {
@@ -21,7 +21,7 @@ async function main() {
   await db.init(); // create tables if needed
 
   // internals
-  const storage = new Storage(db);
+  const storage = new Storage(db, READONLY_MODE);
   const server = initServer(storage);
   const ws = new WS(server);
 
@@ -30,7 +30,9 @@ async function main() {
   orbsAdapter.RegisterToNewBlocks(storage);
   await orbsAdapter.init();
 
-  fillGapsForever(storage, orbsAdapter, GAP_FILLER_INTERVAL);
+  if (GAP_FILLER_ACTIVE) {
+    fillGapsForever(storage, orbsAdapter, GAP_FILLER_INTERVAL);
+  }
 }
 
 main()
