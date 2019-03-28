@@ -13,6 +13,7 @@ const cssnano = require('cssnano');
 
 const config = require('./src/server/config');
 const nodeModulesPath = path.resolve(__dirname, 'node_modules');
+const inDevMode = !config.IS_PRODUCTION && !config.IS_STAGING;
 
 const plugins = [
   new HtmlWebpackPlugin({
@@ -23,7 +24,7 @@ const plugins = [
   }),
 ];
 
-if (!config.IS_PRODUCTION) {
+if (inDevMode) {
   plugins.push(new OpenBrowserPlugin({ url: `http://localhost:${config.SERVER_PORT}` }));
 }
 
@@ -31,8 +32,8 @@ if (!config.IS_PRODUCTION) {
 // plugins.push(new BundleAnalyzerPlugin());
 
 module.exports = {
-  mode: config.IS_PRODUCTION ? 'production' : 'development',
-  devtool: config.IS_PRODUCTION ? '' : 'inline-source-map',
+  mode: inDevMode ? 'development' : 'production',
+  devtool: inDevMode ? 'inline-source-map' : '',
   entry: ['./src/client/client'],
   output: {
     path: path.join(__dirname, 'dist', 'public'),
@@ -71,14 +72,14 @@ module.exports = {
             options: {
               modules: true,
               camelCase: true,
-              sourceMap: !config.IS_PRODUCTION,
+              sourceMap: inDevMode,
             },
           },
           {
             loader: 'postcss-loader',
             options: {
-              sourceMap: !config.IS_PRODUCTION,
-              plugins: config.IS_PRODUCTION ? [] : [cssnano()],
+              sourceMap: inDevMode,
+              plugins: inDevMode ? [cssnano()] : [],
             },
           },
         ],

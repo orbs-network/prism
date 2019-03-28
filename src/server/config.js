@@ -12,6 +12,7 @@ require('dotenv').config({ path: dotEnvPath });
 
 module.exports = {
   IS_PRODUCTION: process.env.NODE_ENV === 'production',
+  IS_STAGING: process.env.NODE_ENV === 'staging',
   SERVER_PORT: process.env.PORT || 3000,
   POSTGRES_URL: process.env.POSTGRES_URL,
   MONGODB_URI: process.env.MONGODB_URI,

@@ -22,7 +22,7 @@ export function initServer(storage: Storage) {
   }
 
   app.use(apiRouter(storage));
-  app.use(config.IS_PRODUCTION ? staticsRouter() : staticsDevRouter());
+  app.use(config.IS_PRODUCTION || config.IS_STAGING ? staticsRouter() : staticsDevRouter());
 
   const server = app.listen(config.SERVER_PORT, () => {
     console.log(`App listening on port ${config.SERVER_PORT}!`);
