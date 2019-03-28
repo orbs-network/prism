@@ -21,6 +21,7 @@ export function fillGapsForever(storage: Storage, orbsAdapter: OrbsAdapter, inte
 export async function fillGaps(storage: Storage, orbsAdapter: OrbsAdapter): Promise<void> {
   const toHeight = await storage.getLatestBlockHeight();
   const fromHeight = (await storage.getHeighestConsecutiveBlockHeight()) + 1n;
+  console.log(`Searching for gaps from ${fromHeight} to ${toHeight}`);
   const gaps = await detectBlockChainGaps(storage, fromHeight, toHeight);
   console.log(`${gaps.length} missing blocks to fill`);
   for (const height of gaps) {
