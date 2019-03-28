@@ -32,6 +32,7 @@ export class InMemoryDB implements IDB {
 
   public async storeBlock(block: IBlock): Promise<void> {
     this.blocks.set(block.blockHash, block);
+    this.capBlocks();
   }
 
   public async getBlockByHeight(blockHeight: string): Promise<IBlock> {
@@ -73,9 +74,34 @@ export class InMemoryDB implements IDB {
     } else {
       this.txs.set(tx.txId.toLowerCase(), tx);
     }
+    this.capTxes();
   }
 
   public async getTxById(txId: string): Promise<IRawTx> {
     return this.txs.get(txId.toLowerCase()) || null;
+  }
+
+  private capTxes(): void {
+    if (this.txs.size > 1100) {
+      const txArr = Array.from(this.txs);
+      this.txs.clear();
+      txArr
+        .map(item => item[1])
+        .sort((a, b) => a.timestamp - b.timestamp)
+        .filter((_, idx) => idx < 1000)
+        .forEach(tx => this.txs.set(tx.txId.toLowerCase(), tx));
+    }
+  }
+
+  private capBlocks(): void {
+    if (this.blocks.size > 1100) {
+      const blocksArr = Array.from(this.blocks);
+      this.blocks.clear();
+      blocksArr
+        .map(item => item[1])
+        .sort((a, b) => a.blockTimestamp - b.blockTimestamp)
+        .filter((_, idx) => idx < 1000)
+        .forEach(block => this.blocks.set(block.blockHash, block));
+    }
   }
 }

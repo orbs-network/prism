@@ -14,14 +14,15 @@
     <% if(process.env.NODE_ENV === 'production') { %>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.7.0/umd/react.production.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.7.0/umd/react-dom.production.min.js"></script>
-        <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-137162211-1"></script>
-        <% if (process.env.ORBS_VIRTUAL_CHAIN_ID) { %>
+        
+        <% if (process.env.GOOGLE_ANALYTICS_KEY) { %>
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id=UA-137162211-1"></script>
             <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', '<%= ORBS_VIRTUAL_CHAIN_ID %>');
+                gtag('config', '<%= GOOGLE_ANALYTICS_KEY %>');
             </script>
         <% } %>
     <% } else { %>
