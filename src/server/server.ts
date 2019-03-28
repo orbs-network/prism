@@ -12,9 +12,14 @@ import { staticsRouter } from './routes/statics-router';
 import { staticsDevRouter } from './routes/statics-dev-router';
 import * as config from './config';
 import { Storage } from './storage/storage';
+import { forceHttps } from './middlewares/ForceHttps';
 
 export function initServer(storage: Storage) {
   const app = express();
+
+  if (config.IS_PRODUCTION) {
+    app.use(forceHttps);
+  }
 
   app.use(apiRouter(storage));
   app.use(config.IS_PRODUCTION ? staticsRouter() : staticsDevRouter());
