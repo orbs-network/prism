@@ -6,15 +6,14 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { Typography, Paper } from '@material-ui/core';
+import { Paper, Typography } from '@material-ui/core';
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
-import { fade } from '@material-ui/core/styles/colorManipulator';
 import * as React from 'react';
+import { animated } from 'react-spring/renderprops';
 import { IBlockSummary } from '../../shared/IBlock';
 import { ConsoleText } from './ConsoleText';
 import { PrismLink } from './PrismLink';
 import { TimeStampField } from './TimeStampField';
-import { animated } from 'react-spring/renderprops';
 
 const styles = (theme: Theme) =>
   createStyles({
