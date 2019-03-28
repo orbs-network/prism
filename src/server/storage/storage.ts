@@ -13,7 +13,7 @@ import { rawBlockToBlock } from '../block-transform/blockTransform';
 import { IDB } from '../db/IDB';
 
 export class Storage {
-  constructor(private db: IDB, private readOnly: boolean = false) {}
+  constructor(private db: IDB) {}
 
   public getBlockByHash(blockHash: string): Promise<IBlock> {
     return this.db.getBlockByHash(blockHash);
@@ -32,9 +32,7 @@ export class Storage {
   }
 
   public setHeighestConsecutiveBlockHeight(value: bigint): Promise<void> {
-    if (!this.readOnly) {
-      return this.db.setHeighestConsecutiveBlockHeight(value);
-    }
+    return this.db.setHeighestConsecutiveBlockHeight(value);
   }
 
   public getTx(txId: string): Promise<IRawTx> {
@@ -42,10 +40,8 @@ export class Storage {
   }
 
   public async handleNewBlock(rawBlock: IRawBlock): Promise<void> {
-    if (!this.readOnly) {
-      await this.db.storeBlock(rawBlockToBlock(rawBlock));
-      await this.db.storeTx(rawBlock.transactions);
-    }
+    await this.db.storeBlock(rawBlockToBlock(rawBlock));
+    await this.db.storeTx(rawBlock.transactions);
   }
 
   public async search(term: string): Promise<ISearchResult> {

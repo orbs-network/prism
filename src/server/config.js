@@ -21,6 +21,5 @@ module.exports = {
   ORBS_NETWORK_TYPE: process.env.ORBS_NETWORK_TYPE,
   POOLING_INTERVAL: parseInt(process.env.POOLING_INTERVAL),
   GAP_FILLER_ACTIVE: process.env.GAP_FILLER_ACTIVE === 'true',
-  READONLY_MODE: process.env.READONLY_MODE === 'true',
   GAP_FILLER_INTERVAL: process.env.GAP_FILLER_INTERVAL ? parseInt(process.env.GAP_FILLER_INTERVAL) : 30,
 };
