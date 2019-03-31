@@ -7,38 +7,30 @@
  */
 
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ManifestPlugin = require('webpack-manifest-plugin');
 const OpenBrowserPlugin = require('open-browser-webpack-plugin');
 const cssnano = require('cssnano');
 
 const config = require('./src/server/config');
-const nodeModulesPath = path.resolve(__dirname, 'node_modules');
-const inDevMode = !config.IS_PRODUCTION && !config.IS_STAGING;
+const { SERVER_PORT, IS_DEV, WEBPACK_PORT } = config;
+const plugins = [new ManifestPlugin()];
 
-const plugins = [
-  new HtmlWebpackPlugin({
-    title: 'Prism',
-    favicon: './src/client/favicon.ico',
-    filename: 'index.html',
-    template: './src/client/index.ejs',
-  }),
-];
-
-if (inDevMode) {
-  plugins.push(new OpenBrowserPlugin({ url: `http://localhost:${config.SERVER_PORT}` }));
+if (IS_DEV) {
+  plugins.push(new OpenBrowserPlugin({ url: `http://localhost:${SERVER_PORT}` }));
 }
 
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 // plugins.push(new BundleAnalyzerPlugin());
 
+const nodeModulesPath = path.resolve(__dirname, 'node_modules');
 module.exports = {
-  mode: inDevMode ? 'development' : 'production',
-  devtool: inDevMode ? 'inline-source-map' : '',
+  mode: IS_DEV ? 'development' : 'production',
+  devtool: IS_DEV ? 'inline-source-map' : '',
   entry: ['./src/client/client'],
   output: {
-    path: path.join(__dirname, 'dist', 'public'),
+    path: path.join(__dirname, 'dist', 'statics'),
     filename: `[name]-[hash:8]-bundle.js`,
-    publicPath: '/public/',
+    publicPath: '/statics/',
   },
   resolve: {
     extensions: ['.js', '.ts', '.tsx'],
@@ -72,14 +64,14 @@ module.exports = {
             options: {
               modules: true,
               camelCase: true,
-              sourceMap: inDevMode,
+              sourceMap: IS_DEV,
             },
           },
           {
             loader: 'postcss-loader',
             options: {
-              sourceMap: inDevMode,
-              plugins: inDevMode ? [cssnano()] : [],
+              sourceMap: IS_DEV,
+              plugins: IS_DEV ? [cssnano()] : [],
             },
           },
         ],
@@ -89,6 +81,9 @@ module.exports = {
         use: 'url-loader?limit=10000',
       },
     ],
+  },
+  devServer: {
+    port: WEBPACK_PORT,
   },
   plugins,
   externals: {

@@ -10,10 +10,14 @@ const findUp = require('find-up');
 const dotEnvPath = findUp.sync('.env');
 require('dotenv').config({ path: dotEnvPath });
 
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+const IS_STAGING = process.env.NODE_ENV === 'staging';
 module.exports = {
-  IS_PRODUCTION: process.env.NODE_ENV === 'production',
-  IS_STAGING: process.env.NODE_ENV === 'staging',
+  IS_PRODUCTION,
+  IS_STAGING,
+  IS_DEV: !IS_PRODUCTION && !IS_STAGING,
   SERVER_PORT: process.env.PORT || 3000,
+  WEBPACK_PORT: 8080,
   POSTGRES_URL: process.env.POSTGRES_URL,
   MONGODB_URI: process.env.MONGODB_URI,
   DATABASE_TYPE: process.env.DATABASE_TYPE,
