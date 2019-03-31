@@ -7,11 +7,11 @@
  */
 
 import { rawBlockToBlock } from '../block-transform/blockTransform';
-import { generateRandomRawBlock } from '../orbs-adapter/fake-blocks-generator';
-import { InMemoryDB } from '../db/InMemoryDB';
-import { IDB } from '../db/IDB';
-import { MongoDB } from '../db/MongoDB';
 import { MONGODB_URI } from '../config';
+import { IDB } from '../db/IDB';
+import { InMemoryDB } from '../db/InMemoryDB';
+import { MongoDB } from '../db/MongoDB';
+import { generateRandomRawBlock } from '../orbs-adapter/fake-blocks-generator';
 
 testDb(new InMemoryDB(), 'InMemoryDB');
 testDb(new MongoDB(MONGODB_URI), 'MongoDB');

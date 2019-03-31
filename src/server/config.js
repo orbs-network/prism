@@ -23,11 +23,12 @@ module.exports = {
   DATABASE_TYPE: process.env.DATABASE_TYPE,
   ORBS_ENDPOINT: process.env.ORBS_ENDPOINT,
   ORBS_VIRTUAL_CHAIN_ID: parseInt(process.env.ORBS_VIRTUAL_CHAIN_ID),
-  ORBS_NETWORK_TYPE: process.env.ORBS_NETWORK_TYPE,
-  POOLING_INTERVAL: parseInt(process.env.POOLING_INTERVAL),
+  ORBS_NETWORK_TYPE: process.env.ORBS_NETWORK_TYPE ? process.env.ORBS_NETWORK_TYPE : 'TEST_NET',
+  POOLING_INTERVAL: process.env.POOLING_INTERVAL ? parseInt(process.env.POOLING_INTERVAL) : 1000,
+  DB_IS_READ_ONLY: process.env.DB_IS_READ_ONLY === 'true',
   GAP_FILLER_ACTIVE: process.env.GAP_FILLER_ACTIVE === 'true',
   GAP_FILLER_INTERVAL: process.env.GAP_FILLER_INTERVAL ? parseInt(process.env.GAP_FILLER_INTERVAL) : 30,
   GAP_FILLER_INITIAL_DELAY: process.env.GAP_FILLER_INITIAL_DELAY
     ? parseInt(process.env.GAP_FILLER_INITIAL_DELAY)
-    : 60 * 1_000,
+    : 60 * 1000,
 };

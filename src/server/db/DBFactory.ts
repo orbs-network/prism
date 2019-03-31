@@ -10,17 +10,17 @@ import { IDB } from './IDB';
 import { InMemoryDB } from './InMemoryDB';
 // import { PostgresDB } from './PostgresDB';
 import { MongoDB } from './MongoDB';
-import { POSTGRES_URL, MONGODB_URI, DATABASE_TYPE } from '../config';
+import { POSTGRES_URL, MONGODB_URI, DATABASE_TYPE, DB_IS_READ_ONLY } from '../config';
 
 export function genDb(): IDB {
   switch (DATABASE_TYPE) {
     case 'MONGO':
-      return new MongoDB(MONGODB_URI);
+      return new MongoDB(MONGODB_URI, DB_IS_READ_ONLY);
 
     // case 'POSTGRES':
     //   return new PostgresDB(POSTGRES_URL);
 
     default:
-      return new InMemoryDB();
+      return new InMemoryDB(DB_IS_READ_ONLY);
   }
 }

@@ -52,7 +52,7 @@ export class MongoDB implements IDB {
   private TxModel: mongoose.Model<mongoose.Document>;
   private CacheModel: mongoose.Model<ICacheDocument>;
 
-  constructor(private connectionUrl: string) {}
+  constructor(private connectionUrl: string, private readOnlyMode: boolean = false) {}
 
   public async init(): Promise<void> {
     mongoose.connection.once('connecting', () => console.log('mongoose connecting'));
@@ -77,12 +77,18 @@ export class MongoDB implements IDB {
   }
 
   public async clearAll(): Promise<void> {
+    if (this.readOnlyMode) {
+      return;
+    }
     await this.BlockModel.remove({});
     await this.TxModel.remove({});
     await this.CacheModel.remove({});
   }
 
   public async storeBlock(block: IBlock): Promise<void> {
+    if (this.readOnlyMode) {
+      return;
+    }
     const startTime = Date.now();
     console.log(`Storing block #${block.blockHeight}`);
     const blockInstance = new this.BlockModel(block);
@@ -136,6 +142,9 @@ export class MongoDB implements IDB {
   }
 
   public async setHeighestConsecutiveBlockHeight(value: bigint): Promise<void> {
+    if (this.readOnlyMode) {
+      return;
+    }
     await this.CacheModel.findOneAndUpdate(
       { _id: 1 },
       { _id: 1, heighestConsecutiveBlockHeight: value },
@@ -157,6 +166,9 @@ export class MongoDB implements IDB {
   }
 
   public async storeTx(tx: IRawTx | IRawTx[]): Promise<any> {
+    if (this.readOnlyMode) {
+      return;
+    }
     if (Array.isArray(tx)) {
       return Promise.all(tx.map(t => this.storeTx(t)));
     } else {

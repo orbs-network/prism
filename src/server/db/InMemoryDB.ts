@@ -15,6 +15,8 @@ export class InMemoryDB implements IDB {
   private txs: Map<string, IRawTx>;
   private heighestConsecutiveBlockHeight: bigint = 0n;
 
+  constructor(private readOnlyMode: boolean = false) {}
+
   public async init(): Promise<void> {
     this.blocks = new Map();
     this.txs = new Map();
@@ -25,12 +27,18 @@ export class InMemoryDB implements IDB {
   }
 
   public async clearAll(): Promise<void> {
+    if (this.readOnlyMode) {
+      return;
+    }
     this.blocks = new Map();
     this.txs = new Map();
     this.heighestConsecutiveBlockHeight = 0n;
   }
 
   public async storeBlock(block: IBlock): Promise<void> {
+    if (this.readOnlyMode) {
+      return;
+    }
     this.blocks.set(block.blockHash, block);
     this.capBlocks();
   }
@@ -49,6 +57,9 @@ export class InMemoryDB implements IDB {
   }
 
   public async setHeighestConsecutiveBlockHeight(value: bigint): Promise<void> {
+    if (this.readOnlyMode) {
+      return;
+    }
     this.heighestConsecutiveBlockHeight = value;
   }
 
@@ -69,6 +80,9 @@ export class InMemoryDB implements IDB {
   }
 
   public async storeTx(tx: IRawTx | IRawTx[]): Promise<void> {
+    if (this.readOnlyMode) {
+      return;
+    }
     if (Array.isArray(tx)) {
       tx.map(t => this.txs.set(t.txId.toLowerCase(), t));
     } else {

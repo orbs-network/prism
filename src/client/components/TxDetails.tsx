@@ -166,7 +166,7 @@ const TxDetailsImpl = withStyles(styles)(
           {args.map((i, idx) => {
             return (
               <ConsoleText key={idx} id={`arg_${idx}`} className={this.props.classes.chips}>
-                {i.value} ({i.type})
+                <span>{i.value}</span> <span>({i.type})</span>
               </ConsoleText>
             );
           })}
