@@ -27,4 +27,7 @@ module.exports = {
   POOLING_INTERVAL: parseInt(process.env.POOLING_INTERVAL),
   GAP_FILLER_ACTIVE: process.env.GAP_FILLER_ACTIVE === 'true',
   GAP_FILLER_INTERVAL: process.env.GAP_FILLER_INTERVAL ? parseInt(process.env.GAP_FILLER_INTERVAL) : 30,
+  GAP_FILLER_INITIAL_DELAY: process.env.GAP_FILLER_INITIAL_DELAY
+    ? parseInt(process.env.GAP_FILLER_INITIAL_DELAY)
+    : 60 * 1_000,
 };

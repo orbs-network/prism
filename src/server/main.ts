@@ -6,13 +6,14 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { GAP_FILLER_ACTIVE, GAP_FILLER_INTERVAL } from './config';
+import { GAP_FILLER_ACTIVE, GAP_FILLER_INTERVAL, GAP_FILLER_INITIAL_DELAY } from './config';
 import { genDb } from './db/DBFactory';
 import { fillGapsForever } from './gaps-filler/GapsFiller';
 import { genOrbsAdapter } from './orbs-adapter/OrbsAdapterFactory';
 import { initServer } from './server';
 import { Storage } from './storage/storage';
 import { WS } from './ws/ws';
+import { sleep } from './gaps-filler/Cron';
 
 async function main() {
   // externals
@@ -31,6 +32,7 @@ async function main() {
   await orbsAdapter.init();
 
   if (GAP_FILLER_ACTIVE) {
+    await sleep(GAP_FILLER_INITIAL_DELAY);
     fillGapsForever(storage, orbsAdapter, GAP_FILLER_INTERVAL);
   }
 }
