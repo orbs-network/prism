@@ -14,8 +14,28 @@ import { initServer } from './server';
 import { Storage } from './storage/storage';
 import { WS } from './ws/ws';
 import { sleep } from './gaps-filler/Cron';
+import * as config from './config';
 
 async function main() {
+  console.log(`  *******************************************  `);
+  console.log(`IS_PRODUCTION: ${config.IS_PRODUCTION}`);
+  console.log(`IS_STAGING: ${config.IS_STAGING}`);
+  console.log(`IS_DEV: ${config.IS_DEV}`);
+  console.log(`SERVER_PORT: ${config.SERVER_PORT}`);
+  console.log(`WEBPACK_PORT: ${config.WEBPACK_PORT}`);
+  console.log(`POSTGRES_URL: ${config.POSTGRES_URL}`);
+  console.log(`MONGODB_URI: ${config.MONGODB_URI}`);
+  console.log(`DATABASE_TYPE: ${config.DATABASE_TYPE}`);
+  console.log(`ORBS_ENDPOINT: ${config.ORBS_ENDPOINT}`);
+  console.log(`ORBS_VIRTUAL_CHAIN_ID: ${config.ORBS_VIRTUAL_CHAIN_ID}`);
+  console.log(`ORBS_NETWORK_TYPE: ${config.ORBS_NETWORK_TYPE}`);
+  console.log(`POOLING_INTERVAL: ${config.POOLING_INTERVAL}`);
+  console.log(`DB_IS_READ_ONLY: ${config.DB_IS_READ_ONLY}`);
+  console.log(`GAP_FILLER_ACTIVE: ${config.GAP_FILLER_ACTIVE}`);
+  console.log(`GAP_FILLER_INTERVAL: ${config.GAP_FILLER_INTERVAL}`);
+  console.log(`GAP_FILLER_INITIAL_DELAY: ${config.GAP_FILLER_INITIAL_DELAY}`);
+  console.log(`  *******************************************  `);
+
   // externals
   const orbsAdapter = genOrbsAdapter();
   const db = genDb();
@@ -31,9 +51,6 @@ async function main() {
   orbsAdapter.RegisterToNewBlocks(storage);
   await orbsAdapter.init();
 
-  console.log(`GAP_FILLER_ACTIVE: ${GAP_FILLER_ACTIVE}`);
-  console.log(`GAP_FILLER_INTERVAL: ${GAP_FILLER_INTERVAL}`);
-  console.log(`GAP_FILLER_INITIAL_DELAY: ${GAP_FILLER_INITIAL_DELAY}`);
   if (GAP_FILLER_ACTIVE) {
     await sleep(GAP_FILLER_INITIAL_DELAY);
     fillGapsForever(storage, orbsAdapter, GAP_FILLER_INTERVAL);
