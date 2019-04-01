@@ -31,6 +31,9 @@ async function main() {
   orbsAdapter.RegisterToNewBlocks(storage);
   await orbsAdapter.init();
 
+  console.log(`GAP_FILLER_ACTIVE: ${GAP_FILLER_ACTIVE}`);
+  console.log(`GAP_FILLER_INTERVAL: ${GAP_FILLER_INTERVAL}`);
+  console.log(`GAP_FILLER_INITIAL_DELAY: ${GAP_FILLER_INITIAL_DELAY}`);
   if (GAP_FILLER_ACTIVE) {
     await sleep(GAP_FILLER_INITIAL_DELAY);
     fillGapsForever(storage, orbsAdapter, GAP_FILLER_INTERVAL);
