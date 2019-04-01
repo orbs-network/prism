@@ -13,7 +13,7 @@ module.exports = {
     headless: !debug,
   },
   server: {
-    command: 'npm run start:prod',
+    command: 'npm run start:staging',
     port: 3000,
     debug,
   },
