@@ -19,6 +19,8 @@ import { Header } from './components/Header';
 import { configureStore } from './store';
 import { App } from './App';
 
+const vchainId = (window as any).vchainId;
+
 const store = configureStore();
 store.dispatch(listenToBlocksSummaryAction() as any);
 
@@ -45,7 +47,7 @@ const baseTheme = createMuiTheme({
 });
 
 export const AppRoot = () => (
-  <BrowserRouter>
+  <BrowserRouter basename={`/vchains/${vchainId}/`}>
     <Provider store={store}>
       <MuiThemeProvider theme={baseTheme}>
         <CssBaseline />

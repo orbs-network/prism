@@ -7,13 +7,13 @@
  */
 
 import * as express from 'express';
-import { apiRouter } from './routes/api-router';
-import { staticsRouter } from './routes/statics-router';
-import { pagesRouter } from './routes/pages-router';
-import * as config from './config';
-import { Storage } from './storage/storage';
-import { forceHttps } from './middlewares/ForceHttps';
 import * as path from 'path';
+import * as config from './config';
+import { forceHttps } from './middlewares/ForceHttps';
+import { apiRouter } from './routes/api-router';
+import { pagesRouter } from './routes/pages-router';
+import { staticsRouter } from './routes/statics-router';
+import { Storage } from './storage/storage';
 
 export function initServer(storage: Storage) {
   const app = express();
@@ -24,8 +24,8 @@ export function initServer(storage: Storage) {
 
   app.set('view engine', 'ejs');
   app.use('/assets', express.static(path.join(__dirname, '..', '..', '..', 'assets')));
-  app.use(apiRouter(storage));
   app.use(staticsRouter());
+  app.use(apiRouter(storage));
   app.use(pagesRouter());
 
   const server = app.listen(config.SERVER_PORT, () => {
