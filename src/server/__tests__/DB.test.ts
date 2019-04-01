@@ -99,22 +99,22 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should store and retrive the heighest consecutive block height ', async () => {
-      const inital = await db.getHeighestConsecutiveBlockHeight();
-      expect(inital).toEqual(0n);
+      const initial = await db.getHeighestConsecutiveBlockHeight();
 
-      await db.setHeighestConsecutiveBlockHeight(123n);
+      await db.setHeighestConsecutiveBlockHeight(initial + 123n);
       const actual = await db.getHeighestConsecutiveBlockHeight();
-      expect(actual).toEqual(123n);
+      expect(actual).toEqual(initial + 123n);
+      expect(actual).not.toEqual(initial);
     });
 
     it('should be able to update existing heighest consecutive block height ', async () => {
-      const inital = await db.getHeighestConsecutiveBlockHeight();
-      expect(inital).toEqual(0n);
+      const initial = await db.getHeighestConsecutiveBlockHeight();
 
       await db.setHeighestConsecutiveBlockHeight(123n);
       await db.setHeighestConsecutiveBlockHeight(456n);
       const actual = await db.getHeighestConsecutiveBlockHeight();
       expect(actual).toEqual(456n);
+      expect(actual).not.toEqual(initial);
     });
   });
 }
