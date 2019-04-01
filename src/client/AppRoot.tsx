@@ -8,16 +8,24 @@
 
 import { common } from '@material-ui/core/colors';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import {
+  createMuiTheme,
+  createStyles,
+  MuiThemeProvider,
+  Theme,
+  WithStyles,
+  withStyles,
+} from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { listenToBlocksSummaryAction } from './actions/blocksSummaryActions';
+import { App } from './App';
 import { Background } from './components/Background';
 import { Header } from './components/Header';
 import { configureStore } from './store';
-import { App } from './App';
+import { VChainDetails } from './VChainDetails';
 
 const vchainId = (window as any).vchainId;
 
@@ -46,15 +54,31 @@ const baseTheme = createMuiTheme({
   },
 });
 
-export const AppRoot = () => (
+const styles = (theme: Theme) =>
+  createStyles({
+    appContainer: {
+      margin: 'auto',
+      paddingLeft: theme.spacing.unit * 2,
+      paddingRight: theme.spacing.unit * 2,
+      position: 'relative',
+      maxWidth: 1100,
+    },
+  });
+
+interface IProps extends WithStyles<typeof styles> {}
+
+export const AppRoot = withStyles(styles)(({ classes }: IProps) => (
   <BrowserRouter basename={`/vchains/${vchainId}/`}>
     <Provider store={store}>
       <MuiThemeProvider theme={baseTheme}>
         <CssBaseline />
         <Background />
         <Header />
-        <App />
+        <div className={classes.appContainer}>
+          <VChainDetails vchainId={vchainId} />
+          <App />
+        </div>
       </MuiThemeProvider>
     </Provider>
   </BrowserRouter>
-);
+));

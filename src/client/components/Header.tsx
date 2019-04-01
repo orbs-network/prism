@@ -18,8 +18,8 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { compose } from 'redux';
 import { searchAction } from '../actions/searchActions';
-import { PrismLink } from './PrismLink';
 import { Logo } from './Logo';
+import { PrismLink } from './PrismLink';
 
 const styles = (theme: Theme) =>
   createStyles({

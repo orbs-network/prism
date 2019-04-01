@@ -27,12 +27,12 @@ const styles = (theme: Theme) =>
 interface IProps extends WithStyles<typeof styles> {
   blocks: IBlockSummary[];
 }
-const BlockBoxImpl = withStyles(styles)(
+const BlocksBoxImpl = withStyles(styles)(
   class extends React.Component<IProps> {
     public render() {
       const { classes } = this.props;
       return (
-        <div>
+        <>
           <Card id='blocks-box'>
             <CardHeader title={'Blocks'} className={classes.header} />
           </Card>
@@ -45,7 +45,7 @@ const BlockBoxImpl = withStyles(styles)(
           >
             {block => props => <BlockItem style={props} block={block} />}
           </Transition>
-        </div>
+        </>
       );
     }
   },
@@ -55,4 +55,4 @@ const mapStateToProps = (state: IRootState) => ({
   blocks: getRecentBlocksSummary(state),
 });
 
-export const BlockBox = connect(mapStateToProps)(BlockBoxImpl);
+export const BlocksBox = connect(mapStateToProps)(BlocksBoxImpl);
