@@ -21,7 +21,8 @@
       "type": "node",
       "request": "launch",
       "name": "Debug server",
-      "program": "${workspaceFolder}/index.js"
+      "program": "${workspaceFolder}/index.js",
+      "preLaunchTask": "build-server"
     },
     {
       "type": "node",
