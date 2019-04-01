@@ -13,7 +13,7 @@ export function cron(job: () => Promise<any>, interval: number): () => void {
   const endlessLoop = async () => {
     while (!stopped) {
       await job();
-      await sleep(interval * 1_000 * 60);
+      await sleep(interval);
     }
   };
 
