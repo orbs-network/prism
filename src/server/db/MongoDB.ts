@@ -30,6 +30,7 @@ const blockSchema = new mongoose.Schema({
   blockTimestamp: Number,
   txIds: [String],
 });
+blockSchema.index({ blockHash: 'text' });
 
 const txSchema = new mongoose.Schema({
   txId: String,
@@ -45,6 +46,7 @@ const txSchema = new mongoose.Schema({
   outputArguments: Array,
   outputEvents: Array,
 });
+txSchema.index({ txId: 'text' });
 
 export class MongoDB implements IDB {
   private db: mongoose.Mongoose;
@@ -99,7 +101,7 @@ export class MongoDB implements IDB {
   public async getBlockByHash(blockHash: string): Promise<IBlock> {
     const startTime = Date.now();
     console.log(`Searching for block by hash: ${blockHash}`);
-    const result = await this.BlockModel.findOne({ blockHash }, { _id: false, __v: false })
+    const result = await this.BlockModel.findOne({ $text: { $search: blockHash } }, { _id: false, __v: false })
       .lean()
       .exec();
 
@@ -172,7 +174,6 @@ export class MongoDB implements IDB {
     if (Array.isArray(tx)) {
       return Promise.all(tx.map(t => this.storeTx(t)));
     } else {
-      tx.txId = tx.txId.toLowerCase();
       const txInstance = new this.TxModel(tx);
       await txInstance.save();
     }
@@ -181,7 +182,7 @@ export class MongoDB implements IDB {
   public async getTxById(txId: string): Promise<IRawTx> {
     const startTime = Date.now();
     console.log(`Searching for tx by txId: ${txId}`);
-    const result = await this.TxModel.findOne({ txId: txId.toLowerCase() }, { _id: false, __v: false })
+    const result = await this.TxModel.findOne({ $text: { $search: txId } }, { _id: false, __v: false })
       .lean()
       .exec();
 
