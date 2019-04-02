@@ -33,7 +33,7 @@ const blockSchema = new mongoose.Schema({
 
 const txSchema = new mongoose.Schema({
   txId: String,
-  blockHash: String,
+  blockHeight: String,
   protocolVersion: Number,
   virtualChainId: Number,
   timestamp: Number,
