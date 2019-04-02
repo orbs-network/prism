@@ -7,21 +7,21 @@
  */
 
 import { combineReducers, Reducer } from 'redux';
-import { blocksByHash, IBlocksByHash } from './blocksReducer';
-import { blocksSummaryByHash, IBlockSummaryByHash } from './blocksSummaryReducer';
+import { blocksByHeight, IBlocksByHeight } from './blocksReducer';
+import { blocksSummaryByHeight, IBlockSummaryByHeight } from './blocksSummaryReducer';
 import { txsById, ITxsById } from './txsReducer';
-import { recentBlocksHashs, RecentBlocksHashes } from './recentBlocksReducer';
+import { RecentBlocksHeights, recentBlocksHeights } from './recentBlocksReducer';
 
 export interface IRootState {
   txsById: ITxsById;
-  blocksByHash: IBlocksByHash;
-  blocksSummaryByHash: IBlockSummaryByHash;
-  recentBlocksHashs: RecentBlocksHashes;
+  blocksByHeight: IBlocksByHeight;
+  blocksSummaryByHeight: IBlockSummaryByHeight;
+  recentBlocksHeights: RecentBlocksHeights;
 }
 
 export const rootReducer: Reducer<IRootState> = combineReducers<IRootState>({
   txsById,
-  blocksByHash,
-  blocksSummaryByHash,
-  recentBlocksHashs,
+  blocksByHeight,
+  blocksSummaryByHeight,
+  recentBlocksHeights,
 });

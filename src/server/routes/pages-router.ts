@@ -1,17 +1,17 @@
 import { Router } from 'express';
-import { getManifest } from './manifest-manager';
 import * as config from '../config';
+import { getManifest } from './manifest-manager';
 
 export function pagesRouter() {
   const router = Router({ mergeParams: true });
 
-  router.get(`/vchains/:vchainId`, async (req, res) => {
+  router.get(`/vchains/:vchainId*`, async (req, res) => {
     const vchainId = Number(req.params.vchainId);
     if (vchainId === config.ORBS_VIRTUAL_CHAIN_ID) {
       const manifest = await getManifest();
       res.render('page.ejs', { manifest, vchainId });
     } else {
-      res.render('vchain-404.ejs');
+      res.render('vchain-404.ejs', { vchainId });
     }
   });
 

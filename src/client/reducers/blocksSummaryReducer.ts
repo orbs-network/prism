@@ -9,18 +9,18 @@
 import { IBlockSummary } from '../../shared/IBlock';
 import { RootAction } from '../actions/rootAction';
 
-export interface IBlockSummaryByHash {
-  [blockHash: string]: IBlockSummary;
+export interface IBlockSummaryByHeight {
+  [blockHeight: string]: IBlockSummary;
 }
 
-export function blocksSummaryByHash(state: IBlockSummaryByHash = {}, action: RootAction): IBlockSummaryByHash {
+export function blocksSummaryByHeight(state: IBlockSummaryByHeight = {}, action: RootAction): IBlockSummaryByHeight {
   switch (action.type) {
     case 'NEW_BLOCK_SUMMARY': {
       const { blockSummary } = action;
-      const { blockHash } = blockSummary;
+      const { blockHeight } = blockSummary;
       return {
         ...state,
-        [blockHash]: blockSummary,
+        [blockHeight]: blockSummary,
       };
     }
 

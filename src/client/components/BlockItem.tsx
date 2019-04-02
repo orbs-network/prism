@@ -45,14 +45,16 @@ export const BlockItem = withStyles(styles)(({ classes, block, style }: IProps) 
     <Paper className={classes.paper}>
       <div className={classes.line}>
         <Typography className={classes.label}>Block Height:</Typography>
-        <Typography data-type='block-height'>{block.blockHeight}</Typography>
+        <Typography data-type='block-height'>
+          <ConsoleText>
+            <PrismLink to={`/block/${block.blockHeight}`}>{block.blockHeight}</PrismLink>
+          </ConsoleText>
+        </Typography>
       </div>
       <div className={classes.line}>
         <Typography className={classes.label}>Block Hash:</Typography>
         <Typography data-type='block-hash'>
-          <ConsoleText>
-            <PrismLink to={`/block/${block.blockHash}`}>{block.blockHash}</PrismLink>
-          </ConsoleText>
+          <ConsoleText>{block.blockHash}</ConsoleText>
         </Typography>
       </div>
       <div className={classes.line}>

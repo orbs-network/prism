@@ -49,10 +49,10 @@ const AppImpl = ({ classes, location }: IProps) => {
             )}
           />
           <Route
-            path='/block/:blockHash'
+            path='/block/:blockHeight'
             render={({ match }) => (
               <div style={props} className={classes.swipeContainer}>
-                <BlockDetails blockHash={match.params.blockHash} />
+                <BlockDetails blockHeight={match.params.blockHeight} />
               </div>
             )}
           />

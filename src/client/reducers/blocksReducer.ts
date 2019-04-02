@@ -16,15 +16,15 @@ export interface IBlockData {
   block: IBlock;
 }
 
-export interface IBlocksByHash {
-  [blockHash: string]: IBlockData;
+export interface IBlocksByHeight {
+  [blockHeight: string]: IBlockData;
 }
 
-function appendBlockToState(state: IBlocksByHash, block: IBlock): IBlocksByHash {
-  const { blockHash } = block;
+function appendBlockToState(state: IBlocksByHeight, block: IBlock): IBlocksByHeight {
+  const { blockHeight } = block;
   return {
     ...state,
-    [blockHash]: {
+    [blockHeight]: {
       isLoading: false,
       error: null,
       block,
@@ -32,7 +32,7 @@ function appendBlockToState(state: IBlocksByHash, block: IBlock): IBlocksByHash 
   };
 }
 
-export function blocksByHash(state: IBlocksByHash = {}, action: RootAction): IBlocksByHash {
+export function blocksByHeight(state: IBlocksByHeight = {}, action: RootAction): IBlocksByHeight {
   switch (action.type) {
     case 'LOAD_BLOCK_COMPLETED': {
       const { block } = action;
@@ -48,10 +48,10 @@ export function blocksByHash(state: IBlocksByHash = {}, action: RootAction): IBl
     }
 
     case 'LOAD_BLOCK_STARTED': {
-      const { blockHash } = action;
+      const { blockHeight } = action;
       return {
         ...state,
-        [blockHash]: {
+        [blockHeight]: {
           isLoading: true,
           block: null,
           error: null,
@@ -60,10 +60,10 @@ export function blocksByHash(state: IBlocksByHash = {}, action: RootAction): IBl
     }
 
     case 'LOAD_BLOCK_ERROR': {
-      const { error, blockHash } = action;
+      const { error, blockHeight } = action;
       return {
         ...state,
-        [blockHash]: {
+        [blockHeight]: {
           isLoading: false,
           block: null,
           error,
@@ -75,9 +75,9 @@ export function blocksByHash(state: IBlocksByHash = {}, action: RootAction): IBl
   }
 }
 
-export const getBlockData = (state: IRootState, blockHash: string): IBlockData => state.blocksByHash[blockHash];
+export const getBlockData = (state: IRootState, blockHeight: string): IBlockData => state.blocksByHeight[blockHeight];
 
-export const isBlockLoading = (state: IRootState, blockHash: string): boolean => {
-  const blockData = getBlockData(state, blockHash);
+export const isBlockLoading = (state: IRootState, blockHeight: string): boolean => {
+  const blockData = getBlockData(state, blockHeight);
   return blockData && blockData.isLoading;
 };

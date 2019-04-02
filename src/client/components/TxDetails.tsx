@@ -74,10 +74,10 @@ const TxDetailsImpl = withStyles(styles)(
             <Table>
               <TableBody>
                 <TableRow>
-                  <TableCell className={classes.label}>Block Hash</TableCell>
+                  <TableCell className={classes.label}>Block Height</TableCell>
                   <TableCell>
                     <ConsoleText>
-                      <PrismLink to={`/block/${tx.blockHash}`}>{tx.blockHash}</PrismLink>
+                      <PrismLink to={`/block/${tx.blockHeight}`}>{tx.blockHeight}</PrismLink>
                     </ConsoleText>
                   </TableCell>
                 </TableRow>

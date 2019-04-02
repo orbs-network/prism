@@ -31,20 +31,20 @@ const styles = (theme: Theme) =>
   });
 
 interface IOwnProps {
-  blockHash: string;
+  blockHeight: string;
 }
 
 interface IProps extends WithStyles<typeof styles> {
   blockData: IBlockData;
   isBlockLoading: boolean;
-  loadBlock: (blockHash: string) => void;
+  loadBlock: (blockHeight: string) => void;
 }
 
 const BlockDetailsImpl = withStyles(styles)(
   class extends React.Component<IProps & IOwnProps> {
     public componentDidMount() {
       if (!this.props.isBlockLoading && !this.props.blockData) {
-        this.props.loadBlock(this.props.blockHash);
+        this.props.loadBlock(this.props.blockHeight);
       }
     }
 
@@ -101,8 +101,8 @@ const BlockDetailsImpl = withStyles(styles)(
 );
 
 const mapStateToProps = (state: IRootState, ownProps: IOwnProps) => ({
-  blockData: getBlockData(state, ownProps.blockHash),
-  isBlockLoading: isBlockLoading(state, ownProps.blockHash),
+  blockData: getBlockData(state, ownProps.blockHeight),
+  isBlockLoading: isBlockLoading(state, ownProps.blockHeight),
 });
 
 const dispatchProps = {

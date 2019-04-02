@@ -24,13 +24,14 @@ export function rawBlockToBlock(block: IRawBlock): IBlock {
 
 export function blockResponseToRawBlock(getBlockResponse: GetBlockResponse): IRawBlock {
   const blockHash = uint8ArrayToHexString(getBlockResponse.resultsBlockHash);
+  const blockHeight = getBlockResponse.resultsBlockHeader.blockHeight.toString();
   return {
-    blockHeight: getBlockResponse.resultsBlockHeader.blockHeight.toString(),
+    blockHeight,
     blockHash,
     timeStamp: getBlockResponse.blockTimestamp.getTime(),
     transactions: getBlockResponse.transactions.map(tx => ({
       txId: uint8ArrayToHexString(tx.txId),
-      blockHash,
+      blockHeight,
       protocolVersion: tx.protocolVersion,
       virtualChainId: tx.virtualChainId,
       timestamp: tx.timestamp.getTime(),

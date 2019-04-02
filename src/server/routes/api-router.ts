@@ -15,9 +15,9 @@ import { Storage } from '../storage/storage';
 export function apiRouter(storage: Storage) {
   const router = Router();
   router.use(bodyParser.json());
-  router.get('/api/block/:blockHash', async (req, res) => {
-    const blockHash: string = req.params.blockHash;
-    const block: IBlock = await storage.getBlockByHash(blockHash);
+  router.get('/api/block/:blockHeight', async (req, res) => {
+    const blockHeight: string = req.params.blockHeight;
+    const block: IBlock = await storage.getBlockByHeight(blockHeight);
     if (!block) {
       res.send(404);
     } else {

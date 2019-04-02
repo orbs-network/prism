@@ -11,8 +11,8 @@ import { IBlock } from '../../shared/IBlock';
 import { IRawTx } from '../../shared/IRawData';
 import { ISearchResult } from '../../shared/ISearchResult';
 
-export async function loadBlock(blockHash: string): Promise<IBlock> {
-  const res = await axios.get(`/api/block/${blockHash}`);
+export async function loadBlock(blockHeight: string): Promise<IBlock> {
+  const res = await axios.get(`/api/block/${blockHeight}`);
   return res.data as IBlock;
 }
 

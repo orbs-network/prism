@@ -12,26 +12,26 @@ import { IBlock } from '../../shared/IBlock';
 import { loadBlock } from '../utils/api-facade';
 
 // Action Creators
-export const loadBlockAction = (blockHash: string): ThunkAction<void, {}, {}, AnyAction> => {
+export const loadBlockAction = (blockHeight: string): ThunkAction<void, {}, {}, AnyAction> => {
   return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
-    dispatch(loadBlockStartedAction(blockHash));
+    dispatch(loadBlockStartedAction(blockHeight));
     try {
-      const block: IBlock = await loadBlock(blockHash); // Call the server api
+      const block: IBlock = await loadBlock(blockHeight); // Call the server api
       dispatch(loadBlockCompletedAction(block));
     } catch (e) {
-      dispatch(loadBlockErrorAction(blockHash, 'Block Not Found'));
+      dispatch(loadBlockErrorAction(blockHeight, 'Block Not Found'));
     }
   };
 };
 
 export interface ILoadingBlockStartedAction {
   type: 'LOAD_BLOCK_STARTED';
-  blockHash: string;
+  blockHeight: string;
 }
 
-export const loadBlockStartedAction = (blockHash: string): ILoadingBlockStartedAction => ({
+export const loadBlockStartedAction = (blockHeight: string): ILoadingBlockStartedAction => ({
   type: 'LOAD_BLOCK_STARTED',
-  blockHash,
+  blockHeight,
 });
 
 export interface ILoadingBlockCompletedAction {
@@ -46,13 +46,13 @@ export const loadBlockCompletedAction = (block: IBlock): ILoadingBlockCompletedA
 
 export interface ILoadingBlockErrorAction {
   type: 'LOAD_BLOCK_ERROR';
-  blockHash: string;
+  blockHeight: string;
   error: string;
 }
 
-export const loadBlockErrorAction = (blockHash: string, error: string): ILoadingBlockErrorAction => ({
+export const loadBlockErrorAction = (blockHeight: string, error: string): ILoadingBlockErrorAction => ({
   type: 'LOAD_BLOCK_ERROR',
-  blockHash,
+  blockHeight,
   error,
 });
 

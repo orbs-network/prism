@@ -19,7 +19,7 @@ export interface IRawEvent {
 
 export interface IRawTx {
   txId: string;
-  blockHash: string;
+  blockHeight: string;
   protocolVersion: number;
   virtualChainId: number;
   timestamp: number;
