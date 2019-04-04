@@ -6,12 +6,30 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { IBlock } from '../../shared/IBlock';
+import { IBlock, IBlockSummary } from '../../shared/IBlock';
 import { IRawBlock, IRawArgument, IRawEvent } from '../../shared/IRawData';
 import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import { uint8ArrayToHexString } from '../hash-converter/hashConverter';
 import { Argument } from 'orbs-client-sdk/dist/codec/Arguments';
 import { Event } from 'orbs-client-sdk/dist/codec/Events';
+
+export function blockToBlockSummary(block: IBlock): IBlockSummary {
+  return {
+    blockHash: block.blockHash,
+    blockHeight: block.blockHeight,
+    numTransactions: block.txIds.length,
+    blockTimestamp: block.blockTimestamp,
+  };
+}
+
+export function rawBlockToBlockSummary(rawBlock: IRawBlock): IBlockSummary {
+  return {
+    blockHash: rawBlock.blockHash,
+    blockHeight: rawBlock.blockHeight,
+    numTransactions: rawBlock.transactions.length,
+    blockTimestamp: rawBlock.timeStamp,
+  };
+}
 
 export function rawBlockToBlock(block: IRawBlock): IBlock {
   return {

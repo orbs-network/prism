@@ -11,6 +11,7 @@ import * as socketIO from 'socket.io';
 import { IBlockSummary } from '../../shared/IBlock';
 import { INewBlocksHandler } from '../orbs-adapter/OrbsAdapter';
 import { IRawBlock } from '../../shared/IRawData';
+import { rawBlockToBlockSummary } from '../block-transform/blockTransform';
 
 export class WS implements INewBlocksHandler {
   private sockets = {};
@@ -29,21 +30,12 @@ export class WS implements INewBlocksHandler {
   }
 
   public async handleNewBlock(rawBlock: IRawBlock): Promise<void> {
-    this.emit('new-block-summary', this.blockToBlockSummary(rawBlock));
+    this.emit('new-block-summary', rawBlockToBlockSummary(rawBlock));
   }
 
   private emit(name: string, data: any) {
     Object.keys(this.sockets)
       .map(id => this.sockets[id])
       .forEach(s => s.emit(name, data));
-  }
-
-  private blockToBlockSummary(rawBlock: IRawBlock): IBlockSummary {
-    return {
-      blockHash: rawBlock.blockHash,
-      blockHeight: rawBlock.blockHeight,
-      numTransactions: rawBlock.transactions.length,
-      blockTimestamp: rawBlock.timeStamp,
-    };
   }
 }

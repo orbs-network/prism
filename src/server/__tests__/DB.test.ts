@@ -55,6 +55,22 @@ function testDb(db: IDB, dbName: string) {
       expect(block).toEqual(actual);
     });
 
+    it('should be able to retrive the latest blocks', async () => {
+      const block1 = rawBlockToBlock(generateRandomRawBlock(1n));
+      const block2 = rawBlockToBlock(generateRandomRawBlock(2n));
+      const block3 = rawBlockToBlock(generateRandomRawBlock(3n));
+      const block4 = rawBlockToBlock(generateRandomRawBlock(4n));
+      const block5 = rawBlockToBlock(generateRandomRawBlock(5n));
+      await db.storeBlock(block1);
+      await db.storeBlock(block2);
+      await db.storeBlock(block3);
+      await db.storeBlock(block4);
+      await db.storeBlock(block5);
+
+      const actual = await db.getLatestBlocks(3);
+      expect(actual).toEqual([block5, block4, block3]);
+    });
+
     it('should store and retrive txs', async () => {
       const rawBlock = generateRandomRawBlock(1n);
 

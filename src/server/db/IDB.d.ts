@@ -14,6 +14,7 @@ export interface IDB {
   destroy(): Promise<void>;
   clearAll(): Promise<void>;
   storeBlock(block: IBlock): Promise<void>;
+  getLatestBlocks(count: number): Promise<IBlock[]>;
   getBlockByHash(blockHash: string): Promise<IBlock>;
   getBlockByHeight(blockHeight: string): Promise<IBlock>;
   getLatestBlockHeight(): Promise<bigint>;
