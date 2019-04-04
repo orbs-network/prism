@@ -17,7 +17,7 @@ export function apiRouter(storage: Storage) {
   router.use(bodyParser.json());
 
   router.get('/api/blocks/summary', async (req, res) => {
-    const count: number = req.query.count ? parseInt(req.query.count, 10) : 5;
+    const count: number = Math.min(20, req.query.count ? parseInt(req.query.count, 10) : 5);
     const blocksSummary: IBlockSummary[] = await storage.getLatestBlocksSummary(count);
     res.json(blocksSummary);
   });
