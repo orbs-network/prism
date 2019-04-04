@@ -6,10 +6,10 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { IBlock } from '../../shared/IBlock';
+import { IBlock, IBlockSummary } from '../../shared/IBlock';
 import { ISearchResult } from '../../shared/ISearchResult';
 import { IRawTx, IRawBlock } from '../../shared/IRawData';
-import { rawBlockToBlock } from '../block-transform/blockTransform';
+import { rawBlockToBlock, blockToBlockSummary } from '../block-transform/blockTransform';
 import { IDB } from '../db/IDB';
 
 export class Storage {
@@ -17,6 +17,11 @@ export class Storage {
 
   public getBlockByHash(blockHash: string): Promise<IBlock> {
     return this.db.getBlockByHash(blockHash);
+  }
+
+  public async getLatestBlocksSummary(count: number): Promise<IBlockSummary[]> {
+    const latestBlocks = await this.db.getLatestBlocks(count);
+    return latestBlocks.map(blockToBlockSummary);
   }
 
   public getBlockByHeight(blockHeight: string): Promise<IBlock> {

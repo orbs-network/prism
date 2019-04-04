@@ -12,14 +12,24 @@ import { IRootState } from './rootReducer';
 
 export type RecentBlocksHeights = string[];
 
+function appendBlockHeight(state: string[], blockHeight: string): string[] {
+  const result = [blockHeight, ...state];
+  return result.length > 5 ? result.splice(0, 5) : result;
+}
+
 export function recentBlocksHeights(
   state: RecentBlocksHeights = [],
   action: BlocksSummaryActions,
 ): RecentBlocksHeights {
   switch (action.type) {
-    case 'NEW_BLOCK_SUMMARY':
-      const result = [action.blockSummary.blockHeight, ...state];
-      return result.length > 5 ? result.splice(0, 5) : result;
+    case 'LATEST_BLOCKS_SUMMARY': {
+      return action.blocksSummary.reduceRight((prev, bs) => appendBlockHeight(prev, bs.blockHeight), state);
+    }
+
+    case 'NEW_BLOCK_SUMMARY': {
+      return appendBlockHeight(state, action.blockSummary.blockHeight);
+    }
+
     default:
       return state;
   }

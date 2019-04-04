@@ -20,7 +20,7 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
-import { listenToBlocksSummaryAction } from './actions/blocksSummaryActions';
+import { loadLatestBlocksSummaryAction } from './actions/blocksSummaryActions';
 import { App } from './App';
 import { Background } from './components/Background';
 import { Header } from './components/Header';
@@ -30,7 +30,7 @@ import { VChainDetails } from './VChainDetails';
 const vchainId = (window as any).vchainId;
 
 const store = configureStore();
-store.dispatch(listenToBlocksSummaryAction() as any);
+store.dispatch(loadLatestBlocksSummaryAction() as any);
 
 const baseTheme = createMuiTheme({
   palette: {

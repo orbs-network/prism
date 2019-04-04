@@ -96,6 +96,26 @@ export class MongoDB implements IDB {
     console.log(`block stored [${Date.now() - startTime}ms.]`);
   }
 
+  public async getLatestBlocks(count: number): Promise<IBlock[]> {
+    const startTime = Date.now();
+    console.log(`Quering for the latest ${count} blocks`);
+    const result = await this.BlockModel.find({ }, { _id: false, __v: false })
+      .sort('-blockHeight')
+      .limit(count)
+      .lean()
+      .exec();
+
+    if (result) {
+      console.log(`${count} blocks found [${Date.now() - startTime}ms.]`);
+      // in the db we store the blockHeight as long (For better search), here we convert it back to string
+      result.forEach(block => block.blockHeight = block.blockHeight.toString());
+      return result;
+    } else {
+      console.log(`no blocks found [${Date.now() - startTime}ms.]`);
+      return null;
+    }
+  }
+
   public async getBlockByHash(blockHash: string): Promise<IBlock> {
     const startTime = Date.now();
     console.log(`Searching for block by hash: ${blockHash}`);

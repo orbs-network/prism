@@ -43,6 +43,10 @@ export class InMemoryDB implements IDB {
     this.capBlocks();
   }
 
+  public async getLatestBlocks(count: number): Promise<IBlock[]> {
+    return [];
+  }
+
   public async getBlockByHeight(blockHeight: string): Promise<IBlock> {
     for (const block of this.blocks.values()) {
       if (block.blockHeight === blockHeight) {

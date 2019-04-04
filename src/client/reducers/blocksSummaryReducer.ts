@@ -13,15 +13,22 @@ export interface IBlockSummaryByHeight {
   [blockHeight: string]: IBlockSummary;
 }
 
+function appendBlockSummary(state: IBlockSummaryByHeight, blockSummary: IBlockSummary): IBlockSummaryByHeight {
+  const { blockHeight } = blockSummary;
+  return {
+    ...state,
+    [blockHeight]: blockSummary,
+  };
+}
+
 export function blocksSummaryByHeight(state: IBlockSummaryByHeight = {}, action: RootAction): IBlockSummaryByHeight {
   switch (action.type) {
+    case 'LATEST_BLOCKS_SUMMARY': {
+      return action.blocksSummary.reduceRight((prev, bs) => appendBlockSummary(prev, bs), state);
+    }
+
     case 'NEW_BLOCK_SUMMARY': {
-      const { blockSummary } = action;
-      const { blockHeight } = blockSummary;
-      return {
-        ...state,
-        [blockHeight]: blockSummary,
-      };
+      return appendBlockSummary(state, action.blockSummary);
     }
 
     default:

@@ -10,10 +10,18 @@ import { AnyAction } from 'redux';
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import * as io from 'socket.io-client';
 import { IBlockSummary } from '../../shared/IBlock';
+import { getLatestBlocksSummary } from '../utils/api-facade';
 
 const socket = io();
 
-// Action Creators
+export const loadLatestBlocksSummaryAction = (): ThunkAction<void, {}, {}, AnyAction> => {
+  return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
+    const blocksSummary = await getLatestBlocksSummary(5);
+    dispatch(latestBlocksSummaryAction(blocksSummary));
+    dispatch(listenToBlocksSummaryAction());
+  };
+};
+
 export const listenToBlocksSummaryAction = (): ThunkAction<void, {}, {}, AnyAction> => {
   return (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
     socket.on('new-block-summary', (blockSummary: IBlockSummary) => {
@@ -32,5 +40,15 @@ export const newBlockSummaryAction = (blockSummary: IBlockSummary): INewBlockSum
   blockSummary,
 });
 
+export interface ILatestBlocksSummaryAction {
+  type: 'LATEST_BLOCKS_SUMMARY';
+  blocksSummary: IBlockSummary[];
+}
+
+export const latestBlocksSummaryAction = (blocksSummary: IBlockSummary[]): ILatestBlocksSummaryAction => ({
+  type: 'LATEST_BLOCKS_SUMMARY',
+  blocksSummary,
+});
+
 // All Actions
-export type BlocksSummaryActions = INewBlockSummaryAction;
+export type BlocksSummaryActions = INewBlockSummaryAction | ILatestBlocksSummaryAction;
