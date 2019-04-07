@@ -87,7 +87,7 @@ function genUint8Array(len: number): Uint8Array {
 }
 
 function generateBlockTransaction(): BlockTransaction {
-  const signerPublicKey = genUint8Array(50);
+  const signerPublicKey = genUint8Array(32);
   return {
     txId: genUint8Array(40),
     txHash: genUint8Array(20),
