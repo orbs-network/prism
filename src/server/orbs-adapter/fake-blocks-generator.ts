@@ -95,7 +95,6 @@ function generateBlockTransaction(): BlockTransaction {
     virtualChainId: 42,
     timestamp: new Date(),
     signerPublicKey,
-    signerAddress: calcClientAddressOfEd25519PublicKey(signerPublicKey),
     contractName: 'DummyContract',
     methodName: 'DummyMethod',
     inputArguments: [],
