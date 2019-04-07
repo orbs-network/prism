@@ -32,6 +32,7 @@ const AppImpl = ({ classes, location }: IProps) => {
   return (
     <Transition
       config={config.slow}
+      initial={null}
       keys={location.pathname}
       from={{ opacity: 0, transform: 'translateX(-15%)' }}
       enter={{ opacity: 1, transform: 'translateX(0%)' }}
