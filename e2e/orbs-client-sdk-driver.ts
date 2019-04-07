@@ -6,11 +6,10 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { argAddress, argUint64, Client, createAccount, NetworkType } from 'orbs-client-sdk';
-import { Account } from 'orbs-client-sdk/dist/orbs/Account';
-import { hexStringToUint8Array } from '../src/server/hash-converter/hashConverter';
-import * as findUp from 'find-up';
 import * as dotEnv from 'dotenv';
+import * as findUp from 'find-up';
+import { argAddress, argUint64, Client, createAccount, decodeHex, NetworkType } from 'orbs-client-sdk';
+import { Account } from 'orbs-client-sdk/dist/orbs/Account';
 
 dotEnv.config({ path: findUp.sync('.env') });
 
@@ -20,9 +19,9 @@ const ORBS_NETWORK_TYPE = process.env.ORBS_NETWORK_TYPE;
 
 // We use the same sender because he is the token holder (the first address that does a transaction of the token contract)
 const sender: Account = {
-  publicKey: hexStringToUint8Array('b72c9fe0f78b5b27769a1007fb6b77fe6743beef92d1cb6e262163cbd13c0e11'),
-  privateKey: hexStringToUint8Array(
-    '479cfc81fb55cf1ce75f66cd8549c4efef2ee585a4c19a34947c1e095d159aa5b72c9fe0f78b5b27769a1007fb6b77fe6743beef92d1cb6e262163cbd13c0e11',
+  publicKey: decodeHex('0xb72c9fe0f78b5b27769a1007fb6b77fe6743beef92d1cb6e262163cbd13c0e11'),
+  privateKey: decodeHex(
+    '0x479cfc81fb55cf1ce75f66cd8549c4efef2ee585a4c19a34947c1e095d159aa5b72c9fe0f78b5b27769a1007fb6b77fe6743beef92d1cb6e262163cbd13c0e11',
   ),
   address: '0x960B27df51146BD3dE815EEa7B9464307AbEe433',
 };

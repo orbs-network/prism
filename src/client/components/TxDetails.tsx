@@ -104,6 +104,12 @@ const TxDetailsImpl = withStyles(styles)(
                   </TableCell>
                 </TableRow>
                 <TableRow>
+                  <TableCell className={classes.label}>Signer Address</TableCell>
+                  <TableCell>
+                    <ConsoleText>{tx.signerAddress}</ConsoleText>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
                   <TableCell className={classes.label}>Contract</TableCell>
                   <TableCell>
                     <ConsoleText>{tx.contractName}</ConsoleText>

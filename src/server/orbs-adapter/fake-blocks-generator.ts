@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { ExecutionResult } from 'orbs-client-sdk';
+import { ExecutionResult, calcClientAddressOfEd25519PublicKey } from 'orbs-client-sdk';
 import {
   BlockTransaction,
   GetBlockResponse,
@@ -87,13 +87,15 @@ function genUint8Array(len: number): Uint8Array {
 }
 
 function generateBlockTransaction(): BlockTransaction {
+  const signerPublicKey = genUint8Array(50);
   return {
     txId: genUint8Array(40),
     txHash: genUint8Array(20),
     protocolVersion: 1,
     virtualChainId: 42,
     timestamp: new Date(),
-    signerPublicKey: genUint8Array(50),
+    signerPublicKey,
+    signerAddress: calcClientAddressOfEd25519PublicKey(signerPublicKey),
     contractName: 'DummyContract',
     methodName: 'DummyMethod',
     inputArguments: [],

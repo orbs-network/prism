@@ -6,12 +6,12 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { IBlock, IBlockSummary } from '../../shared/IBlock';
-import { IRawBlock, IRawArgument, IRawEvent } from '../../shared/IRawData';
-import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
-import { uint8ArrayToHexString } from '../hash-converter/hashConverter';
+import { calcClientAddressOfEd25519PublicKey, encodeHex } from 'orbs-client-sdk';
 import { Argument } from 'orbs-client-sdk/dist/codec/Arguments';
 import { Event } from 'orbs-client-sdk/dist/codec/Events';
+import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
+import { IBlock, IBlockSummary } from '../../shared/IBlock';
+import { IRawArgument, IRawBlock, IRawEvent } from '../../shared/IRawData';
 
 export function blockToBlockSummary(block: IBlock): IBlockSummary {
   return {
@@ -41,19 +41,20 @@ export function rawBlockToBlock(block: IRawBlock): IBlock {
 }
 
 export function blockResponseToRawBlock(getBlockResponse: GetBlockResponse): IRawBlock {
-  const blockHash = uint8ArrayToHexString(getBlockResponse.resultsBlockHash);
+  const blockHash = encodeHex(getBlockResponse.resultsBlockHash);
   const blockHeight = getBlockResponse.resultsBlockHeader.blockHeight.toString();
   return {
     blockHeight,
     blockHash,
     timeStamp: getBlockResponse.blockTimestamp.getTime(),
     transactions: getBlockResponse.transactions.map(tx => ({
-      txId: uint8ArrayToHexString(tx.txId),
+      txId: encodeHex(tx.txId),
       blockHeight,
       protocolVersion: tx.protocolVersion,
       virtualChainId: tx.virtualChainId,
       timestamp: tx.timestamp.getTime(),
-      signerPublicKey: uint8ArrayToHexString(tx.signerPublicKey),
+      signerPublicKey: encodeHex(tx.signerPublicKey),
+      signerAddress: encodeHex(calcClientAddressOfEd25519PublicKey(tx.signerPublicKey)),
       contractName: tx.contractName,
       methodName: tx.methodName,
       inputArguments: tx.inputArguments.map(convertToRawArgument),
@@ -82,7 +83,7 @@ function convertToRawArgument(argument: Argument): IRawArgument {
     case 'bytes':
       return {
         type: argument.type,
-        value: uint8ArrayToHexString(argument.value),
+        value: encodeHex(argument.value),
       };
 
     default:

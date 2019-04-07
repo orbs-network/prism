@@ -24,6 +24,7 @@ export interface IRawTx {
   virtualChainId: number;
   timestamp: number;
   signerPublicKey: string;
+  signerAddress: string;
   contractName: string;
   methodName: string;
   inputArguments: IRawArgument[];
