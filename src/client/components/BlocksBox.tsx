@@ -37,6 +37,7 @@ const BlocksBoxImpl = withStyles(styles)(
             <CardHeader title={'Blocks'} className={classes.header} />
           </Card>
           <Transition
+            config={{ duration: 250 }}
             items={this.props.blocks}
             keys={block => block.blockHash}
             from={{ height: 0, opacity: 0, transform: `scale(0, 0) translate(0, 0px)` }}
