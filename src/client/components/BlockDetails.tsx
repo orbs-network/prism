@@ -19,11 +19,16 @@ import { IRootState } from '../reducers/rootReducer';
 import { TxesList } from './TxesList';
 import { ConsoleText } from './ConsoleText';
 import { TimeStampField } from './TimeStampField';
+import { PrevBlockButton } from './PrevBlockButton';
+import { NextBlockButton } from './NextBlockButton';
 
 const styles = (theme: Theme) =>
   createStyles({
     header: {
       backgroundColor: theme.palette.primary.main,
+    },
+    headerActions: {
+      marginTop: 0,
     },
     label: {
       fontWeight: 700,
@@ -65,7 +70,17 @@ const BlockDetailsImpl = withStyles(styles)(
       const { block } = this.props.blockData;
       return (
         <Card>
-          <CardHeader title='Block' id='block-details' className={classes.header} />
+          <CardHeader
+            title='Block'
+            id='block-details'
+            action={
+              <>
+                <PrevBlockButton block={block} />
+                <NextBlockButton block={block} />
+              </>
+            }
+            classes={{ root: classes.header, action: classes.headerActions }}
+          />
           <CardContent>
             <Table>
               <TableBody>

@@ -37,3 +37,5 @@ export function recentBlocksHeights(
 
 export const getRecentBlocksSummary = (state: IRootState): IBlockSummary[] =>
   state.recentBlocksHeights.map(blockHeight => state.blocksSummaryByHeight[blockHeight]);
+
+export const getHeighestBlockHeight = (state: IRootState): string => state.recentBlocksHeights[0];
