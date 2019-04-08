@@ -27,10 +27,10 @@
             </script>
         <% } %>
 
-        <% if (process.env.ROLLBAR_ID) { %>
+        <% if (process.env.ROLLBAR_ACCESS_TOKEN_CLIENT) { %>
             <script>
             var _rollbarConfig = {
-                accessToken: "<%= process.env.ROLLBAR_ID %>",
+                accessToken: "<%= process.env.ROLLBAR_ACCESS_TOKEN_CLIENT %>",
                 captureUncaught: true,
                 captureUnhandledRejections: true,
                 payload: { 

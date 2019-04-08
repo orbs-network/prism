@@ -6,7 +6,13 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { GAP_FILLER_ACTIVE, GAP_FILLER_INTERVAL, GAP_FILLER_INITIAL_DELAY } from './config';
+import {
+  GAP_FILLER_ACTIVE,
+  GAP_FILLER_INTERVAL,
+  GAP_FILLER_INITIAL_DELAY,
+  ROLLBAR_ACCESS_TOKEN_SERVER,
+  IS_PRODUCTION,
+} from './config';
 import { genDb } from './db/DBFactory';
 import { fillGapsForever } from './gaps-filler/GapsFiller';
 import { genOrbsAdapter } from './orbs-adapter/OrbsAdapterFactory';
@@ -15,6 +21,17 @@ import { Storage } from './storage/storage';
 import { WS } from './ws/ws';
 import { sleep } from './gaps-filler/Cron';
 import * as config from './config';
+import Rollbar = require('rollbar');
+
+if (IS_PRODUCTION && ROLLBAR_ACCESS_TOKEN_SERVER) {
+  const rollbar = new Rollbar({
+    accessToken: ROLLBAR_ACCESS_TOKEN_SERVER,
+    captureUncaught: true,
+    captureUnhandledRejections: true,
+  });
+
+  rollbar.log('Hello world!');
+}
 
 async function main() {
   console.log(`  *******************************************  `);
