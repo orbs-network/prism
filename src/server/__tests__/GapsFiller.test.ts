@@ -12,19 +12,23 @@ import { OrbsAdapter } from '../orbs-adapter/OrbsAdapter';
 import { MockOrbsClient } from '../orbs-client/MockOrbsClient';
 import { Storage } from '../storage/storage';
 import { waitUntil } from './TimeUtils';
+import { genLogger } from '../logger/LoggerFactory';
+import * as winston from 'winston';
 
 describe('Gaps Filler', () => {
   let db: InMemoryDB;
+  let logger: winston.Logger;
   let orbsAdapter: OrbsAdapter;
   let orbsClient: MockOrbsClient;
   let storage: Storage;
 
   beforeEach(async () => {
+    logger = genLogger(false, false, false);
     db = new InMemoryDB();
     await db.init();
 
     orbsClient = new MockOrbsClient();
-    orbsAdapter = new OrbsAdapter(orbsClient, 25); // fast pooling, every 25ms.
+    orbsAdapter = new OrbsAdapter(logger, orbsClient, 25); // fast pooling, every 25ms.
     storage = new Storage(db);
     orbsAdapter.RegisterToNewBlocks(storage);
   });
