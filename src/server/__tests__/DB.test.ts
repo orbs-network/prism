@@ -12,9 +12,13 @@ import { IDB } from '../db/IDB';
 import { InMemoryDB } from '../db/InMemoryDB';
 import { MongoDB } from '../db/MongoDB';
 import { generateRandomRawBlock } from '../orbs-adapter/fake-blocks-generator';
+import * as winston from 'winston';
+import { genLogger } from '../logger/LoggerFactory';
+
+const logger: winston.Logger = genLogger(false, false, false);
 
 testDb(new InMemoryDB(), 'InMemoryDB');
-testDb(new MongoDB(MONGODB_URI), 'MongoDB');
+testDb(new MongoDB(logger, MONGODB_URI), 'MongoDB');
 
 function testDb(db: IDB, dbName: string) {
   describe(dbName, async () => {

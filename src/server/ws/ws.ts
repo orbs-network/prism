@@ -8,23 +8,23 @@
 
 import { Server } from 'http';
 import * as socketIO from 'socket.io';
-import { IBlockSummary } from '../../shared/IBlock';
-import { INewBlocksHandler } from '../orbs-adapter/OrbsAdapter';
+import * as winston from 'winston';
 import { IRawBlock } from '../../shared/IRawData';
 import { rawBlockToBlockSummary } from '../block-transform/blockTransform';
+import { INewBlocksHandler } from '../orbs-adapter/OrbsAdapter';
 
 export class WS implements INewBlocksHandler {
   private sockets = {};
 
-  constructor(private server: Server) {
+  constructor(private logger: winston.Logger, private server: Server) {
     const io = socketIO(this.server);
 
     io.on('connection', socket => {
       this.sockets[socket.id] = socket;
-      console.log(`Client connected, ${Object.keys(this.sockets).length} connections`);
+      this.logger.info(`Client connected, ${Object.keys(this.sockets).length} websockets connections`);
       socket.on('disconnect', () => {
         delete this.sockets[socket.id];
-        console.log(`Client disconnected, ${Object.keys(this.sockets).length} connections.`);
+        this.logger.info(`Client disconnected, ${Object.keys(this.sockets).length} websockets connections.`);
       });
     });
   }

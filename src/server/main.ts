@@ -27,13 +27,13 @@ async function main() {
 
   // externals
   const orbsAdapter = genOrbsAdapter(logger);
-  const db = genDb();
+  const db = genDb(logger);
   await db.init(); // create tables if needed
 
   // internals
   const storage = new Storage(db);
   const server = initServer(storage);
-  const ws = new WS(server);
+  const ws = new WS(logger, server);
 
   // link all the parts
   orbsAdapter.RegisterToNewBlocks(ws);
@@ -42,7 +42,7 @@ async function main() {
 
   if (GAP_FILLER_ACTIVE) {
     await sleep(GAP_FILLER_INITIAL_DELAY);
-    fillGapsForever(storage, orbsAdapter, GAP_FILLER_INTERVAL);
+    fillGapsForever(logger, storage, orbsAdapter, GAP_FILLER_INTERVAL);
   }
 }
 

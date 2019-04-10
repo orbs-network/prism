@@ -11,6 +11,7 @@ import { IBlock } from '../../shared/IBlock';
 import { IRawTx } from '../../shared/IRawData';
 import { IDB } from './IDB';
 import * as mongooseLong from 'mongoose-long';
+import * as winston from 'winston';
 
 mongooseLong(mongoose);
 mongoose.set('useFindAndModify', false);
@@ -56,14 +57,14 @@ export class MongoDB implements IDB {
   private TxModel: mongoose.Model<mongoose.Document>;
   private CacheModel: mongoose.Model<ICacheDocument>;
 
-  constructor(private connectionUrl: string, private readOnlyMode: boolean = false) {}
+  constructor(private logger: winston.Logger, private connectionUrl: string, private readOnlyMode: boolean = false) {}
 
   public async init(): Promise<void> {
-    mongoose.connection.once('connecting', () => console.log('mongoose connecting'));
-    mongoose.connection.once('connected', () => console.log('mongoose connected'));
-    mongoose.connection.once('disconnecting', () => console.log('mongoose disconnecting'));
-    mongoose.connection.once('disconnected', () => console.log('mongoose disconnected'));
-    mongoose.connection.once('error', e => console.log('mongoose error:', e));
+    mongoose.connection.once('connecting', () => this.logger.info('mongoose connecting'));
+    mongoose.connection.once('connected', () => this.logger.info('mongoose connected'));
+    mongoose.connection.once('disconnecting', () => this.logger.info('mongoose disconnecting'));
+    mongoose.connection.once('disconnected', () => this.logger.info('mongoose disconnected'));
+    mongoose.connection.once('error', e => this.logger.info('mongoose error:', e));
 
     this.db = await mongoose.connect(this.connectionUrl, { useNewUrlParser: true });
 
@@ -94,15 +95,15 @@ export class MongoDB implements IDB {
       return;
     }
     const startTime = Date.now();
-    console.log(`Storing block #${block.blockHeight}`);
+    this.logger.info(`Storing block #${block.blockHeight}`);
     const blockInstance = new this.BlockModel(block);
     await blockInstance.save();
-    console.log(`block stored [${Date.now() - startTime}ms.]`);
+    this.logger.info(`block stored [${Date.now() - startTime}ms.]`);
   }
 
   public async getLatestBlocks(count: number): Promise<IBlock[]> {
     const startTime = Date.now();
-    console.log(`Quering for the latest ${count} blocks`);
+    this.logger.info(`Quering for the latest ${count} blocks`);
     const result = await this.BlockModel.find({}, { _id: false, __v: false })
       .sort('-blockHeight')
       .limit(count)
@@ -110,48 +111,48 @@ export class MongoDB implements IDB {
       .exec();
 
     if (result) {
-      console.log(`${count} blocks found [${Date.now() - startTime}ms.]`);
+      this.logger.info(`${count} blocks found [${Date.now() - startTime}ms.]`);
       // in the db we store the blockHeight as long (For better search), here we convert it back to string
       result.forEach(block => (block.blockHeight = block.blockHeight.toString()));
       return result;
     } else {
-      console.log(`no blocks found [${Date.now() - startTime}ms.]`);
+      this.logger.info(`no blocks found [${Date.now() - startTime}ms.]`);
       return null;
     }
   }
 
   public async getBlockByHash(blockHash: string): Promise<IBlock> {
     const startTime = Date.now();
-    console.log(`Searching for block by hash: ${blockHash}`);
+    this.logger.info(`Searching for block by hash: ${blockHash}`);
     const result = await this.BlockModel.findOne({ $text: { $search: blockHash } }, { _id: false, __v: false })
       .lean()
       .exec();
 
     if (result) {
-      console.log(`block found [${Date.now() - startTime}ms.]`);
+      this.logger.info(`block found [${Date.now() - startTime}ms.]`);
       // in the db we store the blockHeight as long (For better search), here we convert it back to string
       result.blockHeight = result.blockHeight.toString();
       return result;
     } else {
-      console.log(`block not found [${Date.now() - startTime}ms.]`);
+      this.logger.info(`block not found [${Date.now() - startTime}ms.]`);
       return null;
     }
   }
 
   public async getBlockByHeight(blockHeight: string): Promise<IBlock> {
     const startTime = Date.now();
-    console.log(`Searching for block by height: ${blockHeight}`);
+    this.logger.info(`Searching for block by height: ${blockHeight}`);
     const result = await this.BlockModel.findOne({ blockHeight }, { _id: false, __v: false })
       .lean()
       .exec();
 
     if (result) {
-      console.log(`block found [${Date.now() - startTime}ms.]`);
+      this.logger.info(`block found [${Date.now() - startTime}ms.]`);
       // in the db we store the blockHeight as long (For better search), here we convert it back to string
       result.blockHeight = result.blockHeight.toString();
       return result;
     } else {
-      console.log(`block not found [${Date.now() - startTime}ms.]`);
+      this.logger.info(`block not found [${Date.now() - startTime}ms.]`);
       return null;
     }
   }
@@ -203,12 +204,12 @@ export class MongoDB implements IDB {
 
   public async getTxById(txId: string): Promise<IRawTx> {
     const startTime = Date.now();
-    console.log(`Searching for tx by txId: ${txId}`);
+    this.logger.info(`Searching for tx by txId: ${txId}`);
     const result = await this.TxModel.findOne({ $text: { $search: txId } }, { _id: false, __v: false })
       .lean()
       .exec();
 
-    console.log(`tx found [${Date.now() - startTime}ms.]`);
+    this.logger.info(`tx found [${Date.now() - startTime}ms.]`);
     return result;
   }
 }

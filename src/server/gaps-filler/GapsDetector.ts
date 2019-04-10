@@ -7,17 +7,23 @@
  */
 
 import { Storage } from '../storage/storage';
+import winston = require('winston');
 
-export async function detectBlockChainGaps(storage: Storage, fromHeight: bigint, toHeight: bigint): Promise<Array<bigint>> {
+export async function detectBlockChainGaps(
+  logger: winston.Logger,
+  storage: Storage,
+  fromHeight: bigint,
+  toHeight: bigint,
+): Promise<Array<bigint>> {
   const result: Array<bigint> = [];
   for (let height = fromHeight; height <= toHeight; height++) {
+    logger.info(`Asking storage for block at ${height}?`, { method: 'detectBlockChainGaps' });
     const storageBlock = await storage.getBlockByHeight(height.toString());
-    console.log(`[Gaps Detector], do we have block at ${height}?`);
     if (!storageBlock) {
-      console.log(`[Gaps Detector], nop.`);
+      logger.info(`No block found in storage for height ${height}`);
       result.push(height);
     } else {
-      console.log(`[Gaps Detector], yeap.`);
+      logger.info(`A block found in storage for height ${height}`);
     }
   }
 

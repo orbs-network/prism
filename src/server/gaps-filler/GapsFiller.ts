@@ -10,26 +10,32 @@ import { OrbsAdapter } from '../orbs-adapter/OrbsAdapter';
 import { Storage } from '../storage/storage';
 import { detectBlockChainGaps } from './GapsDetector';
 import { cron } from './Cron';
+import * as winston from 'winston';
 
-export function fillGapsForever(storage: Storage, orbsAdapter: OrbsAdapter, interval: number): void {
+export function fillGapsForever(
+  logger: winston.Logger,
+  storage: Storage,
+  orbsAdapter: OrbsAdapter,
+  interval: number,
+): void {
   cron(async () => {
-    console.log(`Cron Job started.`);
-    await fillGaps(storage, orbsAdapter);
+    logger.info(`Cron Job started.`);
+    await fillGaps(logger, storage, orbsAdapter);
   }, interval);
 }
 
-export async function fillGaps(storage: Storage, orbsAdapter: OrbsAdapter): Promise<void> {
+export async function fillGaps(logger: winston.Logger, storage: Storage, orbsAdapter: OrbsAdapter): Promise<void> {
   const toHeight = await storage.getLatestBlockHeight();
   const fromHeight = (await storage.getHeighestConsecutiveBlockHeight()) + 1n;
-  console.log(`Searching for gaps from ${fromHeight} to ${toHeight}`);
-  const gaps = await detectBlockChainGaps(storage, fromHeight, toHeight);
-  console.log(`${gaps.length} missing blocks to fill`);
+  logger.info(`Searching for gaps from ${fromHeight} to ${toHeight}`, { method: 'fillGaps' });
+  const gaps = await detectBlockChainGaps(logger, storage, fromHeight, toHeight);
+  logger.info(`${gaps.length} missing blocks to fill`, { method: 'fillGaps' });
   for (const height of gaps) {
     const block = await orbsAdapter.getBlockAt(height);
     if (block) {
       await storage.handleNewBlock(block);
       await storage.setHeighestConsecutiveBlockHeight(height);
-      console.log(`GapsFiller, block at ${height} stored`);
+      logger.info(`GapsFiller, block at ${height} stored`, { method: 'fillGaps' });
     } else {
       // report block not stored
     }

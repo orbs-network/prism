@@ -11,11 +11,12 @@ import { InMemoryDB } from './InMemoryDB';
 // import { PostgresDB } from './PostgresDB';
 import { MongoDB } from './MongoDB';
 import { POSTGRES_URL, MONGODB_URI, DATABASE_TYPE, DB_IS_READ_ONLY } from '../config';
+import * as winston from 'winston';
 
-export function genDb(): IDB {
+export function genDb(logger: winston.Logger): IDB {
   switch (DATABASE_TYPE) {
     case 'MONGO':
-      return new MongoDB(MONGODB_URI, DB_IS_READ_ONLY);
+      return new MongoDB(logger, MONGODB_URI, DB_IS_READ_ONLY);
 
     // case 'POSTGRES':
     //   return new PostgresDB(POSTGRES_URL);

@@ -16,14 +16,13 @@ import { genLogger } from '../logger/LoggerFactory';
 import * as winston from 'winston';
 
 describe('Gaps Filler', () => {
+  const logger: winston.Logger = genLogger(false, false, false);
   let db: InMemoryDB;
-  let logger: winston.Logger;
   let orbsAdapter: OrbsAdapter;
   let orbsClient: MockOrbsClient;
   let storage: Storage;
 
   beforeEach(async () => {
-    logger = genLogger(false, false, false);
     db = new InMemoryDB();
     await db.init();
 
@@ -57,7 +56,7 @@ describe('Gaps Filler', () => {
     }
 
     // fill the gap from 1 to 10
-    await fillGaps(storage, orbsAdapter);
+    await fillGaps(logger, storage, orbsAdapter);
 
     // make sure that the storage holds the all 15 blocks
     for (let i = 1; i <= 15; i++) {
@@ -80,7 +79,7 @@ describe('Gaps Filler', () => {
     await waitUntil(async () => (await storage.getLatestBlockHeight()) === 15n);
 
     // fill the gap from 1 to 10
-    await fillGaps(storage, orbsAdapter);
+    await fillGaps(logger, storage, orbsAdapter);
 
     // make sure that the storage holds the all 15 blocks
     const actual = await storage.getHeighestConsecutiveBlockHeight();

@@ -12,9 +12,13 @@ import { InMemoryDB } from '../db/InMemoryDB';
 import { IDB } from '../db/IDB';
 import { MongoDB } from '../db/MongoDB';
 import { MONGODB_URI } from '../config';
+import * as winston from 'winston';
+import { genLogger } from '../logger/LoggerFactory';
+
+const logger: winston.Logger = genLogger(false, false, false);
 
 testReadOnlyDb(new InMemoryDB(true), 'InMemoryDB');
-testReadOnlyDb(new MongoDB(MONGODB_URI, true), 'MongoDB');
+testReadOnlyDb(new MongoDB(logger, MONGODB_URI, true), 'MongoDB');
 
 function testReadOnlyDb(db: IDB, dbName: string) {
   describe(`${dbName} - Readonly`, async () => {
