@@ -56,6 +56,7 @@ export class OrbsAdapter {
         this.logger.error(`OrbsClient responded with bad requestStatus`, {
           method: 'getBlockAt',
           requestStatus: getBlockResponse.requestStatus,
+          requestedBlockHeight: height.toString()
         });
       }
     }
