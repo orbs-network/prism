@@ -9,7 +9,7 @@
 import { blockResponseToRawBlock } from '../block-transform/blockTransform';
 import { IOrbsClient } from '../orbs-client/IOrbsClient';
 import { IRawBlock } from '../../shared/IRawData';
-import winston = require('winston');
+import * as winston from 'winston';
 import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 
 export type NewBlockCallback = (block: IRawBlock) => void;
@@ -56,7 +56,7 @@ export class OrbsAdapter {
         this.logger.error(`OrbsClient responded with bad requestStatus`, {
           method: 'getBlockAt',
           requestStatus: getBlockResponse.requestStatus,
-          requestedBlockHeight: height.toString()
+          requestedBlockHeight: height.toString(),
         });
       }
     }

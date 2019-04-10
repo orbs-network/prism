@@ -10,8 +10,9 @@ import * as mongoose from 'mongoose';
 import { IBlock } from '../../shared/IBlock';
 import { IRawTx } from '../../shared/IRawData';
 import { IDB } from './IDB';
+import * as mongooseLong from 'mongoose-long';
 
-require('mongoose-long')(mongoose);
+mongooseLong(mongoose);
 mongoose.set('useFindAndModify', false);
 
 interface ICacheDocument extends mongoose.Document {
