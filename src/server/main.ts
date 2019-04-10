@@ -14,7 +14,7 @@ import { Storage } from './storage/storage';
 import { WS } from './ws/ws';
 import { sleep } from './gaps-filler/Cron';
 import * as config from './config';
-import winston from 'winston';
+import * as winston from 'winston';
 import { genLogger } from './logger/LoggerFactory';
 
 async function main() {
