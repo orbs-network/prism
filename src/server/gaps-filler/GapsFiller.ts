@@ -26,9 +26,13 @@ export async function fillGaps(storage: Storage, orbsAdapter: OrbsAdapter): Prom
   console.log(`${gaps.length} missing blocks to fill`);
   for (const height of gaps) {
     const block = await orbsAdapter.getBlockAt(height);
-    await storage.handleNewBlock(block);
-    await storage.setHeighestConsecutiveBlockHeight(height);
-    console.log(`GapsFiller, block at ${height} stored`);
+    if (block) {
+      await storage.handleNewBlock(block);
+      await storage.setHeighestConsecutiveBlockHeight(height);
+      console.log(`GapsFiller, block at ${height} stored`);
+    } else {
+      // report block not stored
+    }
   }
   await storage.setHeighestConsecutiveBlockHeight(toHeight);
 }

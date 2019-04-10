@@ -6,13 +6,6 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import {
-  GAP_FILLER_ACTIVE,
-  GAP_FILLER_INTERVAL,
-  GAP_FILLER_INITIAL_DELAY,
-  ROLLBAR_ACCESS_TOKEN_SERVER,
-  IS_PRODUCTION,
-} from './config';
 import { genDb } from './db/DBFactory';
 import { fillGapsForever } from './gaps-filler/GapsFiller';
 import { genOrbsAdapter } from './orbs-adapter/OrbsAdapterFactory';
@@ -21,40 +14,19 @@ import { Storage } from './storage/storage';
 import { WS } from './ws/ws';
 import { sleep } from './gaps-filler/Cron';
 import * as config from './config';
-import Rollbar = require('rollbar');
-
-if (IS_PRODUCTION && ROLLBAR_ACCESS_TOKEN_SERVER) {
-  const rollbar = new Rollbar({
-    accessToken: ROLLBAR_ACCESS_TOKEN_SERVER,
-    captureUncaught: true,
-    captureUnhandledRejections: true,
-  });
-
-  rollbar.log('Hello world!');
-}
+import winston from 'winston';
+import { genLogger } from './logger/LoggerFactory';
 
 async function main() {
-  console.log(`  *******************************************  `);
-  console.log(`IS_PRODUCTION: ${config.IS_PRODUCTION}`);
-  console.log(`IS_STAGING: ${config.IS_STAGING}`);
-  console.log(`IS_DEV: ${config.IS_DEV}`);
-  console.log(`SERVER_PORT: ${config.SERVER_PORT}`);
-  console.log(`WEBPACK_PORT: ${config.WEBPACK_PORT}`);
-  console.log(`POSTGRES_URL: ${config.POSTGRES_URL}`);
-  console.log(`MONGODB_URI: ${config.MONGODB_URI}`);
-  console.log(`DATABASE_TYPE: ${config.DATABASE_TYPE}`);
-  console.log(`ORBS_ENDPOINT: ${config.ORBS_ENDPOINT}`);
-  console.log(`ORBS_VIRTUAL_CHAIN_ID: ${config.ORBS_VIRTUAL_CHAIN_ID}`);
-  console.log(`ORBS_NETWORK_TYPE: ${config.ORBS_NETWORK_TYPE}`);
-  console.log(`POOLING_INTERVAL: ${config.POOLING_INTERVAL}`);
-  console.log(`DB_IS_READ_ONLY: ${config.DB_IS_READ_ONLY}`);
-  console.log(`GAP_FILLER_ACTIVE: ${config.GAP_FILLER_ACTIVE}`);
-  console.log(`GAP_FILLER_INTERVAL: ${config.GAP_FILLER_INTERVAL}`);
-  console.log(`GAP_FILLER_INITIAL_DELAY: ${config.GAP_FILLER_INITIAL_DELAY}`);
-  console.log(`  *******************************************  `);
+  console.log(`*******************************************`);
+  console.log(`config: ${JSON.stringify(config, null, 2)}`);
+  console.log(`*******************************************`);
+
+  const { GAP_FILLER_ACTIVE, GAP_FILLER_INTERVAL, GAP_FILLER_INITIAL_DELAY, IS_PRODUCTION } = config;
+  const logger: winston.Logger = genLogger(true, IS_PRODUCTION, IS_PRODUCTION);
 
   // externals
-  const orbsAdapter = genOrbsAdapter();
+  const orbsAdapter = genOrbsAdapter(logger);
   const db = genDb();
   await db.init(); // create tables if needed
 
@@ -74,6 +46,4 @@ async function main() {
   }
 }
 
-main()
-  .then(() => console.log('running'))
-  .catch(err => console.log(`error: ${err}`));
+main().then(() => console.log('running'));
