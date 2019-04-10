@@ -8,9 +8,7 @@ export function genLogger(toConsole: boolean, toFile: boolean, toRemote: boolean
     format: winston.format.json(),
   });
 
-  if (toConsole) {
-    logger.add(new winston.transports.Console({ format: winston.format.simple() }));
-  }
+  logger.add(new winston.transports.Console({ format: winston.format.simple(), silent: !toConsole }));
 
   if (toFile) {
     logger.add(new winston.transports.File({ filename: 'error.log', level: 'error' }));
