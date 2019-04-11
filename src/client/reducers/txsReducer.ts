@@ -27,7 +27,7 @@ export function txsById(state: ITxsById = {}, action: RootAction): ITxsById {
       const { txId } = tx;
       return {
         ...state,
-        [txId]: {
+        [txId.toLowerCase()]: {
           isLoading: false,
           tx,
         },
@@ -37,7 +37,7 @@ export function txsById(state: ITxsById = {}, action: RootAction): ITxsById {
       const { error, txId } = action;
       return {
         ...state,
-        [txId]: {
+        [txId.toLowerCase()]: {
           isLoading: false,
           error,
         },
@@ -48,7 +48,7 @@ export function txsById(state: ITxsById = {}, action: RootAction): ITxsById {
   }
 }
 
-export const getTxData = (state: IRootState, txId: string): ITxData => state.txsById[txId];
+export const getTxData = (state: IRootState, txId: string): ITxData => state.txsById[txId.toLowerCase()];
 
 export const isTxLoading = (state: IRootState, txId: string): boolean => {
   const tx = getTxData(state, txId);
