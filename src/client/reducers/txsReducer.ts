@@ -19,20 +19,24 @@ export interface ITxData {
 export interface ITxsById {
   [txId: string]: ITxData;
 }
+function appendTxToState(state: ITxsById, tx: IRawTx): ITxsById {
+  const { txId } = tx;
+  return {
+    ...state,
+    [txId.toLowerCase()]: {
+      isLoading: false,
+      tx,
+    },
+  };
+}
 
 export function txsById(state: ITxsById = {}, action: RootAction): ITxsById {
   switch (action.type) {
     case 'LOAD_TX_COMPLETED': {
       const { tx } = action;
-      const { txId } = tx;
-      return {
-        ...state,
-        [txId.toLowerCase()]: {
-          isLoading: false,
-          tx,
-        },
-      };
+      return appendTxToState(state, tx);
     }
+
     case 'LOAD_TX_ERROR': {
       const { error, txId } = action;
       return {
@@ -43,6 +47,16 @@ export function txsById(state: ITxsById = {}, action: RootAction): ITxsById {
         },
       };
     }
+
+    case 'SEARCH_COMPLETED': {
+      const { searchResult } = action;
+      if (searchResult.type === 'tx') {
+        return appendTxToState(state, searchResult.tx);
+      } else {
+        return state;
+      }
+    }
+
     default:
       return state;
   }
