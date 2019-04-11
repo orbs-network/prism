@@ -62,19 +62,21 @@ export class MongoDB implements IDB {
   public init(): Promise<void> {
     return new Promise((resolve, reject) => {
       mongoose.connection.once('connecting', () => this.logger.info('mongoose connecting'));
+      mongoose.connection.once('connected', () => this.logger.info('mongoose conncted'));
       mongoose.connection.once('disconnecting', () => this.logger.info('mongoose disconnecting'));
       mongoose.connection.once('disconnected', () => this.logger.info('mongoose disconnected'));
 
-      mongoose.connection.once('connected', resolve);
       mongoose.connection.once('error', reject);
 
       mongoose.connect(this.connectionUrl, { useNewUrlParser: true }).then(db => {
+        console.log('connect completed');
         this.db = db;
 
         // model
         this.BlockModel = mongoose.model('Block', blockSchema);
         this.TxModel = mongoose.model('Tx', txSchema);
         this.CacheModel = mongoose.model('Cache', cacheSchema);
+        resolve();
       });
     });
   }
