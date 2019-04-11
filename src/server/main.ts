@@ -28,7 +28,13 @@ async function main() {
   // externals
   const orbsAdapter = genOrbsAdapter(logger);
   const db = genDb(logger);
-  await db.init(); // create tables if needed
+  try {
+    await db.init();
+    logger.info(`Database connected and initialized.`);
+  } catch (error) {
+    logger.error(`Unable to connect db`, { error });
+    process.exit(1);
+  }
 
   // internals
   const storage = new Storage(db);

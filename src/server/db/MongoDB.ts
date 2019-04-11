@@ -59,19 +59,24 @@ export class MongoDB implements IDB {
 
   constructor(private logger: winston.Logger, private connectionUrl: string, private readOnlyMode: boolean = false) {}
 
-  public async init(): Promise<void> {
-    mongoose.connection.once('connecting', () => this.logger.info('mongoose connecting'));
-    mongoose.connection.once('connected', () => this.logger.info('mongoose connected'));
-    mongoose.connection.once('disconnecting', () => this.logger.info('mongoose disconnecting'));
-    mongoose.connection.once('disconnected', () => this.logger.info('mongoose disconnected'));
-    mongoose.connection.once('error', e => this.logger.info('mongoose error:', e));
+  public init(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      mongoose.connection.once('connecting', () => this.logger.info('mongoose connecting'));
+      mongoose.connection.once('disconnecting', () => this.logger.info('mongoose disconnecting'));
+      mongoose.connection.once('disconnected', () => this.logger.info('mongoose disconnected'));
 
-    this.db = await mongoose.connect(this.connectionUrl, { useNewUrlParser: true });
+      mongoose.connection.once('connected', resolve);
+      mongoose.connection.once('error', reject);
 
-    // model
-    this.BlockModel = mongoose.model('Block', blockSchema);
-    this.TxModel = mongoose.model('Tx', txSchema);
-    this.CacheModel = mongoose.model('Cache', cacheSchema);
+      mongoose.connect(this.connectionUrl, { useNewUrlParser: true }).then(db => {
+        this.db = db;
+
+        // model
+        this.BlockModel = mongoose.model('Block', blockSchema);
+        this.TxModel = mongoose.model('Tx', txSchema);
+        this.CacheModel = mongoose.model('Cache', cacheSchema);
+      });
+    });
   }
 
   public async destroy() {
