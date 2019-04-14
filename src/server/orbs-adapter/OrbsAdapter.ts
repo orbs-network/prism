@@ -48,7 +48,7 @@ export class OrbsAdapter {
   }
 
   public async getBlockAt(height: bigint): Promise<IRawBlock> {
-    const getBlockResponse = await this.getBlockWrapper(height);
+    const getBlockResponse = await this.getBlockWrapper(height, 'getBlockAt');
     if (getBlockResponse) {
       if (getBlockResponse.requestStatus === 'COMPLETED') {
         return blockResponseToRawBlock(getBlockResponse);
@@ -68,7 +68,7 @@ export class OrbsAdapter {
     try {
       const nextHeight = this.latestKnownHeight + 1n;
       this.logger.info(`get block at => ${nextHeight}`);
-      const getBlockResponse = await this.getBlockWrapper(nextHeight);
+      const getBlockResponse = await this.getBlockWrapper(nextHeight, 'checkForNewBlocks');
       if (getBlockResponse) {
         const blockHeight: bigint = BigInt(getBlockResponse.blockHeight);
         this.logger.info(`block height <= ${blockHeight}`);
@@ -116,12 +116,19 @@ export class OrbsAdapter {
     return true;
   }
 
-  private async getBlockWrapper(blockHeight: bigint): Promise<GetBlockResponse> {
+  private async getBlockWrapper(blockHeight: bigint, sourceMethod: string): Promise<GetBlockResponse> {
     let getBlockResponse: GetBlockResponse;
     try {
       getBlockResponse = await this.orbsClient.getBlock(blockHeight);
     } catch (err) {
-      this.logger.error(`getBlock failed`, { method: 'getBlockWrapper', err, blockHeight: blockHeight.toString() });
+      this.logger.error(`getBlock failed`, {
+        method: 'getBlockWrapper',
+        sourceMethod,
+        err,
+        errMessage: err.message,
+        stack: err.stack,
+        blockHeight: blockHeight.toString(),
+      });
       return null;
     }
 
