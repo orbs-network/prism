@@ -1,5 +1,7 @@
 FROM node:11-alpine
 
+EXPOSE 3000
+
 RUN apk add --no-cache git
 
 ADD package*.json /opt/prism/
