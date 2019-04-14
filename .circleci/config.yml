@@ -5,11 +5,13 @@ jobs:
     steps:
       - checkout
       - run: ./.circleci/setup.sh
+      - run: ./.circleci/test.sh
 
   release:
     machine: true
     steps:
       - checkout
+      - run: ./.circleci/setup.sh
       - run: ./docker-build.sh
       - run: ./.circleci/release.sh
 

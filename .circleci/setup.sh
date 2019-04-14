@@ -18,32 +18,3 @@ if [ $EXITCODE != 0 ]; then
     echo "npm build failed so exiting.."
     exit 1
 fi
-
-npm test
-
-EXITCODE=$?
-
-if [ $EXITCODE != 0 ]; then
-    echo "npm test failed so exiting.."
-    exit 1
-fi
-
-docker pull orbsnetwork/gamma:experimental
-echo "Running gamma-server on port 9000"
-docker run --name gamma -d -p "9000:8080" orbsnetwork/gamma:experimental
-
-echo "sleeping before running the e2e tests"
-sleep 5
-
-echo "running E2E tests"
-npm run test-e2e
-
-EXITCODE=$?
-
-if [ $EXITCODE != 0 ]; then
-    exit 1
-fi
-
-docker rm -fv gamma mongo
-
-exit 0
