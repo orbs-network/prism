@@ -16,4 +16,6 @@ ADD assets /opt/prism/assets
 
 ADD dist /opt/prism/dist
 
+ADD views /opt/prism/views
+
 CMD node index.js
