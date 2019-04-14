@@ -121,7 +121,7 @@ export class OrbsAdapter {
     try {
       getBlockResponse = await this.orbsClient.getBlock(blockHeight);
     } catch (err) {
-      this.logger.error(`getBlock failed`, { method: 'getBlockWrapper', err });
+      this.logger.error(`getBlock failed`, { method: 'getBlockWrapper', err, blockHeight: blockHeight.toString() });
       return null;
     }
 
