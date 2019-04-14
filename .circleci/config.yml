@@ -26,6 +26,6 @@ workflows:
           filters:
             branches:
               only:
-                - feature/docker
+                - master
             tags:
               only: /^v.*/
