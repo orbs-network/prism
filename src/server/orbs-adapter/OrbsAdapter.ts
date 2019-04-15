@@ -11,6 +11,7 @@ import { IOrbsClient } from '../orbs-client/IOrbsClient';
 import { IRawBlock } from '../../shared/IRawData';
 import * as winston from 'winston';
 import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
+import { sleep } from '../gaps-filler/Cron';
 
 export type NewBlockCallback = (block: IRawBlock) => void;
 
@@ -26,9 +27,16 @@ export class OrbsAdapter {
   constructor(private logger: winston.Logger, private orbsClient: IOrbsClient, private poolingInterval: number) {}
 
   public async init(): Promise<void> {
-    if (!this.initScheduler()) {
-      throw new Error(`Unable to initialize OrbsAdapter`);
+    this.logger.info('initializing the scheduler');
+    let schedulerInitialized = false;
+    while (!schedulerInitialized) {
+      schedulerInitialized = await this.initScheduler();
+      if (!schedulerInitialized) {
+        this.logger.warn('Unable to initialize the scheduler, retrying in 1sec.');
+        await sleep(1000);
+      }
     }
+    this.logger.info('scheduler initialized');
   }
 
   public RegisterToNewBlocks(handler: INewBlocksHandler): void {
@@ -89,7 +97,13 @@ export class OrbsAdapter {
   private async initScheduler(): Promise<boolean> {
     if (this.latestKnownHeight === 0n) {
       this.logger.info(`Asking Orbs for the lastest height`);
-      const getBlockResponse = await this.orbsClient.getBlock(0n);
+      let getBlockResponse: GetBlockResponse;
+      try {
+        getBlockResponse = await this.orbsClient.getBlock(0n);
+      } catch (err) {
+        this.logger.error('getBlock failed', { method: 'initScheduler', err });
+        return false;
+      }
 
       if (typeof getBlockResponse.blockHeight !== 'bigint') {
         this.logger.crit(`orbsClient.getBlock(0n) returned with bad blockHeight`, {
