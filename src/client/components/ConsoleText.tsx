@@ -12,12 +12,14 @@ import * as React from 'react';
 const styles = (theme: Theme) =>
   createStyles({
     textField: {
-      display: 'inline',
+      display: 'inline-block',
       backgroundColor: '#b0b0b038',
-      paddingLeft: theme.spacing.unit,
-      paddingRight: theme.spacing.unit,
       paddingTop: theme.spacing.unit / 4,
+      paddingRight: theme.spacing.unit,
       paddingBottom: theme.spacing.unit / 4,
+      paddingLeft: theme.spacing.unit,
+      marginTop: theme.spacing.unit / 4,
+      marginBottom: theme.spacing.unit / 4,
       borderRadius: 5,
       fontSize: 15,
       fontFamily: 'Inconsolata, monospace',
