@@ -48,8 +48,10 @@ interface IProps extends WithStyles<typeof styles> {
 const BlockDetailsImpl = withStyles(styles)(
   class extends React.Component<IProps & IOwnProps> {
     public componentDidMount() {
-      if (!this.props.isBlockLoading && !this.props.blockData) {
-        this.props.loadBlock(this.props.blockHeight);
+      if (!this.props.isBlockLoading) {
+        if (!this.props.blockData || this.props.blockData.error) {
+          this.props.loadBlock(this.props.blockHeight);
+        }
       }
     }
 

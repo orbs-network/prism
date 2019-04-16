@@ -47,8 +47,10 @@ interface IProps extends WithStyles<typeof styles> {
 const TxDetailsImpl = withStyles(styles)(
   class extends React.Component<IProps & IOwnProps> {
     public componentDidMount() {
-      if (!this.props.isTxLoading && !this.props.txData) {
-        this.props.loadTx(this.props.txId);
+      if (!this.props.isTxLoading) {
+        if (!this.props.txData || this.props.txData.error) {
+          this.props.loadTx(this.props.txId);
+        }
       }
     }
 
