@@ -59,6 +59,12 @@ export class OrbsAdapter {
     const getBlockResponse = await this.getBlockWrapper(height, 'getBlockAt');
     if (getBlockResponse) {
       if (getBlockResponse.requestStatus === 'COMPLETED') {
+        if (getBlockResponse.blockHeight === 0n) {
+          this.logger.error(
+            'OrbsClient responded with requestStatus===completed, but blockheight===0, requested block was: ' +
+              height.toString(),
+          );
+        }
         return blockResponseToRawBlock(getBlockResponse);
       } else {
         this.logger.error(`OrbsClient responded with bad requestStatus`, {
