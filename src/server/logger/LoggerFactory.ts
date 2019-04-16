@@ -1,6 +1,7 @@
 import * as winston from 'winston';
 import { ROLLBAR_ACCESS_TOKEN_SERVER } from '../config';
 import { Rollbar } from 'winston-transport-rollbar';
+import * as path from 'path';
 
 export function genLogger(toConsole: boolean, toFile: boolean, toRemote: boolean): winston.Logger {
   const logger = winston.createLogger({
@@ -11,8 +12,10 @@ export function genLogger(toConsole: boolean, toFile: boolean, toRemote: boolean
   logger.add(new winston.transports.Console({ format: winston.format.simple(), silent: !toConsole }));
 
   if (toFile) {
-    logger.add(new winston.transports.File({ filename: 'error.log', level: 'error' }));
-    logger.add(new winston.transports.File({ filename: 'combined.log' }));
+    logger.add(
+      new winston.transports.File({ filename: path.join(process.cwd(), 'logs', 'error.log'), level: 'error' }),
+    );
+    logger.add(new winston.transports.File({ filename: path.join(process.cwd(), 'logs', 'combined.log') }));
   }
 
   if (toRemote && ROLLBAR_ACCESS_TOKEN_SERVER) {

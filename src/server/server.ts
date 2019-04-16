@@ -23,7 +23,8 @@ export function initServer(storage: Storage) {
   }
 
   app.set('view engine', 'ejs');
-  app.use('/assets', express.static(path.join(__dirname, '..', '..', '..', 'assets')));
+  app.use('/assets', express.static(path.join(process.cwd(), 'assets')));
+  app.use('/logs', express.static(path.join(process.cwd(), 'logs')));
   app.use(staticsRouter());
   app.use(apiRouter(storage));
   app.use(pagesRouter());

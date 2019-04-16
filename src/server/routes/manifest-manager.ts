@@ -22,9 +22,7 @@ export async function getManifest() {
     manifestStr = await getManifestFromWebpack();
   } else {
     // read from file system
-    manifestStr = fs
-      .readFileSync(path.join(__dirname, '..', '..', '..', 'statics', 'manifest.json'), 'utf-8')
-      .toString();
+    manifestStr = fs.readFileSync(path.join(process.cwd(), 'dist', 'statics', 'manifest.json'), 'utf-8').toString();
   }
   const manifest = JSON.parse(manifestStr);
   return manifest;
