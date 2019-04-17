@@ -26,11 +26,23 @@ const styles = (theme: Theme) =>
     header: {
       backgroundColor: theme.palette.primary.main,
     },
+    table: {
+      tableLayout: 'fixed'
+    },
     label: {
       fontWeight: 700,
+      width: 210,
     },
     chips: {
-      marginRight: 12,
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+    },
+    argContainer: {
+      display: 'flex',
+      alignItems: 'center',
+    },
+    argLabel: {
+      paddingRight: 6,
     },
   });
 
@@ -73,7 +85,7 @@ const TxDetailsImpl = withStyles(styles)(
         <Card>
           <CardHeader title='Transaction' id='tx-details' className={classes.header} />
           <CardContent>
-            <Table>
+            <Table className={classes.table}>
               <TableBody>
                 <TableRow>
                   <TableCell className={classes.label}>Block Height</TableCell>
@@ -173,9 +185,12 @@ const TxDetailsImpl = withStyles(styles)(
         <>
           {args.map((i, idx) => {
             return (
-              <ConsoleText key={idx} id={`arg_${idx}`} className={this.props.classes.chips}>
-                <span>{i.value}</span> <span>({i.type})</span>
-              </ConsoleText>
+              <div key={idx} className={this.props.classes.argContainer}>
+                <span className={this.props.classes.argLabel}>{i.type}</span>
+                <ConsoleText id={`arg_${idx}`} className={this.props.classes.chips}>
+                  {i.value}
+                </ConsoleText>
+              </div>
             );
           })}
         </>
