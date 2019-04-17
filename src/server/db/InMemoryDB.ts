@@ -46,9 +46,9 @@ export class InMemoryDB implements IDB {
   public async getLatestBlocks(count: number): Promise<IBlock[]> {
     const blocksArr = Array.from(this.blocks);
     return blocksArr
-        .map(item => item[1])
-        .sort((a, b) => b.blockTimestamp - a.blockTimestamp)
-        .filter((_, idx) => idx < count);
+      .map(item => item[1])
+      .sort((a, b) => b.blockTimestamp - a.blockTimestamp)
+      .filter((_, idx) => idx < count);
   }
 
   public async getBlockByHeight(blockHeight: string): Promise<IBlock> {
@@ -101,6 +101,19 @@ export class InMemoryDB implements IDB {
 
   public async getTxById(txId: string): Promise<IRawTx> {
     return this.txs.get(txId.toLowerCase()) || null;
+  }
+
+  public async getDeployContractTx(contractName: string, lang: number): Promise<IRawTx> {
+    for (const tx of this.txs.values()) {
+      if (tx.contractName === '_Deployments' && tx.methodName === 'deployService' && tx.executionResult === 'SUCCESS') {
+        const { inputArguments: args } = tx;
+        if (args.length === 3) {
+          if (args[0].type === 'string' && args[0].value === contractName && args[1].type === 'uint32' && args[1].value === lang.toString()) {
+            return tx;
+          }
+        }
+      }
+    }
   }
 
   private capTxes(): void {

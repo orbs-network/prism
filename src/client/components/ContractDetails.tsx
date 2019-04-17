@@ -59,12 +59,14 @@ const ContractDetailsImpl = withStyles(styles)(
       }
 
       const { classes } = this.props;
-      const { code } = this.props.contractData;
+      const { code, contractName } = this.props.contractData;
       return (
         <Card>
-          <CardHeader title='Contract' id='tx-details' className={classes.header} />
+          <CardHeader title={`Contract - ${contractName}`} id='tx-details' className={classes.header} />
           <CardContent>
-            {code}
+            <pre>
+              <code>{code}</code>
+            </pre>
           </CardContent>
         </Card>
       );

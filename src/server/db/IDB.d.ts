@@ -22,4 +22,5 @@ export interface IDB {
   setHeighestConsecutiveBlockHeight(value: bigint): Promise<void>;
   storeTx(tx: IRawTx | IRawTx[]): Promise<void>;
   getTxById(txId: string): Promise<IRawTx>;
+  getDeployContractTx(contractName: string, lang: number): Promise<IRawTx>;
 }

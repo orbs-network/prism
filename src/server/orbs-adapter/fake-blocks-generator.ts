@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { ExecutionResult, calcClientAddressOfEd25519PublicKey } from 'orbs-client-sdk';
+import { ExecutionResult, calcClientAddressOfEd25519PublicKey, argUint32, argString, argBytes } from 'orbs-client-sdk';
 import {
   BlockTransaction,
   GetBlockResponse,
@@ -18,6 +18,12 @@ import { IRawBlock } from '../../shared/IRawData';
 
 export function generateRandomRawBlock(blockHeight: bigint): IRawBlock {
   const getBlockResponse: GetBlockResponse = generateRandomGetBlockRespose(blockHeight);
+  return blockResponseToRawBlock(getBlockResponse);
+}
+
+export function generateRawBlockWithTransaction(blockHeight: bigint, tx: BlockTransaction): IRawBlock {
+  const getBlockResponse: GetBlockResponse = generateRandomGetBlockRespose(blockHeight);
+  getBlockResponse.transactions = [tx];
   return blockResponseToRawBlock(getBlockResponse);
 }
 
@@ -86,7 +92,7 @@ function genUint8Array(len: number): Uint8Array {
   return result;
 }
 
-function generateBlockTransaction(): BlockTransaction {
+export function generateBlockTransaction(): BlockTransaction {
   const signerPublicKey = genUint8Array(32);
   return {
     txId: genUint8Array(40),
@@ -98,6 +104,31 @@ function generateBlockTransaction(): BlockTransaction {
     contractName: 'DummyContract',
     methodName: 'DummyMethod',
     inputArguments: [],
+    executionResult: ExecutionResult.EXECUTION_RESULT_SUCCESS,
+    outputArguments: [],
+    outputEvents: [],
+  };
+}
+
+export function generateContractDeployTransaction(contractName: string, code: string): BlockTransaction {
+  const signerPublicKey = genUint8Array(32);
+
+  const inputArguments = [
+    argString(contractName),
+    argUint32(1),
+    argBytes(Uint8Array.from(Buffer.from(code)))
+  ];
+
+  return {
+    txId: genUint8Array(40),
+    txHash: genUint8Array(20),
+    protocolVersion: 1,
+    virtualChainId: 42,
+    timestamp: new Date(),
+    signerPublicKey,
+    contractName: '_Deployments',
+    methodName: 'deployService',
+    inputArguments,
     executionResult: ExecutionResult.EXECUTION_RESULT_SUCCESS,
     outputArguments: [],
     outputEvents: [],

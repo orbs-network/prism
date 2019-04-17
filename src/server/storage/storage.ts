@@ -12,6 +12,7 @@ import { IRawTx, IRawBlock } from '../../shared/IRawData';
 import { rawBlockToBlock, blockToBlockSummary } from '../block-transform/blockTransform';
 import { IDB } from '../db/IDB';
 import { IContractData } from '../../shared/IContractData';
+import { decodeHex } from 'orbs-client-sdk';
 
 export class Storage {
   constructor(private db: IDB) {}
@@ -46,9 +47,16 @@ export class Storage {
   }
 
   public async getContractData(contractName: string): Promise<IContractData> {
-    return {
-      code: 'this is a go code'
-    };
+    const result = await this.db.getDeployContractTx(contractName, 1);
+    if (result) {
+      const code = Buffer.from(decodeHex(result.inputArguments[2].value)).toString();
+      return {
+        contractName: result.inputArguments[0].value,
+        code,
+      };
+    }
+
+    return null;
   }
 
   public async handleNewBlock(rawBlock: IRawBlock): Promise<void> {

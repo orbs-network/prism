@@ -11,9 +11,14 @@ import { MONGODB_URI } from '../config';
 import { IDB } from '../db/IDB';
 import { InMemoryDB } from '../db/InMemoryDB';
 import { MongoDB } from '../db/MongoDB';
-import { generateRandomRawBlock } from '../orbs-adapter/fake-blocks-generator';
+import {
+  generateRandomRawBlock,
+  generateRawBlockWithTransaction,
+  generateContractDeployTransaction,
+} from '../orbs-adapter/fake-blocks-generator';
 import * as winston from 'winston';
 import { genLogger } from '../logger/LoggerFactory';
+import { BlockTransaction } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 
 const logger: winston.Logger = genLogger(false, false, false);
 
@@ -135,6 +140,17 @@ function testDb(db: IDB, dbName: string) {
       const actual = await db.getHeighestConsecutiveBlockHeight();
       expect(actual).toEqual(456n);
       expect(actual).not.toEqual(initial);
+    });
+
+    it('should retrive contract by name', async () => {
+      const code: string = 'this is go code';
+      const tx: BlockTransaction = generateContractDeployTransaction('test-contract', code);
+      const rawBlock = generateRawBlockWithTransaction(1n, tx);
+
+      await db.storeTx(rawBlock.transactions);
+
+      const actual = await db.getDeployContractTx('test-contract', 1);
+      expect(rawBlock.transactions[0]).toEqual(actual);
     });
   });
 }
