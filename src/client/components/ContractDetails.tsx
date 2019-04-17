@@ -16,6 +16,11 @@ import { connect } from 'react-redux';
 import { IContractData } from '../../shared/IContractData';
 import { loadContractDataAction } from '../actions/focusedContractActions';
 import { IRootState } from '../reducers/rootReducer';
+import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
+import goLang from 'react-syntax-highlighter/dist/esm/languages/hljs/go';
+import darcula from 'react-syntax-highlighter/dist/esm/styles/hljs/darcula';
+
+SyntaxHighlighter.registerLanguage('go', goLang);
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -60,13 +65,14 @@ const ContractDetailsImpl = withStyles(styles)(
 
       const { classes } = this.props;
       const { code, contractName } = this.props.contractData;
+      const codeString = '(num) => num + 1';
       return (
         <Card>
           <CardHeader title={`Contract - ${contractName}`} id='tx-details' className={classes.header} />
           <CardContent>
-            <pre>
-              <code>{code}</code>
-            </pre>
+            <SyntaxHighlighter language='go' style={darcula} customStyle={{ maxHeight: 500 }}>
+              {code}
+            </SyntaxHighlighter>
           </CardContent>
         </Card>
       );
