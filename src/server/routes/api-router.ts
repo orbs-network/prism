@@ -10,6 +10,7 @@ import * as bodyParser from 'body-parser';
 import { Router } from 'express';
 import { IBlock, IBlockSummary } from '../../shared/IBlock';
 import { IRawTx } from '../../shared/IRawData';
+import { IContractData } from '../../shared/IContractData';
 import { Storage } from '../storage/storage';
 
 export function apiRouter(storage: Storage) {
@@ -39,6 +40,15 @@ export function apiRouter(storage: Storage) {
       return res.send(404);
     }
     res.json(tx);
+  });
+
+  router.get('/api/contract/:contractName', async (req, res) => {
+    const contractName: string = req.params.contractName;
+    const contractData: IContractData = await storage.getContractData(contractName);
+    if (!contractData) {
+      return res.send(404);
+    }
+    res.json(contractData);
   });
 
   router.get('/api/search/:term', async (req, res) => {

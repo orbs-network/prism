@@ -10,6 +10,7 @@ import { combineReducers, Reducer } from 'redux';
 import { blocksByHeight, IBlocksByHeight } from './blocksReducer';
 import { blocksSummaryByHeight, IBlockSummaryByHeight } from './blocksSummaryReducer';
 import { txsById, ITxsById } from './txsReducer';
+import { focusedContract, IFocusedContract } from './focusedContractReducer';
 import { RecentBlocksHeights, recentBlocksHeights } from './recentBlocksReducer';
 
 export interface IRootState {
@@ -17,6 +18,7 @@ export interface IRootState {
   blocksByHeight: IBlocksByHeight;
   blocksSummaryByHeight: IBlockSummaryByHeight;
   recentBlocksHeights: RecentBlocksHeights;
+  focusedContract: IFocusedContract;
 }
 
 export const rootReducer: Reducer<IRootState> = combineReducers<IRootState>({
@@ -24,4 +26,5 @@ export const rootReducer: Reducer<IRootState> = combineReducers<IRootState>({
   blocksByHeight,
   blocksSummaryByHeight,
   recentBlocksHeights,
+  focusedContract
 });

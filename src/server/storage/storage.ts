@@ -11,6 +11,7 @@ import { ISearchResult } from '../../shared/ISearchResult';
 import { IRawTx, IRawBlock } from '../../shared/IRawData';
 import { rawBlockToBlock, blockToBlockSummary } from '../block-transform/blockTransform';
 import { IDB } from '../db/IDB';
+import { IContractData } from '../../shared/IContractData';
 
 export class Storage {
   constructor(private db: IDB) {}
@@ -42,6 +43,12 @@ export class Storage {
 
   public getTx(txId: string): Promise<IRawTx> {
     return this.db.getTxById(txId);
+  }
+
+  public async getContractData(contractName: string): Promise<IContractData> {
+    return {
+      code: 'this is a go code'
+    };
   }
 
   public async handleNewBlock(rawBlock: IRawBlock): Promise<void> {

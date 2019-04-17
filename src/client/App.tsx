@@ -15,6 +15,7 @@ import { BlockDetails } from './components/BlockDetails';
 import { Home } from './components/Home';
 import { TermNotFound } from './components/TermNotFound';
 import { TxDetails } from './components/TxDetails';
+import { ContractDetails } from './components/ContractDetails';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -62,6 +63,14 @@ const AppImpl = ({ classes, location }: IProps) => {
             render={({ match }) => (
               <div style={props} className={classes.swipeContainer}>
                 <TxDetails txId={match.params.txId} />
+              </div>
+            )}
+          />
+          <Route
+            path='/contract/:contractName'
+            render={({ match }) => (
+              <div style={props} className={classes.swipeContainer}>
+                <ContractDetails contractName={match.params.contractName} />
               </div>
             )}
           />

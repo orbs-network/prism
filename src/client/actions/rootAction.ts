@@ -10,5 +10,6 @@ import { BlocksSummaryActions } from './blocksSummaryActions';
 import { BlocksActions } from './blockActions';
 import { TxActions } from './txActions';
 import { SearchActions } from './searchActions';
+import { FocusedContractActions } from './focusedContractActions';
 
-export type RootAction = BlocksSummaryActions | BlocksActions | TxActions | SearchActions;
+export type RootAction = BlocksSummaryActions | BlocksActions | TxActions | FocusedContractActions | SearchActions;

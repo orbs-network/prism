@@ -8,6 +8,7 @@
 
 import axios from 'axios';
 import { IBlock, IBlockSummary } from '../../shared/IBlock';
+import { IContractData } from '../../shared/IContractData';
 import { IRawTx } from '../../shared/IRawData';
 import { ISearchResult } from '../../shared/ISearchResult';
 
@@ -19,6 +20,11 @@ export async function getLatestBlocksSummary(numOfBlocks: number): Promise<IBloc
 export async function loadBlock(blockHeight: string): Promise<IBlock> {
   const res = await axios.get(`/api/block/${blockHeight}`);
   return res.data as IBlock;
+}
+
+export async function loadContractData(contractName: string): Promise<IContractData> {
+  const res = await axios.get(`/api/contract/${contractName}`);
+  return res.data as IContractData;
 }
 
 export async function loadTx(txId: string): Promise<IRawTx> {
