@@ -27,15 +27,15 @@ export function fillGapsForever(
 export async function fillGaps(logger: winston.Logger, storage: Storage, orbsAdapter: OrbsAdapter): Promise<void> {
   const toHeight = await storage.getLatestBlockHeight();
   const fromHeight = (await storage.getHeighestConsecutiveBlockHeight()) + 1n;
-  logger.info(`Searching for gaps from ${fromHeight} to ${toHeight}`, { method: 'fillGaps' });
+  logger.info(`Searching for gaps from ${fromHeight} to ${toHeight}`, { func: 'fillGaps' });
   const gaps = await detectBlockChainGaps(logger, storage, fromHeight, toHeight);
-  logger.info(`${gaps.length} missing blocks to fill`, { method: 'fillGaps' });
+  logger.info(`${gaps.length} missing blocks to fill`, { func: 'fillGaps' });
   for (const height of gaps) {
     const block = await orbsAdapter.getBlockAt(height);
     if (block) {
       await storage.handleNewBlock(block);
       await storage.setHeighestConsecutiveBlockHeight(height);
-      logger.info(`GapsFiller, block at ${height} stored`, { method: 'fillGaps' });
+      logger.info(`GapsFiller, block at ${height} stored`, { func: 'fillGaps' });
     } else {
       // report block not stored
     }

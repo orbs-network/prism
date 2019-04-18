@@ -68,7 +68,7 @@ export class OrbsAdapter {
         return blockResponseToRawBlock(getBlockResponse);
       } else {
         this.logger.error(`OrbsClient responded with bad requestStatus`, {
-          method: 'getBlockAt',
+          func: 'getBlockAt',
           requestStatus: getBlockResponse.requestStatus,
           requestedBlockHeight: height.toString(),
         });
@@ -107,13 +107,13 @@ export class OrbsAdapter {
       try {
         getBlockResponse = await this.orbsClient.getBlock(0n);
       } catch (err) {
-        this.logger.error('getBlock failed', { method: 'initScheduler', err });
+        this.logger.error('getBlock failed', { func: 'initScheduler', err });
         return false;
       }
 
       if (typeof getBlockResponse.blockHeight !== 'bigint') {
         this.logger.crit(`orbsClient.getBlock(0n) returned with bad blockHeight`, {
-          method: 'initScheduler',
+          func: 'initScheduler',
           blockHeight: getBlockResponse.blockHeight,
         });
         return false;
@@ -123,7 +123,7 @@ export class OrbsAdapter {
       // because we expect orbs to have at least one block it is not reasonable to get block height = 0
       if (getBlockResponse.blockHeight === 0n) {
         this.logger.crit(`orbsClient.getBlock(0n) returned blockHeight = 0n, not reasonable`, {
-          method: 'initScheduler',
+          func: 'initScheduler',
         });
         return false;
       }
@@ -142,7 +142,7 @@ export class OrbsAdapter {
       getBlockResponse = await this.orbsClient.getBlock(blockHeight);
     } catch (err) {
       this.logger.error(`getBlock failed`, {
-        method: 'getBlockWrapper',
+        func: 'getBlockWrapper',
         sourceMethod,
         err,
         errMessage: err.message,

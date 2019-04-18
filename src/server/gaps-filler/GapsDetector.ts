@@ -17,7 +17,7 @@ export async function detectBlockChainGaps(
 ): Promise<Array<bigint>> {
   const result: Array<bigint> = [];
   for (let height = fromHeight; height <= toHeight; height++) {
-    logger.info(`Asking storage for block at ${height}?`, { method: 'detectBlockChainGaps' });
+    logger.info(`Asking storage for block at ${height}?`, { func: 'detectBlockChainGaps' });
     const storageBlock = await storage.getBlockByHeight(height.toString());
     if (!storageBlock) {
       logger.info(`No block found in storage for height ${height}`);
