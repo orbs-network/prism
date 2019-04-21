@@ -6,28 +6,17 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
+import { createStyles, Theme, withStyles, WithStyles, Grid } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { IContractData } from '../../shared/IContractData';
-import { loadContractDataAction } from '../actions/focusedContractActions';
-import { IRootState } from '../reducers/rootReducer';
-import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
-import goLang from 'react-syntax-highlighter/dist/esm/languages/hljs/go';
-import darcula from 'react-syntax-highlighter/dist/esm/styles/hljs/darcula';
+import { IContractData } from '../../../shared/IContractData';
+import { loadContractDataAction } from '../../actions/focusedContractActions';
+import { IRootState } from '../../reducers/rootReducer';
+import { ContractCode } from './ContractCode';
+import { ContractHistory } from './ContractHistory';
 
-SyntaxHighlighter.registerLanguage('go', goLang);
-
-const styles = (theme: Theme) =>
-  createStyles({
-    header: {
-      backgroundColor: theme.palette.primary.main,
-    },
-  });
+const styles = (theme: Theme) => createStyles({});
 
 interface IOwnProps {
   contractName: string;
@@ -63,18 +52,16 @@ const ContractDetailsImpl = withStyles(styles)(
         return <Typography variant='h4'>{this.props.error}</Typography>;
       }
 
-      const { classes } = this.props;
-      const { code, contractName } = this.props.contractData;
-      const codeString = '(num) => num + 1';
+      const { code, contractName, blockInfo } = this.props.contractData;
       return (
-        <Card>
-          <CardHeader title={`Contract - ${contractName}`} id='tx-details' className={classes.header} />
-          <CardContent>
-            <SyntaxHighlighter language='go' style={darcula} customStyle={{ maxHeight: 500 }}>
-              {code}
-            </SyntaxHighlighter>
-          </CardContent>
-        </Card>
+        <Grid container spacing={24}>
+          <Grid item xs={12}>
+            <ContractCode code={code} contractName={contractName} />
+          </Grid>
+          <Grid item xs={12}>
+            <ContractHistory blockInfo={blockInfo} />
+          </Grid>
+        </Grid>
       );
     }
   },

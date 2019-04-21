@@ -15,7 +15,7 @@ import { BlockDetails } from './components/BlockDetails';
 import { Home } from './components/Home';
 import { TermNotFound } from './components/TermNotFound';
 import { TxDetails } from './components/TxDetails';
-import { ContractDetails } from './components/ContractDetails';
+import { ContractDetails } from './components/contract/ContractDetails';
 
 const styles = (theme: Theme) =>
   createStyles({
