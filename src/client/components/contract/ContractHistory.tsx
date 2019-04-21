@@ -18,12 +18,15 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  TableHead,
 } from '@material-ui/core';
 import * as React from 'react';
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
 import goLang from 'react-syntax-highlighter/dist/esm/languages/hljs/go';
 import { IContractBlockInfo } from '../../../shared/IContractData';
 import { TxesList } from '../TxesList';
+import { ConsoleText } from '../ConsoleText';
+import { PrismLink } from '../PrismLink';
 
 SyntaxHighlighter.registerLanguage('go', goLang);
 
@@ -31,9 +34,6 @@ const styles = (theme: Theme) =>
   createStyles({
     header: {
       backgroundColor: theme.palette.primary.main,
-    },
-    label: {
-      fontWeight: 700,
     },
   });
 
@@ -46,11 +46,21 @@ export const ContractHistory = withStyles(styles)(({ blockInfo, classes }: IProp
     <CardHeader title='History' id='contract-history' className={classes.header} />
     <CardContent>
       <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Block Height</TableCell>
+            <TableCell>Transactions</TableCell>
+          </TableRow>
+        </TableHead>
         <TableBody>
           {Object.keys(blockInfo).map(blockHeight => {
             return (
               <TableRow key={blockHeight}>
-                <TableCell className={classes.label}>{blockHeight}</TableCell>
+                <TableCell>
+                  <ConsoleText>
+                    <PrismLink to={`/block/${blockHeight}`}>{blockHeight}</PrismLink>
+                  </ConsoleText>
+                </TableCell>
                 <TableCell>
                   <TxesList txIds={blockInfo[blockHeight].txes} />
                 </TableCell>

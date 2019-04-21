@@ -27,7 +27,7 @@ const styles = (theme: Theme) =>
       backgroundColor: theme.palette.primary.main,
     },
     table: {
-      tableLayout: 'fixed'
+      tableLayout: 'fixed',
     },
     label: {
       fontWeight: 700,
@@ -126,7 +126,9 @@ const TxDetailsImpl = withStyles(styles)(
                 <TableRow>
                   <TableCell className={classes.label}>Contract</TableCell>
                   <TableCell>
-                    <ConsoleText>{tx.contractName}</ConsoleText>
+                    <ConsoleText>
+                      <PrismLink to={`/contract/${tx.contractName}`}>{tx.contractName}</PrismLink>
+                    </ConsoleText>
                   </TableCell>
                 </TableRow>
                 <TableRow>
