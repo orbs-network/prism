@@ -23,4 +23,5 @@ export interface IDB {
   storeTx(tx: IRawTx | IRawTx[]): Promise<void>;
   getTxById(txId: string): Promise<IRawTx>;
   getDeployContractTx(contractName: string, lang: number): Promise<IRawTx>;
+  getContractTxes(contractName: string): Promise<IRawTx[]>;
 }

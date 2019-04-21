@@ -15,15 +15,19 @@ import {
 } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import { blockResponseToRawBlock } from '../block-transform/blockTransform';
 import { IRawBlock } from '../../shared/IRawData';
+import { Argument } from 'orbs-client-sdk/dist/codec/Arguments';
 
 export function generateRandomRawBlock(blockHeight: bigint): IRawBlock {
   const getBlockResponse: GetBlockResponse = generateRandomGetBlockRespose(blockHeight);
   return blockResponseToRawBlock(getBlockResponse);
 }
 
-export function generateRawBlockWithTransaction(blockHeight: bigint, tx: BlockTransaction): IRawBlock {
+export function generateRawBlockWithTransaction(
+  blockHeight: bigint,
+  txes: BlockTransaction | BlockTransaction[],
+): IRawBlock {
   const getBlockResponse: GetBlockResponse = generateRandomGetBlockRespose(blockHeight);
-  getBlockResponse.transactions = [tx];
+  getBlockResponse.transactions = Array.isArray(txes) ? txes : [txes];
   return blockResponseToRawBlock(getBlockResponse);
 }
 
@@ -92,18 +96,21 @@ function genUint8Array(len: number): Uint8Array {
   return result;
 }
 
-export function generateBlockTransaction(): BlockTransaction {
-  const signerPublicKey = genUint8Array(32);
+export function generateBlockTransaction(
+  contractName: string = 'DummyContract',
+  methodName: string = 'DummyMethod',
+  inputArguments: Argument[] = [],
+): BlockTransaction {
   return {
     txId: genUint8Array(40),
     txHash: genUint8Array(20),
     protocolVersion: 1,
     virtualChainId: 42,
     timestamp: new Date(),
-    signerPublicKey,
-    contractName: 'DummyContract',
-    methodName: 'DummyMethod',
-    inputArguments: [],
+    signerPublicKey: genUint8Array(32),
+    contractName,
+    methodName,
+    inputArguments,
     executionResult: ExecutionResult.EXECUTION_RESULT_SUCCESS,
     outputArguments: [],
     outputEvents: [],
@@ -111,26 +118,7 @@ export function generateBlockTransaction(): BlockTransaction {
 }
 
 export function generateContractDeployTransaction(contractName: string, code: string): BlockTransaction {
-  const signerPublicKey = genUint8Array(32);
+  const inputArguments = [argString(contractName), argUint32(1), argBytes(Uint8Array.from(Buffer.from(code)))];
 
-  const inputArguments = [
-    argString(contractName),
-    argUint32(1),
-    argBytes(Uint8Array.from(Buffer.from(code)))
-  ];
-
-  return {
-    txId: genUint8Array(40),
-    txHash: genUint8Array(20),
-    protocolVersion: 1,
-    virtualChainId: 42,
-    timestamp: new Date(),
-    signerPublicKey,
-    contractName: '_Deployments',
-    methodName: 'deployService',
-    inputArguments,
-    executionResult: ExecutionResult.EXECUTION_RESULT_SUCCESS,
-    outputArguments: [],
-    outputEvents: [],
-  };
+  return generateBlockTransaction('_Deployments', 'deployService', inputArguments);
 }

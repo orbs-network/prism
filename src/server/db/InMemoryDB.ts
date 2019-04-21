@@ -108,12 +108,22 @@ export class InMemoryDB implements IDB {
       if (tx.contractName === '_Deployments' && tx.methodName === 'deployService' && tx.executionResult === 'SUCCESS') {
         const { inputArguments: args } = tx;
         if (args.length === 3) {
-          if (args[0].type === 'string' && args[0].value === contractName && args[1].type === 'uint32' && args[1].value === lang.toString()) {
+          if (
+            args[0].type === 'string' &&
+            args[0].value === contractName &&
+            args[1].type === 'uint32' &&
+            args[1].value === lang.toString()
+          ) {
             return tx;
           }
         }
       }
     }
+  }
+
+  public async getContractTxes(contractName: string): Promise<IRawTx[]> {
+    const txArr = Array.from(this.txs);
+    return txArr.map(item => item[1]).filter(tx => tx.contractName === contractName);
   }
 
   private capTxes(): void {

@@ -15,6 +15,7 @@ import {
   generateRandomRawBlock,
   generateRawBlockWithTransaction,
   generateContractDeployTransaction,
+  generateBlockTransaction,
 } from '../orbs-adapter/fake-blocks-generator';
 import * as winston from 'winston';
 import { genLogger } from '../logger/LoggerFactory';
@@ -151,6 +152,28 @@ function testDb(db: IDB, dbName: string) {
 
       const actual = await db.getDeployContractTx('test-contract', 1);
       expect(rawBlock.transactions[0]).toEqual(actual);
+    });
+
+    it('should retrive txes by contract name', async () => {
+      const code: string = 'this is go code';
+      const contractName = 'test-contract';
+      const deployTx: BlockTransaction = generateContractDeployTransaction(contractName, code);
+      const tx1 = generateBlockTransaction('test-contract', 'some-method1');
+      const tx2 = generateBlockTransaction('test-contract', 'some-method2');
+      const tx3 = generateBlockTransaction('test-contract', 'some-method3');
+      const deployRawBlock = generateRawBlockWithTransaction(1n, deployTx);
+      const rawBlock1 = generateRawBlockWithTransaction(2n, [tx1, tx2]);
+      const rawBlock2 = generateRawBlockWithTransaction(3n, tx3);
+
+      await db.storeBlock(rawBlockToBlock(deployRawBlock));
+      await db.storeBlock(rawBlockToBlock(rawBlock1));
+      await db.storeBlock(rawBlockToBlock(rawBlock2));
+      await db.storeTx(deployRawBlock.transactions);
+      await db.storeTx(rawBlock1.transactions);
+      await db.storeTx(rawBlock2.transactions);
+
+      const actual = await db.getContractTxes(contractName);
+      expect([...rawBlock1.transactions, ...rawBlock2.transactions]).toEqual(actual);
     });
   });
 }

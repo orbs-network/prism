@@ -189,6 +189,27 @@ export class MongoDB implements IDB {
     }
   }
 
+  public async getContractTxes(contractName: string): Promise<IRawTx[]> {
+    const startTime = Date.now();
+    this.logger.info(`Searching for all txes for contract: ${contractName}`);
+    const result = await this.TxModel.find(
+      {
+        contractName,
+      },
+      { _id: false, __v: false },
+    )
+      .lean()
+      .exec();
+
+    if (result) {
+      this.logger.info(`found ${result.length} txes for contract ${contractName} in [${Date.now() - startTime}ms.]`);
+      return result;
+    } else {
+      this.logger.info(`no txes found for contract ${contractName} [${Date.now() - startTime}ms.]`);
+      return null;
+    }
+  }
+
   public async getHeighestConsecutiveBlockHeight(): Promise<bigint> {
     const result = await this.CacheModel.findOne({ _id: 1 });
     if (result) {
