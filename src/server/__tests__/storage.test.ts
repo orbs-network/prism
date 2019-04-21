@@ -9,8 +9,15 @@
 import { ISearchResult } from '../../shared/ISearchResult';
 import { rawBlockToBlock } from '../block-transform/blockTransform';
 import { InMemoryDB } from '../db/InMemoryDB';
-import { generateRandomRawBlock } from '../orbs-adapter/fake-blocks-generator';
+import {
+  generateRandomRawBlock,
+  generateContractDeployTransaction,
+  generateRawBlockWithTransaction,
+  generateBlockTransaction,
+} from '../orbs-adapter/fake-blocks-generator';
 import { Storage } from '../storage/storage';
+import { IContractData } from '../../shared/IContractData';
+import { BlockTransaction } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 
 describe('storage', () => {
   it('should store and retrive blocks', async () => {
@@ -78,6 +85,42 @@ describe('storage', () => {
 
       const expected: ISearchResult = null;
       const actual = await storage.search('fake hash');
+      expect(expected).toEqual(actual);
+    });
+
+    it('should return contract data by contract name', async () => {
+      const contractName: string = 'test-contract';
+      const code: string = 'This is Go code';
+      const deployTx: BlockTransaction = generateContractDeployTransaction(contractName, code);
+      const deployBlock = generateRawBlockWithTransaction(1n, deployTx);
+      const tx1 = generateBlockTransaction(contractName, 'some-method1');
+      const tx2 = generateBlockTransaction(contractName, 'some-method2');
+      const tx3 = generateBlockTransaction(contractName, 'some-method3');
+      const rawBlock2 = generateRawBlockWithTransaction(2n, [tx1, tx2]);
+      const rawBlock3 = generateRawBlockWithTransaction(3n, tx3);
+
+      const db = new InMemoryDB();
+      await db.init();
+      const storage = new Storage(db);
+      await storage.handleNewBlock(deployBlock);
+      await storage.handleNewBlock(rawBlock2);
+      await storage.handleNewBlock(rawBlock3);
+
+      const expected: IContractData = {
+        code,
+        contractName,
+        blockInfo: {
+          2: {
+            stateDiff: null,
+            txes: rawBlock2.transactions.map(t => t.txId),
+          },
+          3: {
+            stateDiff: null,
+            txes: rawBlock3.transactions.map(t => t.txId),
+          },
+        },
+      };
+      const actual = await storage.getContractData(contractName);
       expect(expected).toEqual(actual);
     });
   });

@@ -11,7 +11,7 @@ import { ISearchResult } from '../../shared/ISearchResult';
 import { IRawTx, IRawBlock } from '../../shared/IRawData';
 import { rawBlockToBlock, blockToBlockSummary } from '../block-transform/blockTransform';
 import { IDB } from '../db/IDB';
-import { IContractData } from '../../shared/IContractData';
+import { IContractData, IContractBlockInfo } from '../../shared/IContractData';
 import { decodeHex } from 'orbs-client-sdk';
 
 export class Storage {
@@ -49,10 +49,26 @@ export class Storage {
   public async getContractData(contractName: string): Promise<IContractData> {
     const result = await this.db.getDeployContractTx(contractName, 1);
     if (result) {
+      const txes = await this.db.getContractTxes(contractName);
       const code = Buffer.from(decodeHex(result.inputArguments[2].value)).toString();
+      const blockInfo: IContractBlockInfo = txes.reduce(
+        (prev, tx) => {
+          if (prev[tx.blockHeight]) {
+            prev[tx.blockHeight].txes.push(tx.txId);
+          } else {
+            prev[tx.blockHeight] = {
+              stateDiff: null,
+              txes: [tx.txId],
+            };
+          }
+          return prev;
+        },
+        {} as IContractBlockInfo,
+      );
       return {
         contractName: result.inputArguments[0].value,
         code,
+        blockInfo,
       };
     }
 
