@@ -27,7 +27,9 @@ describe('Full cycle', () => {
     await mainPageDriver.waitForBlockDetailsPage();
     console.log(`^^^ clickOnTx`);
     await mainPageDriver.clickOnTx(txId);
+    console.log(`^^^ getInputArg(0)`);
     const sentAmountArg = await mainPageDriver.getInputArg(0);
+    console.log(`^^^ getInputArg(1)`);
     const targetAddressArg = await mainPageDriver.getInputArg(1);
     console.log(`^^^ done`);
 
