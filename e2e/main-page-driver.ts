@@ -14,7 +14,8 @@ export class MainPageDriver {
   }
 
   public async waitForBlockHeight(blockHeight: bigint, navigateToBlock: boolean): Promise<void> {
-    const element = await page.waitForSelector(`#block-${blockHeight.toString()}`);
+    const element = await page.waitForSelector(`#block-${blockHeight.toString()} [data-type="block-height"]`);
+    await page.waitFor(100);
     if (navigateToBlock) {
       const link = await element.$('a');
       await link.click();
@@ -26,7 +27,6 @@ export class MainPageDriver {
   }
 
   public async clickOnTx(txId: string): Promise<void> {
-    console.log(`--------------------------#tx-${txId}`);
     const element = await page.waitForSelector(`#tx-${txId.toLowerCase()}`);
     await page.waitFor(1_000);
     const link = await element.$('a');
