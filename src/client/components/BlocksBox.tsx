@@ -16,6 +16,7 @@ import { IBlockSummary } from '../../shared/IBlock';
 import { getRecentBlocksSummary } from '../reducers/recentBlocksReducer';
 import { IRootState } from '../reducers/rootReducer';
 import { BlockItem } from './BlockItem';
+import { DISABLE_ANIMATIONS } from '../config';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -39,6 +40,7 @@ const BlocksBoxImpl = withStyles(styles)(
           <Transition
             config={{ duration: 250 }}
             initial={null}
+            immediate={DISABLE_ANIMATIONS}
             items={this.props.blocks}
             keys={block => block.blockHash}
             from={{ height: 0, opacity: 0, transform: `scale(0, 0) translate(0, 0px)` }}

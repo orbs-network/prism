@@ -16,6 +16,7 @@ import { Home } from './components/Home';
 import { TermNotFound } from './components/TermNotFound';
 import { TxDetails } from './components/TxDetails';
 import { ContractDetails } from './components/contract/ContractDetails';
+import { DISABLE_ANIMATIONS } from './config';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -34,6 +35,7 @@ const AppImpl = ({ classes, location }: IProps) => {
     <Transition
       config={config.slow}
       initial={null}
+      immediate={DISABLE_ANIMATIONS}
       keys={location.pathname}
       from={{ opacity: 0, transform: 'translateX(-15%)' }}
       enter={{ opacity: 1, transform: 'translateX(0%)' }}

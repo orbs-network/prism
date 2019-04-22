@@ -10,12 +10,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script>
         var vchainId = <%- vchainId %>;
+        <% if (process.env.DISABLE_ANIMATIONS === 'true') { %>       
+            var disableAnimations = true;
+        <% } %>
     </script>
     <body>
         <div class="container">
             <div id="app">Loading...</div>
         </div>
-    <% if(process.env.NODE_ENV === 'production') { %>       
+    <% if (process.env.NODE_ENV === 'production') { %>       
         <% if (process.env.GOOGLE_ANALYTICS_KEY) { %>
             <!-- Global site tag (gtag.js) - Google Analytics -->
             <script async src="https://www.googletagmanager.com/gtag/js?id=<%= process.env.GOOGLE_ANALYTICS_KEY %>"></script>

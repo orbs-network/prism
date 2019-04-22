@@ -10,7 +10,7 @@
     "test": "npm run test-server",
     "test-server": "node env-checker.js && jest --config ./src/server/__tests__/jest.config.js",
     "test-client": "jest --config ./src/client/__tests__/jest.config.js",
-    "test-e2e": "node env-checker.js && jest --config ./e2e/jest-e2e.config.js",
+    "test-e2e": "node env-checker.js && cross-env DISABLE_ANIMATIONS=true jest --config ./e2e/jest-e2e.config.js",
     "clean": "rimraf dist",
     "postinstall": "npm run build",
     "lint": "tslint -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'",
