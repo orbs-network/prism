@@ -47,30 +47,31 @@ export class Storage {
   }
 
   public async getContractData(contractName: string): Promise<IContractData> {
-    const result = await this.db.getDeployContractTx(contractName, 1);
-    if (result) {
-      const txes = await this.db.getContractTxes(contractName);
-      const code = Buffer.from(decodeHex(result.inputArguments[2].value)).toString();
-      const blockInfo: IContractBlockInfo = txes.reduce(
-        (prev, tx) => {
-          if (prev[tx.blockHeight]) {
-            prev[tx.blockHeight].txes.push(tx.txId);
-          } else {
-            prev[tx.blockHeight] = {
-              stateDiff: null,
-              txes: [tx.txId],
-            };
-          }
-          return prev;
-        },
-        {} as IContractBlockInfo,
-      );
-      return {
-        contractName: result.inputArguments[0].value,
-        code,
-        blockInfo,
-      };
+    const deployTx = await this.db.getDeployContractTx(contractName, 1);
+    let code = null;
+    if (deployTx) {
+      code = Buffer.from(decodeHex(deployTx.inputArguments[2].value)).toString();
     }
+    const txes = await this.db.getContractTxes(contractName);
+    const blockInfo: IContractBlockInfo = txes.reduce(
+      (prev, tx) => {
+        if (prev[tx.blockHeight]) {
+          prev[tx.blockHeight].txes.push(tx.txId);
+        } else {
+          prev[tx.blockHeight] = {
+            stateDiff: null,
+            txes: [tx.txId],
+          };
+        }
+        return prev;
+      },
+      {} as IContractBlockInfo,
+    );
+    return {
+      contractName,
+      code,
+      blockInfo,
+    };
 
     return null;
   }

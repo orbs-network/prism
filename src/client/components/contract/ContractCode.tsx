@@ -31,7 +31,7 @@ export const ContractCode = withStyles(styles)(({ contractName, code, classes }:
     <CardHeader title={`Contract - ${contractName}`} id='contract-code' className={classes.header} />
     <CardContent>
       <SyntaxHighlighter language='go' style={darcula} customStyle={{ maxHeight: 500 }}>
-        {code}
+        {code ? code : 'System contract'}
       </SyntaxHighlighter>
     </CardContent>
   </Card>
