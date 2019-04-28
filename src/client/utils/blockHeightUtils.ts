@@ -8,5 +8,10 @@
 
 // because we're using string blockHeight (avoiding BigInt polyfill)
 // we have to work around it. In the future we should support BigInt
-export const calcNextBlock = (blockHeight: string): string => (parseInt(blockHeight, 10) + 1).toString();
-export const calcPrevBlock = (blockHeight: string): string => (parseInt(blockHeight, 10) - 1).toString();
+const toNum = (val: string | number): number => (typeof val === 'number' ? val : parseInt(val, 10));
+
+export const add = (a: string | number, b: string | number): number => toNum(a) + toNum(b);
+export const subtract = (a: string | number, b: string | number): number => toNum(a) - toNum(b);
+
+export const calcNextBlock = (blockHeight: string): string => add(blockHeight, 1).toString();
+export const calcPrevBlock = (blockHeight: string): string => subtract(blockHeight, 1).toString();

@@ -27,6 +27,7 @@ import { IContractBlockInfo } from '../../../shared/IContractData';
 import { TxesList } from '../TxesList';
 import { ConsoleText } from '../ConsoleText';
 import { PrismLink } from '../PrismLink';
+import { subtract } from '../../utils/blockHeightUtils';
 
 SyntaxHighlighter.registerLanguage('go', goLang);
 
@@ -53,20 +54,22 @@ export const ContractHistory = withStyles(styles)(({ blockInfo, classes }: IProp
           </TableRow>
         </TableHead>
         <TableBody>
-          {Object.keys(blockInfo).map(blockHeight => {
-            return (
-              <TableRow key={blockHeight}>
-                <TableCell>
-                  <ConsoleText>
-                    <PrismLink to={`/block/${blockHeight}`}>{blockHeight}</PrismLink>
-                  </ConsoleText>
-                </TableCell>
-                <TableCell>
-                  <TxesList txIds={blockInfo[blockHeight].txes} />
-                </TableCell>
-              </TableRow>
-            );
-          })}
+          {Object.keys(blockInfo)
+            .sort((a, b) => subtract(b, a))
+            .map(blockHeight => {
+              return (
+                <TableRow key={blockHeight}>
+                  <TableCell>
+                    <ConsoleText>
+                      <PrismLink to={`/block/${blockHeight}`}>{blockHeight}</PrismLink>
+                    </ConsoleText>
+                  </TableCell>
+                  <TableCell>
+                    <TxesList txIds={blockInfo[blockHeight].txes} />
+                  </TableCell>
+                </TableRow>
+              );
+            })}
         </TableBody>
       </Table>
     </CardContent>
