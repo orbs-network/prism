@@ -112,11 +112,11 @@ describe('storage', () => {
         blockInfo: {
           2: {
             stateDiff: null,
-            txes: rawBlock2.transactions.map(t => t.txId),
+            txes: [rawBlock2.transactions[1].txId, rawBlock2.transactions[0].txId],
           },
           3: {
             stateDiff: null,
-            txes: rawBlock3.transactions.map(t => t.txId),
+            txes: [rawBlock3.transactions[0].txId],
           },
         },
       };

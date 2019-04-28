@@ -18,6 +18,7 @@ export interface IRawEvent {
 }
 
 export interface IRawTx {
+  idxInBlock: number;
   txId: string;
   blockHeight: string;
   protocolVersion: number;

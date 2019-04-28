@@ -35,6 +35,7 @@ const blockSchema = new mongoose.Schema({
 blockSchema.index({ blockHash: 'text' });
 
 const txSchema = new mongoose.Schema({
+  idxInBlock: Number,
   txId: String,
   blockHeight: String,
   protocolVersion: Number,
@@ -69,7 +70,6 @@ export class MongoDB implements IDB {
       mongoose.connection.once('error', reject);
 
       mongoose.connect(this.connectionUrl, { useNewUrlParser: true }).then(db => {
-        console.log('connect completed');
         this.db = db;
 
         // model
@@ -189,7 +189,7 @@ export class MongoDB implements IDB {
     }
   }
 
-  public async getContractTxes(contractName: string): Promise<IRawTx[]> {
+  public async getContractTxes(contractName: string, limit: number): Promise<IRawTx[]> {
     const startTime = Date.now();
     this.logger.info(`Searching for all txes for contract: ${contractName}`);
     const result = await this.TxModel.find(
@@ -197,6 +197,14 @@ export class MongoDB implements IDB {
         contractName,
       },
       { _id: false, __v: false },
+      {
+        skip: 0,
+        sort: {
+          blockHeight: -1,
+          idxInBlock: -1,
+        },
+        limit,
+      },
     )
       .lean()
       .exec();
@@ -243,16 +251,16 @@ export class MongoDB implements IDB {
     return 0n;
   }
 
-  public async storeTx(tx: IRawTx | IRawTx[]): Promise<any> {
+  public async storeTxes(txes: IRawTx[]): Promise<any> {
     if (this.readOnlyMode) {
       return;
     }
-    if (Array.isArray(tx)) {
-      return Promise.all(tx.map(t => this.storeTx(t)));
-    } else {
-      const txInstance = new this.TxModel(tx);
-      await txInstance.save();
-    }
+    return Promise.all(
+      txes.map(async t => {
+        const txInstance = new this.TxModel(t);
+        await txInstance.save();
+      }),
+    );
   }
 
   public async getTxById(txId: string): Promise<IRawTx> {

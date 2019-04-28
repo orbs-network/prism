@@ -47,7 +47,8 @@ export function blockResponseToRawBlock(getBlockResponse: GetBlockResponse): IRa
     blockHeight,
     blockHash,
     timeStamp: getBlockResponse.blockTimestamp.getTime(),
-    transactions: getBlockResponse.transactions.map(tx => ({
+    transactions: getBlockResponse.transactions.map((tx, idx) => ({
+      idxInBlock: idx,
       txId: encodeHex(tx.txId),
       blockHeight,
       protocolVersion: tx.protocolVersion,

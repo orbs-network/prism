@@ -52,7 +52,7 @@ export class Storage {
     if (deployTx) {
       code = Buffer.from(decodeHex(deployTx.inputArguments[2].value)).toString();
     }
-    const txes = await this.db.getContractTxes(contractName);
+    const txes = await this.db.getContractTxes(contractName, 100);
     const blockInfo: IContractBlockInfo = txes.reduce(
       (prev, tx) => {
         if (prev[tx.blockHeight]) {
@@ -78,7 +78,7 @@ export class Storage {
 
   public async handleNewBlock(rawBlock: IRawBlock): Promise<void> {
     await this.db.storeBlock(rawBlockToBlock(rawBlock));
-    await this.db.storeTx(rawBlock.transactions);
+    await this.db.storeTxes(rawBlock.transactions);
   }
 
   public async search(term: string): Promise<ISearchResult> {

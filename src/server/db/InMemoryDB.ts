@@ -12,14 +12,14 @@ import { IRawTx } from '../../shared/IRawData';
 
 export class InMemoryDB implements IDB {
   private blocks: Map<string, IBlock>;
-  private txs: Map<string, IRawTx>;
+  private txes: Map<string, IRawTx>;
   private heighestConsecutiveBlockHeight: bigint = 0n;
 
   constructor(private readOnlyMode: boolean = false) {}
 
   public async init(): Promise<void> {
     this.blocks = new Map();
-    this.txs = new Map();
+    this.txes = new Map();
   }
 
   public async destroy(): Promise<void> {
@@ -31,7 +31,7 @@ export class InMemoryDB implements IDB {
       return;
     }
     this.blocks = new Map();
-    this.txs = new Map();
+    this.txes = new Map();
     this.heighestConsecutiveBlockHeight = 0n;
   }
 
@@ -87,24 +87,20 @@ export class InMemoryDB implements IDB {
     return result;
   }
 
-  public async storeTx(tx: IRawTx | IRawTx[]): Promise<void> {
+  public async storeTxes(txes: IRawTx[]): Promise<void> {
     if (this.readOnlyMode) {
       return;
     }
-    if (Array.isArray(tx)) {
-      tx.map(t => this.txs.set(t.txId.toLowerCase(), t));
-    } else {
-      this.txs.set(tx.txId.toLowerCase(), tx);
-    }
+    txes.map(t => this.txes.set(t.txId.toLowerCase(), t));
     this.capTxes();
   }
 
   public async getTxById(txId: string): Promise<IRawTx> {
-    return this.txs.get(txId.toLowerCase()) || null;
+    return this.txes.get(txId.toLowerCase()) || null;
   }
 
   public async getDeployContractTx(contractName: string, lang: number): Promise<IRawTx> {
-    for (const tx of this.txs.values()) {
+    for (const tx of this.txes.values()) {
       if (tx.contractName === '_Deployments' && tx.methodName === 'deployService' && tx.executionResult === 'SUCCESS') {
         const { inputArguments: args } = tx;
         if (args.length === 3) {
@@ -121,20 +117,24 @@ export class InMemoryDB implements IDB {
     }
   }
 
-  public async getContractTxes(contractName: string): Promise<IRawTx[]> {
-    const txArr = Array.from(this.txs);
-    return txArr.map(item => item[1]).filter(tx => tx.contractName === contractName);
+  public async getContractTxes(contractName: string, limit: number): Promise<IRawTx[]> {
+    const txArr = Array.from(this.txes);
+    const allTxes = txArr
+      .map(item => item[1])
+      .filter(tx => tx.contractName === contractName)
+      .sort((a, b) => Number(BigInt(b.blockHeight) - BigInt(a.blockHeight)) || b.idxInBlock - a.idxInBlock);
+    return allTxes.splice(0, limit);
   }
 
   private capTxes(): void {
-    if (this.txs.size > 1100) {
-      const txArr = Array.from(this.txs);
-      this.txs.clear();
+    if (this.txes.size > 1100) {
+      const txArr = Array.from(this.txes);
+      this.txes.clear();
       txArr
         .map(item => item[1])
         .sort((a, b) => a.timestamp - b.timestamp)
         .filter((_, idx) => idx < 1000)
-        .forEach(tx => this.txs.set(tx.txId.toLowerCase(), tx));
+        .forEach(tx => this.txes.set(tx.txId.toLowerCase(), tx));
     }
   }
 
