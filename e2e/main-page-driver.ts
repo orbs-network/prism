@@ -34,17 +34,11 @@ export class MainPageDriver {
   }
 
   public async clickOnTx(txId: string): Promise<void> {
-    console.log(`^^^ waitFor 1_000 1`);
     await page.waitFor(100);
-    console.log(`^^^ waitForSelector #tx-${txId.toLowerCase()}`);
     const element = await page.waitForSelector(`#tx-${txId.toLowerCase()}`);
-    console.log(`^^^ waitFor 1_000 2`);
     await page.waitFor(100);
-    console.log(`^^^ const link = await element.$('a');`);
     const link = await element.$('a');
-    console.log(`^^^ await link.click();`);
     await link.click();
-    console.log(`^^^ await page.waitForSelector('#tx-details');`);
     await page.waitForSelector('#tx-details');
   }
 
