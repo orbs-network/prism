@@ -28,6 +28,7 @@ function testReadOnlyDb(db: IDB, dbName: string) {
     });
 
     afterEach(async () => {
+      await db.clearAll();
       await db.destroy();
     });
 

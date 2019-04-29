@@ -34,6 +34,7 @@ function testDb(db: IDB, dbName: string) {
     });
 
     afterEach(async () => {
+      await db.clearAll();
       await db.destroy();
     });
 

@@ -32,7 +32,6 @@ const blockSchema = new mongoose.Schema({
   blockTimestamp: Number,
   txIds: [String],
 });
-blockSchema.index({ blockHash: 'text' });
 
 const txSchema = new mongoose.Schema({
   idxInBlock: Number,
@@ -50,7 +49,6 @@ const txSchema = new mongoose.Schema({
   outputArguments: Array,
   outputEvents: Array,
 });
-txSchema.index({ txId: 'text' });
 
 export class MongoDB implements IDB {
   private db: mongoose.Mongoose;
@@ -71,6 +69,9 @@ export class MongoDB implements IDB {
 
       mongoose.connect(this.connectionUrl, { useNewUrlParser: true }).then(db => {
         this.db = db;
+
+        txSchema.index({ txId: 'text' });
+        blockSchema.index({ blockHash: 'text' });
 
         // model
         this.BlockModel = mongoose.model('Block', blockSchema);
