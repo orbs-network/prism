@@ -23,9 +23,7 @@ describe('Full cycle', () => {
     const { txId, blockHeight, receiverAddress } = await orbsClientSdkDriver.transferTokensTx(amountToSend);
     await mainPageDriver.waitForBlockHeight(blockHeight, true);
     await mainPageDriver.waitForBlockDetailsPage();
-    await page.waitFor(2000);
     await mainPageDriver.clickOnTx(txId);
-    await page.waitFor(2000);
     const sentAmountArg = await mainPageDriver.getInputArg(0);
     const targetAddressArg = await mainPageDriver.getInputArg(1);
 
