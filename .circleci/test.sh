@@ -6,14 +6,14 @@ export NVM_DIR="/opt/circleci/.nvm"
 
 nvm use 11.2.0
 
-#npm test
+npm test
 
-# EXITCODE=$?
+EXITCODE=$?
 
-# if [ $EXITCODE != 0 ]; then
-#     echo "npm test failed so exiting.."
-#     exit 1
-# fi
+if [ $EXITCODE != 0 ]; then
+    echo "npm test failed so exiting.."
+    exit 1
+fi
 
 docker pull orbsnetwork/gamma:experimental
 echo "Running gamma-server on port 9000"
