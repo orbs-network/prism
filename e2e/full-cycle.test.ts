@@ -8,6 +8,7 @@
 
 import { MainPageDriver } from './main-page-driver';
 import { OrbsClientSdkDriver } from './orbs-client-sdk-driver';
+import { takeScreenshot } from './screenshooter';
 
 describe('Full cycle', () => {
   const orbsClientSdkDriver = new OrbsClientSdkDriver();

@@ -41,8 +41,8 @@ interface IProps extends WithStyles<typeof styles> {
 }
 
 export const BlockItem = withStyles(styles)(({ classes, block, style }: IProps) => (
-  <animated.div id={`block-${block.blockHeight}`} data-type='block-item' style={style}>
-    <Paper className={classes.paper}>
+  <animated.div style={style}>
+    <Paper className={classes.paper} id={`block-${block.blockHeight}`} data-type='block-item'>
       <div className={classes.line}>
         <Typography className={classes.label}>Block Height:</Typography>
         <Typography data-type='block-height'>

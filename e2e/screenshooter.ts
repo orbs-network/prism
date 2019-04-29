@@ -15,11 +15,11 @@ const upload = filePath => {
   });
 };
 
-const takeScreenshot = async (testName: string) => {
-  const path = toFilename(`${new Date().toISOString()}_${testName}.png`);
+export const takeScreenshot = async (name: string) => {
+  const path = toFilename(`${new Date().toISOString()}_${name}.png`);
   await page.screenshot({ path });
   const uploadedFileUrl = await upload(path);
-  console.log(`Screenshot uploaded: ${uploadedFileUrl}`);
+  console.log(`Screenshot for "${name}" uploaded to: ${uploadedFileUrl}`);
   fs.unlinkSync(path);
 };
 
