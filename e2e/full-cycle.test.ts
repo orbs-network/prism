@@ -22,12 +22,38 @@ describe('Full cycle', () => {
   it('should display the block that holds my transaction', async () => {
     const amountToSend = 7;
     const { txId, blockHeight, receiverAddress } = await orbsClientSdkDriver.transferTokensTx(amountToSend);
+    console.log(`^^^ waitForBlockHeight blockHeight:${blockHeight - 1n}`);
+    await mainPageDriver.waitForBlockHeight(blockHeight - 1n, true);
+    await mainPageDriver.waitForBlockDetailsPage();
+    await takeScreenshot(`After waiting for blockheight - 1n: ${blockHeight - 1n}`);
+    await mainPageDriver.navigateToHome();
+
+    console.log(`^^^ waitForBlockHeight blockHeight:${blockHeight}`);
+    await mainPageDriver.waitForBlockHeight(blockHeight, true);
+    await mainPageDriver.waitForBlockDetailsPage();
+    await takeScreenshot(`After waiting for blockheight: ${blockHeight}`);
+    await mainPageDriver.navigateToHome();
+
+    console.log(`^^^ waitForBlockHeight blockHeight:${blockHeight + 1n}`);
+    await mainPageDriver.waitForBlockHeight(blockHeight + 1n, true);
+    await mainPageDriver.waitForBlockDetailsPage();
+    await takeScreenshot(`After waiting for blockheight + 1n: ${blockHeight - 1n}`);
+    await mainPageDriver.navigateToHome();
+
+    console.log(`^^^ waitForBlockHeight blockHeight:${blockHeight + 2n}`);
+    await mainPageDriver.waitForBlockHeight(blockHeight + 2n, true);
+    await mainPageDriver.waitForBlockDetailsPage();
+    await takeScreenshot(`After waiting for blockheight + 2n: ${blockHeight - 2n}`);
+    await mainPageDriver.navigateToHome();
+
     console.log(`^^^ waitForBlockHeight blockHeight:${blockHeight}`);
     await mainPageDriver.waitForBlockHeight(blockHeight, true);
     console.log(`^^^ waitForBlockDetailsPage`);
     await mainPageDriver.waitForBlockDetailsPage();
+    await page.waitFor(2000);
     console.log(`^^^ clickOnTx txId:${txId}`);
     await mainPageDriver.clickOnTx(txId);
+    await page.waitFor(2000);
     console.log(`^^^ getInputArg(0)`);
     const sentAmountArg = await mainPageDriver.getInputArg(0);
     console.log(`^^^ getInputArg(1)`);

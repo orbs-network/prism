@@ -11,13 +11,18 @@ import { takeScreenshot } from './screenshooter';
 
 export class MainPageDriver {
   public async navigate() {
+    await page.setViewport({ width: 1600, height: 900 });
     await page.goto('http://localhost:3000');
+  }
+
+  public async navigateToHome() {
+    const homeLink = await page.waitForSelector('#home');
+    await homeLink.click();
   }
 
   public async waitForBlockHeight(blockHeight: bigint, navigateToBlock: boolean): Promise<void> {
     const element = await page.waitForSelector(`#block-${blockHeight.toString()} [data-type="block-height"]`);
     await page.waitFor(100);
-    await takeScreenshot(`After waiting for blockheight`);
     if (navigateToBlock) {
       const link = await element.$('a');
       await link.click();

@@ -105,7 +105,7 @@ const HeaderImpl = withStyles(styles)(
         <div className={classes.root}>
           <AppBar position='static'>
             <Toolbar>
-              <PrismLink to={'/'} className={classes.cleanLink}>
+              <PrismLink to={'/'} className={classes.cleanLink} id='home'>
                 <Logo />
               </PrismLink>
               <div className={classes.title}>
