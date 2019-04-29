@@ -57,6 +57,7 @@
     "@types/react-redux": "^7.0.1",
     "@types/three": "^0.93.19",
     "body-parser": "^1.18.3",
+    "cloudinary": "^1.14.0",
     "cross-env": "^5.2.0",
     "dotenv": "^6.2.0",
     "ejs": "^2.6.1",

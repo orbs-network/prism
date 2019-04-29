@@ -6,4 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
+import { registerScreenshotReporter } from './screenshooter';
+registerScreenshotReporter();
+
 require('./matchers');
