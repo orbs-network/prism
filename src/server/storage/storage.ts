@@ -56,11 +56,23 @@ export class Storage {
     const blockInfo: IContractBlockInfo = txes.reduce(
       (prev, tx) => {
         if (prev[tx.blockHeight]) {
-          prev[tx.blockHeight].txes.push(tx.txId);
+          prev[tx.blockHeight].txes.push({
+            method: tx.methodName,
+            txId: tx.txId,
+            signerAddress: tx.signerAddress,
+            successful: tx.executionResult === 'SUCCESS',
+          });
         } else {
           prev[tx.blockHeight] = {
             stateDiff: null,
-            txes: [tx.txId],
+            txes: [
+              {
+                method: tx.methodName,
+                txId: tx.txId,
+                signerAddress: tx.signerAddress,
+                successful: tx.executionResult === 'SUCCESS',
+              },
+            ],
           };
         }
         return prev;

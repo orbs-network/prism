@@ -8,7 +8,6 @@
 
 import { Tooltip, Typography } from '@material-ui/core';
 import { createStyles, Theme, WithStyles, withStyles } from '@material-ui/core/styles';
-import { fade } from '@material-ui/core/styles/colorManipulator';
 import HelpIcon from '@material-ui/icons/Help';
 import * as React from 'react';
 

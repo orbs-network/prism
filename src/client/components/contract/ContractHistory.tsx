@@ -28,6 +28,7 @@ import { TxesList } from '../TxesList';
 import { ConsoleText } from '../ConsoleText';
 import { PrismLink } from '../PrismLink';
 import { subtract } from '../../utils/blockHeightUtils';
+import { ShortTxesList } from '../ShortTxesList';
 
 SyntaxHighlighter.registerLanguage('go', goLang);
 
@@ -65,7 +66,7 @@ export const ContractHistory = withStyles(styles)(({ blockInfo, classes }: IProp
                     </ConsoleText>
                   </TableCell>
                   <TableCell>
-                    <TxesList txIds={blockInfo[blockHeight].txes} />
+                    <ShortTxesList txes={blockInfo[blockHeight].txes} />
                   </TableCell>
                 </TableRow>
               );

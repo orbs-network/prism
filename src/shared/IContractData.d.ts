@@ -1,7 +1,14 @@
+export interface IShortTx {
+  method: string;
+  txId: string;
+  signerAddress: string;
+  successful: boolean;
+}
+
 export interface IContractBlockInfo {
   [blockHeight: string]: {
     stateDiff: any;
-    txes: string[];
+    txes: IShortTx[];
   };
 }
 export interface IContractData {
