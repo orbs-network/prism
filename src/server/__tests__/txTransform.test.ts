@@ -12,15 +12,29 @@ import { txToShortTx } from '../transformers/txTransform';
 
 describe('txTransform', () => {
   it('should convert IRawTx to IShortTx', async () => {
-    const block1 = generateRandomRawBlock(1n);
-    const tx = block1.transactions[0];
-    const actual = txToShortTx(tx);
-    const expected: IShortTx = {
-      method: tx.methodName,
-      txId: tx.txId,
-      signerAddress: tx.signerAddress,
-      successful: tx.executionResult === 'SUCCESS',
+    const block = generateRandomRawBlock(1n);
+
+    const failingTx = block.transactions[0];
+    failingTx.executionResult = 'ERROR';
+    const actualFailing = txToShortTx(failingTx);
+    const expectedFailing: IShortTx = {
+      method: failingTx.methodName,
+      txId: failingTx.txId,
+      signerAddress: failingTx.signerAddress,
+      successful: false,
     };
-    expect(expected).toEqual(actual);
+    expect(expectedFailing).toEqual(actualFailing);
+
+    const successTx = block.transactions[1];
+    successTx.executionResult = 'SUCCESS';
+
+    const actualSuccess = txToShortTx(successTx);
+    const expectedSuccess: IShortTx = {
+      method: successTx.methodName,
+      txId: successTx.txId,
+      signerAddress: successTx.signerAddress,
+      successful: true,
+    };
+    expect(expectedSuccess).toEqual(actualSuccess);
   });
 });
