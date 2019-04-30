@@ -13,7 +13,7 @@ import {
   ResultsBlockHeader,
   TransactionsBlockHeader,
 } from 'orbs-client-sdk/dist/codec/OpGetBlock';
-import { blockResponseToRawBlock } from '../block-transform/blockTransform';
+import { blockResponseToRawBlock } from '../transformers/blockTransform';
 import { IRawBlock } from '../../shared/IRawData';
 import { Argument } from 'orbs-client-sdk/dist/codec/Arguments';
 

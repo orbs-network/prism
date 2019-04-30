@@ -7,7 +7,7 @@
  */
 
 import { ISearchResult } from '../../shared/ISearchResult';
-import { rawBlockToBlock } from '../block-transform/blockTransform';
+import { rawBlockToBlock } from '../transformers/blockTransform';
 import { InMemoryDB } from '../db/InMemoryDB';
 import {
   generateRandomRawBlock,
@@ -18,6 +18,7 @@ import {
 import { Storage } from '../storage/storage';
 import { IContractData } from '../../shared/IContractData';
 import { BlockTransaction } from 'orbs-client-sdk/dist/codec/OpGetBlock';
+import { txToShortTx } from '../transformers/txTransform';
 
 describe('storage', () => {
   it('should store and retrive blocks', async () => {
@@ -112,11 +113,11 @@ describe('storage', () => {
         blockInfo: {
           2: {
             stateDiff: null,
-            txes: [rawBlock2.transactions[1].txId, rawBlock2.transactions[0].txId],
+            txes: [txToShortTx(rawBlock2.transactions[1]), txToShortTx(rawBlock2.transactions[0])],
           },
           3: {
             stateDiff: null,
-            txes: [rawBlock3.transactions[0].txId],
+            txes: [txToShortTx(rawBlock3.transactions[0])],
           },
         },
       };
