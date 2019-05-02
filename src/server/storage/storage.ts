@@ -9,10 +9,11 @@
 import { IBlock, IBlockSummary } from '../../shared/IBlock';
 import { ISearchResult } from '../../shared/ISearchResult';
 import { IRawTx, IRawBlock } from '../../shared/IRawData';
-import { rawBlockToBlock, blockToBlockSummary } from '../block-transform/blockTransform';
+import { rawBlockToBlock, blockToBlockSummary } from '../transformers/blockTransform';
 import { IDB } from '../db/IDB';
 import { IContractData, IContractBlockInfo } from '../../shared/IContractData';
 import { decodeHex } from 'orbs-client-sdk';
+import { txToShortTx } from '../transformers/txTransform';
 
 export class Storage {
   constructor(private db: IDB) {}
@@ -56,23 +57,11 @@ export class Storage {
     const blockInfo: IContractBlockInfo = txes.reduce(
       (prev, tx) => {
         if (prev[tx.blockHeight]) {
-          prev[tx.blockHeight].txes.push({
-            method: tx.methodName,
-            txId: tx.txId,
-            signerAddress: tx.signerAddress,
-            successful: tx.executionResult === 'SUCCESS',
-          });
+          prev[tx.blockHeight].txes.push(txToShortTx(tx));
         } else {
           prev[tx.blockHeight] = {
             stateDiff: null,
-            txes: [
-              {
-                method: tx.methodName,
-                txId: tx.txId,
-                signerAddress: tx.signerAddress,
-                successful: tx.executionResult === 'SUCCESS',
-              },
-            ],
+            txes: [txToShortTx(tx)],
           };
         }
         return prev;

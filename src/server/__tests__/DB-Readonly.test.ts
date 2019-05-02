@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { rawBlockToBlock } from '../block-transform/blockTransform';
+import { rawBlockToBlock } from '../transformers/blockTransform';
 import { generateRandomRawBlock } from '../orbs-adapter/fake-blocks-generator';
 import { InMemoryDB } from '../db/InMemoryDB';
 import { IDB } from '../db/IDB';

@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { rawBlockToBlock } from '../block-transform/blockTransform';
+import { rawBlockToBlock } from '../transformers/blockTransform';
 import { MONGODB_URI } from '../config';
 import { IDB } from '../db/IDB';
 import { InMemoryDB } from '../db/InMemoryDB';

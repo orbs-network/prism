@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { blockResponseToRawBlock } from '../block-transform/blockTransform';
+import { blockResponseToRawBlock } from '../transformers/blockTransform';
 import { IOrbsClient } from '../orbs-client/IOrbsClient';
 import { IRawBlock } from '../../shared/IRawData';
 import * as winston from 'winston';
