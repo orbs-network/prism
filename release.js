@@ -1,10 +1,23 @@
 const fs = require('fs');
 const findUp = require('find-up');
 const execSync = require('child_process').execSync;
+const packageJsonPath = findUp.sync('package.json');
 
-function abortIfPackageJsonHasChanges(packageJsonPath) {
+const run = (command, options) => execSync(command, { encoding: 'utf8', ...options });
+
+const getHashFor = branchName => run(`git rev-parse --verify ${branchName}`).trim();
+
+function ensurePackageJsonHasNoChanges() {
   if (run(`git status -s ${packageJsonPath}`).length) {
-    throw new UsageError('First, commit your package.json');
+    console.error('First, commit your package.json');
+    process.exit(1);
+  }
+}
+
+function ensureNothingStaged() {
+  if (run(`git diff --name-only --cached`).length) {
+    console.error('You need to push your staged changes first');
+    process.exit(1);
   }
 }
 
@@ -26,10 +39,23 @@ function bumpVersion(version, upgradeType) {
   }
 }
 
-const packageJsonPath = findUp.sync('package.json');
-abortIfPackageJsonHasChanges(packageJsonPath);
+function upgradePackageJson() {
+  const packageJson = require(packageJsonPath);
+  const { version } = packageJson;
+  const newVersion = bumpVersion(version, 'patch');
+  packageJson.version = newVersion;
+  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
+  console.log(`Version bumped from ${version} to ${packageJson.version}`);
+  return newVersion;
+}
 
-const packageJson = require(packageJsonPath);
-const { version } = packageJson;
-packageJson.version = bumpVersion(version, 'patch');
-fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
+function commitPackageJson(newVersion) {
+  run(`git add ${packageJsonPath}`);
+  run(`git commit ${packageJsonPath} -m "Version ${newVersion}"`);
+  run(`git push origin master`);
+}
+
+ensureNothingStaged();
+ensurePackageJsonHasNoChanges();
+const newVersion = upgradePackageJson();
+commitPackageJson(newVersion);
