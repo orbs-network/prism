@@ -8,6 +8,7 @@
 
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
 import * as React from 'react';
+import { Typography } from '@material-ui/core';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -17,6 +18,11 @@ const styles = (theme: Theme) =>
       zIndex: -1000,
       position: `absolute`,
       overflow: 'hidden',
+    },
+    prismVersion: {
+      position: `fixed`,
+      bottom: 4,
+      left: 4,
     },
     triangle: {
       opacity: 0.25,
@@ -41,12 +47,14 @@ const styles = (theme: Theme) =>
     },
   });
 
-interface IProps extends WithStyles<typeof styles> {}
+interface IProps extends WithStyles<typeof styles> {
+  prismVersion: string;
+}
 
 export const Background = withStyles(styles)(
   class extends React.Component<IProps> {
     public render() {
-      const { classes } = this.props;
+      const { classes, prismVersion } = this.props;
       return (
         <div className={classes.root}>
           <svg xmlns='http://www.w3.org/2000/svg' className={classes.svgElm} viewBox='0 0 100 100'>
@@ -63,6 +71,9 @@ export const Background = withStyles(styles)(
               d='m32.443882,84.176l58.6,0a6.09,6.09 0 0 0 5.12,-9.4l-29.2,-45.28a5.45,5.45 0 0 0 -9.16,0l-29.93,46.27a5.45,5.45 0 0 0 4.57,8.41z'
             />
           </svg>
+          <Typography className={classes.prismVersion} variant='caption'>
+            {prismVersion}
+          </Typography>
         </div>
       );
     }

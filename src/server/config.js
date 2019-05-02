@@ -10,9 +10,12 @@ const findUp = require('find-up');
 const dotEnvPath = findUp.sync('.env');
 require('dotenv').config({ path: dotEnvPath });
 
+const { version } = require(findUp.sync('package.json'));
+
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 const IS_STAGING = process.env.NODE_ENV === 'staging';
 module.exports = {
+  PRISM_VERSION: `v${version}`,
   IS_PRODUCTION,
   IS_STAGING,
   IS_DEV: !IS_PRODUCTION && !IS_STAGING,
