@@ -7,6 +7,7 @@
     "node": ">=10.6.0"
   },
   "scripts": {
+    "publish": "node release.js",
     "test": "npm run test-server",
     "test-server": "node env-checker.js && jest --config ./src/server/__tests__/jest.config.js",
     "test-client": "jest --config ./src/client/__tests__/jest.config.js",
