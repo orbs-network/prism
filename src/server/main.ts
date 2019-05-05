@@ -22,8 +22,8 @@ async function main() {
   console.log(`config: ${JSON.stringify(config, null, 2)}`);
   console.log(`*******************************************`);
 
-  const { GAP_FILLER_ACTIVE, GAP_FILLER_INTERVAL, IS_PRODUCTION } = config;
-  const logger: winston.Logger = genLogger(true, IS_PRODUCTION, IS_PRODUCTION);
+  const { GAP_FILLER_ACTIVE, GAP_FILLER_INTERVAL, LOG_TO_CONSOLE, LOG_TO_FILE, LOG_TO_ROLLBAR } = config;
+  const logger: winston.Logger = genLogger(LOG_TO_CONSOLE, LOG_TO_FILE, LOG_TO_ROLLBAR);
 
   // externals
   const orbsAdapter = genOrbsAdapter(logger);

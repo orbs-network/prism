@@ -20,9 +20,16 @@ const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 const IS_STAGING = process.env.NODE_ENV === 'staging';
 const IS_DEV = !IS_PRODUCTION && !IS_STAGING;
 
+// debug
+const MINIFY_JS_FILES = process.env.MINIFY_JS_FILES === 'true';
+const LOG_TO_CONSOLE = process.env.LOG_TO_CONSOLE === 'true';
+const LOG_TO_FILE = process.env.LOG_TO_FILE === 'true';
+const LOG_TO_ROLLBAR = process.env.LOG_TO_ROLLBAR === 'true';
+
 // server
 const SERVER_PORT = process.env.PORT || 3000;
 const WEBPACK_PORT = 8085; // For dev environment only
+const FORCE_HTTPS = process.env.FORCE_HTTPS === 'true';
 
 // analytics
 const ROLLBAR_ACCESS_TOKEN_SERVER = process.env.ROLLBAR_ACCESS_TOKEN_SERVER;
@@ -46,11 +53,14 @@ const GAP_FILLER_INTERVAL = parseInt(process.env.GAP_FILLER_INTERVAL_IN_MINUTES)
 
 module.exports = {
   PRISM_VERSION,
-  IS_PRODUCTION,
-  IS_STAGING,
   IS_DEV,
+  MINIFY_JS_FILES,
+  LOG_TO_CONSOLE,
+  LOG_TO_FILE,
+  LOG_TO_ROLLBAR,
   ROLLBAR_ACCESS_TOKEN_SERVER,
   SERVER_PORT,
+  FORCE_HTTPS,
   WEBPACK_PORT,
   DATABASE_TYPE,
   MONGODB_URI,

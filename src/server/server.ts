@@ -18,7 +18,7 @@ import { Storage } from './storage/storage';
 export function initServer(storage: Storage) {
   const app = express();
 
-  if (config.IS_PRODUCTION) {
+  if (config.FORCE_HTTPS) {
     app.use(forceHttps);
   }
 
