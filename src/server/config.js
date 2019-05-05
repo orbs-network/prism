@@ -12,26 +12,59 @@ require('dotenv').config({ path: dotEnvPath });
 
 const { version } = require(findUp.sync('package.json'));
 
+const SECOND = 1000;
+const MINUTE = 60 * SECOND;
+
+const PRISM_VERSION = `v${version}`;
+
+// environment
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 const IS_STAGING = process.env.NODE_ENV === 'staging';
+const IS_DEV = !IS_PRODUCTION && !IS_STAGING;
+
+// server
+const SERVER_PORT = process.env.PORT || 3000;
+const WEBPACK_PORT = 8080; // For dev environment only
+
+// analytics
+const ROLLBAR_ACCESS_TOKEN_SERVER = process.env.ROLLBAR_ACCESS_TOKEN_SERVER;
+
+// database
+const DATABASE_TYPE = process.env.DATABASE_TYPE;
+const MONGODB_URI = process.env.MONGODB_URI;
+const DB_IS_READ_ONLY = process.env.DB_IS_READ_ONLY === 'true';
+
+// orbs client
+const ORBS_ENDPOINT = process.env.ORBS_ENDPOINT;
+const ORBS_VIRTUAL_CHAIN_ID = parseInt(process.env.ORBS_VIRTUAL_CHAIN_ID);
+const ORBS_NETWORK_TYPE = process.env.ORBS_NETWORK_TYPE ? process.env.ORBS_NETWORK_TYPE : 'TEST_NET';
+
+// polling
+const POOLING_INTERVAL = process.env.POOLING_INTERVAL ? parseInt(process.env.POOLING_INTERVAL) : 2 * SECOND;
+
+// gap filler
+const GAP_FILLER_ACTIVE = process.env.GAP_FILLER_ACTIVE === 'true';
+const GAP_FILLER_INTERVAL = process.env.GAP_FILLER_INTERVAL ? parseInt(process.env.GAP_FILLER_INTERVAL) : 30 * MINUTE;
+const GAP_FILLER_INITIAL_DELAY = process.env.GAP_FILLER_INITIAL_DELAY
+  ? parseInt(process.env.GAP_FILLER_INITIAL_DELAY)
+  : MINUTE;
+
 module.exports = {
-  PRISM_VERSION: `v${version}`,
+  PRISM_VERSION,
   IS_PRODUCTION,
   IS_STAGING,
-  IS_DEV: !IS_PRODUCTION && !IS_STAGING,
-  ROLLBAR_ACCESS_TOKEN_SERVER: process.env.ROLLBAR_ACCESS_TOKEN_SERVER,
-  SERVER_PORT: process.env.PORT || 3000,
-  WEBPACK_PORT: 8080,
-  MONGODB_URI: process.env.MONGODB_URI,
-  DATABASE_TYPE: process.env.DATABASE_TYPE,
-  ORBS_ENDPOINT: process.env.ORBS_ENDPOINT,
-  ORBS_VIRTUAL_CHAIN_ID: parseInt(process.env.ORBS_VIRTUAL_CHAIN_ID),
-  ORBS_NETWORK_TYPE: process.env.ORBS_NETWORK_TYPE ? process.env.ORBS_NETWORK_TYPE : 'TEST_NET',
-  POOLING_INTERVAL: process.env.POOLING_INTERVAL ? parseInt(process.env.POOLING_INTERVAL) : 1000,
-  DB_IS_READ_ONLY: process.env.DB_IS_READ_ONLY === 'true',
-  GAP_FILLER_ACTIVE: process.env.GAP_FILLER_ACTIVE === 'true',
-  GAP_FILLER_INTERVAL: process.env.GAP_FILLER_INTERVAL ? parseInt(process.env.GAP_FILLER_INTERVAL) : 30 * 60 * 1000,
-  GAP_FILLER_INITIAL_DELAY: process.env.GAP_FILLER_INITIAL_DELAY
-    ? parseInt(process.env.GAP_FILLER_INITIAL_DELAY)
-    : 60 * 1000,
+  IS_DEV,
+  ROLLBAR_ACCESS_TOKEN_SERVER,
+  SERVER_PORT,
+  WEBPACK_PORT,
+  DATABASE_TYPE,
+  MONGODB_URI,
+  ORBS_ENDPOINT,
+  ORBS_VIRTUAL_CHAIN_ID,
+  ORBS_NETWORK_TYPE,
+  POOLING_INTERVAL,
+  DB_IS_READ_ONLY,
+  GAP_FILLER_ACTIVE,
+  GAP_FILLER_INTERVAL,
+  GAP_FILLER_INITIAL_DELAY,
 };
