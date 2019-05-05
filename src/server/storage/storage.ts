@@ -78,8 +78,7 @@ export class Storage {
   }
 
   public async handleNewBlock(rawBlock: IRawBlock): Promise<void> {
-    await this.db.storeBlock(rawBlockToBlock(rawBlock));
-    await this.db.storeTxes(rawBlock.transactions);
+    await Promise.all([this.db.storeBlock(rawBlockToBlock(rawBlock)), this.db.storeTxes(rawBlock.transactions)]);
   }
 
   public async search(term: string): Promise<ISearchResult> {

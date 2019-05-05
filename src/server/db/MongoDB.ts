@@ -36,7 +36,7 @@ const blockSchema = new mongoose.Schema({
 const txSchema = new mongoose.Schema({
   idxInBlock: Number,
   txId: String,
-  blockHeight: String,
+  blockHeight: (mongoose.Schema.Types as any).Long,
   protocolVersion: Number,
   virtualChainId: Number,
   timestamp: Number,
