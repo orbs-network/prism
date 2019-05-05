@@ -16,9 +16,7 @@ const { version } = require(findUp.sync('package.json'));
 const PRISM_VERSION = `v${version}`;
 
 // environment
-const IS_PRODUCTION = process.env.NODE_ENV === 'production';
-const IS_STAGING = process.env.NODE_ENV === 'staging';
-const IS_DEV = !IS_PRODUCTION && !IS_STAGING;
+const IS_DEV = process.env.NODE_ENV !== 'production';
 
 // debug
 const MINIFY_JS_FILES = process.env.MINIFY_JS_FILES === 'true';

@@ -19,6 +19,7 @@ import { genLogger } from './logger/LoggerFactory';
 
 async function main() {
   console.log(`*******************************************`);
+  console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
   console.log(`config: ${JSON.stringify(config, null, 2)}`);
   console.log(`*******************************************`);
 
@@ -53,4 +54,4 @@ async function main() {
   }
 }
 
-main().then(() => console.log('running'));
+main();
