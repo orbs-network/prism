@@ -24,7 +24,7 @@ const IS_DEV = !IS_PRODUCTION && !IS_STAGING;
 
 // server
 const SERVER_PORT = process.env.PORT || 3000;
-const WEBPACK_PORT = 8080; // For dev environment only
+const WEBPACK_PORT = 8085; // For dev environment only
 
 // analytics
 const ROLLBAR_ACCESS_TOKEN_SERVER = process.env.ROLLBAR_ACCESS_TOKEN_SERVER;
