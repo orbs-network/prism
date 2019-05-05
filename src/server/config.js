@@ -12,9 +12,7 @@ require('dotenv').config({ path: dotEnvPath });
 
 const { version } = require(findUp.sync('package.json'));
 
-const SECOND = 1000;
-const MINUTE = 60 * SECOND;
-
+////////////// CONFIG VARIABLES //////////////
 const PRISM_VERSION = `v${version}`;
 
 // environment
@@ -37,17 +35,14 @@ const DB_IS_READ_ONLY = process.env.DB_IS_READ_ONLY === 'true';
 // orbs client
 const ORBS_ENDPOINT = process.env.ORBS_ENDPOINT;
 const ORBS_VIRTUAL_CHAIN_ID = parseInt(process.env.ORBS_VIRTUAL_CHAIN_ID);
-const ORBS_NETWORK_TYPE = process.env.ORBS_NETWORK_TYPE ? process.env.ORBS_NETWORK_TYPE : 'TEST_NET';
+const ORBS_NETWORK_TYPE = process.env.ORBS_NETWORK_TYPE;
 
 // polling
-const POOLING_INTERVAL = process.env.POOLING_INTERVAL ? parseInt(process.env.POOLING_INTERVAL) : 2 * SECOND;
+const POOLING_INTERVAL = parseInt(process.env.POOLING_INTERVAL);
 
 // gap filler
 const GAP_FILLER_ACTIVE = process.env.GAP_FILLER_ACTIVE === 'true';
-const GAP_FILLER_INTERVAL = process.env.GAP_FILLER_INTERVAL ? parseInt(process.env.GAP_FILLER_INTERVAL) : 30 * MINUTE;
-const GAP_FILLER_INITIAL_DELAY = process.env.GAP_FILLER_INITIAL_DELAY
-  ? parseInt(process.env.GAP_FILLER_INITIAL_DELAY)
-  : MINUTE;
+const GAP_FILLER_INTERVAL = parseInt(process.env.GAP_FILLER_INTERVAL_IN_MINUTES) * 60 * 1000;
 
 module.exports = {
   PRISM_VERSION,
@@ -66,5 +61,4 @@ module.exports = {
   DB_IS_READ_ONLY,
   GAP_FILLER_ACTIVE,
   GAP_FILLER_INTERVAL,
-  GAP_FILLER_INITIAL_DELAY,
 };

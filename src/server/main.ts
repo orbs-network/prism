@@ -22,7 +22,7 @@ async function main() {
   console.log(`config: ${JSON.stringify(config, null, 2)}`);
   console.log(`*******************************************`);
 
-  const { GAP_FILLER_ACTIVE, GAP_FILLER_INTERVAL, GAP_FILLER_INITIAL_DELAY, IS_PRODUCTION } = config;
+  const { GAP_FILLER_ACTIVE, GAP_FILLER_INTERVAL, IS_PRODUCTION } = config;
   const logger: winston.Logger = genLogger(true, IS_PRODUCTION, IS_PRODUCTION);
 
   // externals
@@ -47,6 +47,7 @@ async function main() {
   await orbsAdapter.init();
 
   if (GAP_FILLER_ACTIVE) {
+    const GAP_FILLER_INITIAL_DELAY = 60 * 1000; // We wait a minute before we start the gap filler
     await sleep(GAP_FILLER_INITIAL_DELAY);
     fillGapsForever(logger, storage, orbsAdapter, GAP_FILLER_INTERVAL);
   }
