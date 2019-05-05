@@ -5,7 +5,7 @@ export NVM_DIR="/opt/circleci/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 nvm use 11.2.0
-
+export NODE_ENV=production
 npm test
 
 EXITCODE=$?
