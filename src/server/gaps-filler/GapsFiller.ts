@@ -12,7 +12,7 @@ import { detectBlockChainGaps } from './GapsDetector';
 import { cron } from './Cron';
 import * as winston from 'winston';
 
-const CHUCK_SIZE = 10;
+const CHUCK_SIZE = 100;
 
 export function fillGapsForever(
   logger: winston.Logger,
