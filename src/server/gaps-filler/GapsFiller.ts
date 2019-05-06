@@ -54,8 +54,12 @@ export async function fillGaps(logger: winston.Logger, storage: Storage, orbsAda
 
   for (let i = 0; i < gaps.length; i += CHUCK_SIZE) {
     const chunk = gaps.slice(i, i + CHUCK_SIZE);
+    const startTime = Date.now();
     await storeBlocksChunk(chunk, storage, orbsAdapter);
-    logger.info(`GapsFiller, blocks from ${chunk[0]} to ${chunk[chunk.length - 1]} stored`, { func: 'fillGaps' });
+    logger.info(
+      `GapsFiller, blocks from ${chunk[0]} to ${chunk[chunk.length - 1]} stored [${Date.now() - startTime}ms.]`,
+      { func: 'fillGaps' },
+    );
   }
   await storage.setHeighestConsecutiveBlockHeight(toHeight);
 }
