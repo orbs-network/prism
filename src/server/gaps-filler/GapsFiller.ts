@@ -12,6 +12,8 @@ import { detectBlockChainGaps } from './GapsDetector';
 import { cron } from './Cron';
 import * as winston from 'winston';
 
+const CHUCK_SIZE = 10;
+
 export function fillGapsForever(
   logger: winston.Logger,
   storage: Storage,
@@ -24,21 +26,36 @@ export function fillGapsForever(
   }, interval);
 }
 
+async function storeBlockAt(height: bigint, storage: Storage, orbsAdapter: OrbsAdapter): Promise<void> {
+  const block = await orbsAdapter.getBlockAt(height);
+  if (block) {
+    await storage.handleNewBlock(block);
+  } else {
+    // report block not stored
+  }
+}
+
+async function storeBlocksChunk(chunk: Array<bigint>, storage: Storage, orbsAdapter: OrbsAdapter): Promise<void> {
+  const promises: Array<Promise<void>> = [];
+  for (const height of chunk) {
+    promises.push(storeBlockAt(height, storage, orbsAdapter));
+  }
+  await Promise.all(promises);
+  const heighestBlockHeight = chunk[chunk.length - 1];
+  await storage.setHeighestConsecutiveBlockHeight(heighestBlockHeight);
+}
+
 export async function fillGaps(logger: winston.Logger, storage: Storage, orbsAdapter: OrbsAdapter): Promise<void> {
   const toHeight = await storage.getLatestBlockHeight();
   const fromHeight = (await storage.getHeighestConsecutiveBlockHeight()) + 1n;
   logger.info(`Searching for gaps from ${fromHeight} to ${toHeight}`, { func: 'fillGaps' });
   const gaps = await detectBlockChainGaps(logger, storage, fromHeight, toHeight);
   logger.info(`${gaps.length} missing blocks to fill`, { func: 'fillGaps' });
-  for (const height of gaps) {
-    const block = await orbsAdapter.getBlockAt(height);
-    if (block) {
-      await storage.handleNewBlock(block);
-      await storage.setHeighestConsecutiveBlockHeight(height);
-      logger.info(`GapsFiller, block at ${height} stored`, { func: 'fillGaps' });
-    } else {
-      // report block not stored
-    }
+
+  for (let i = 0; i < gaps.length; i += CHUCK_SIZE) {
+    const chunk = gaps.slice(i, i + CHUCK_SIZE);
+    await storeBlocksChunk(chunk, storage, orbsAdapter);
+    logger.info(`GapsFiller, blocks from ${chunk[0]} to ${chunk[chunk.length - 1]} stored`, { func: 'fillGaps' });
   }
   await storage.setHeighestConsecutiveBlockHeight(toHeight);
 }
