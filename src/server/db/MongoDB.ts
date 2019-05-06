@@ -103,7 +103,6 @@ export class MongoDB implements IDB {
       return;
     }
     const startTime = Date.now();
-    this.logger.info(`Storing block #${block.blockHeight}`);
     const blockInstance = new this.BlockModel(block);
     await blockInstance.save();
     this.logger.info(`block stored [${Date.now() - startTime}ms.]`);

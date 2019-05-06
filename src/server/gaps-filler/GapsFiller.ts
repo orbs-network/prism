@@ -26,8 +26,15 @@ export function fillGapsForever(
   }, interval);
 }
 
-async function storeBlockAt(height: bigint, storage: Storage, orbsAdapter: OrbsAdapter): Promise<void> {
+async function storeBlockAt(
+  height: bigint,
+  logger: winston.Logger,
+  storage: Storage,
+  orbsAdapter: OrbsAdapter,
+): Promise<void> {
+  const startTime = Date.now();
   const block = await orbsAdapter.getBlockAt(height);
+  logger.info(`getBlockAt finished, on height ${height} [${Date.now() - startTime}ms.]`);
   if (block) {
     await storage.handleNewBlock(block);
   } else {
@@ -35,10 +42,15 @@ async function storeBlockAt(height: bigint, storage: Storage, orbsAdapter: OrbsA
   }
 }
 
-async function storeBlocksChunk(chunk: Array<bigint>, storage: Storage, orbsAdapter: OrbsAdapter): Promise<void> {
+async function storeBlocksChunk(
+  chunk: Array<bigint>,
+  logger: winston.Logger,
+  storage: Storage,
+  orbsAdapter: OrbsAdapter,
+): Promise<void> {
   const promises: Array<Promise<void>> = [];
   for (const height of chunk) {
-    promises.push(storeBlockAt(height, storage, orbsAdapter));
+    promises.push(storeBlockAt(height, logger, storage, orbsAdapter));
   }
   await Promise.all(promises);
   const heighestBlockHeight = chunk[chunk.length - 1];
@@ -55,7 +67,7 @@ export async function fillGaps(logger: winston.Logger, storage: Storage, orbsAda
   for (let i = 0; i < gaps.length; i += CHUCK_SIZE) {
     const chunk = gaps.slice(i, i + CHUCK_SIZE);
     const startTime = Date.now();
-    await storeBlocksChunk(chunk, storage, orbsAdapter);
+    await storeBlocksChunk(chunk, logger, storage, orbsAdapter);
     logger.info(
       `GapsFiller, blocks from ${chunk[0]} to ${chunk[chunk.length - 1]} stored [${Date.now() - startTime}ms.]`,
       { func: 'fillGaps' },
