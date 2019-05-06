@@ -24,13 +24,13 @@ export class OrbsAdapter {
   private listeners: Map<INewBlocksHandler, INewBlocksHandler> = new Map();
   private timeoutId: NodeJS.Timeout;
 
-  constructor(private logger: winston.Logger, private orbsClient: IOrbsClient, private poolingInterval: number) {}
+  constructor(private logger: winston.Logger, private orbsClient: IOrbsClient) {}
 
-  public async init(): Promise<void> {
+  public async initPooling(poolingInterval: number): Promise<void> {
     this.logger.info('initializing the scheduler');
     let schedulerInitialized = false;
     while (!schedulerInitialized) {
-      schedulerInitialized = await this.initScheduler();
+      schedulerInitialized = await this.initScheduler(poolingInterval);
       if (!schedulerInitialized) {
         this.logger.warn('Unable to initialize the scheduler, retrying in 1sec.');
         await sleep(1000);
@@ -78,7 +78,12 @@ export class OrbsAdapter {
     return null;
   }
 
-  private async checkForNewBlocks(): Promise<void> {
+  public async getHeighestBlockHeight(): Promise<bigint> {
+    const getBlockResponse = await this.getBlockWrapper(0n, 'fillGaps');
+    return getBlockResponse ? BigInt(getBlockResponse.blockHeight) : null;
+  }
+
+  private async checkForNewBlocks(poolingInterval: number): Promise<void> {
     try {
       const nextHeight = this.latestKnownHeight + 1n;
       this.logger.info(`get block at => ${nextHeight}`);
@@ -97,10 +102,10 @@ export class OrbsAdapter {
     } catch (err) {
       this.logger.error(`checkForNewBlocks failed`, err);
     }
-    this.schedualNextRequest();
+    this.schedualNextRequest(poolingInterval);
   }
 
-  private async initScheduler(): Promise<boolean> {
+  private async initScheduler(poolingInterval: number): Promise<boolean> {
     if (this.latestKnownHeight === 0n) {
       this.logger.info(`Asking Orbs for the lastest height`);
       let getBlockResponse: GetBlockResponse;
@@ -132,7 +137,7 @@ export class OrbsAdapter {
       this.logger.info(`Lastest height is ${this.latestKnownHeight}`);
     }
 
-    this.schedualNextRequest();
+    this.schedualNextRequest(poolingInterval);
     return true;
   }
 
@@ -155,7 +160,7 @@ export class OrbsAdapter {
     return getBlockResponse;
   }
 
-  private schedualNextRequest(): void {
-    this.timeoutId = setTimeout(() => this.checkForNewBlocks(), this.poolingInterval);
+  private schedualNextRequest(poolingInterval: number): void {
+    this.timeoutId = setTimeout(() => this.checkForNewBlocks(poolingInterval), poolingInterval);
   }
 }

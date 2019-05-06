@@ -23,7 +23,14 @@ async function main() {
   console.log(`config: ${JSON.stringify(config, null, 2)}`);
   console.log(`*******************************************`);
 
-  const { GAP_FILLER_ACTIVE, GAP_FILLER_INTERVAL, LOG_TO_CONSOLE, LOG_TO_FILE, LOG_TO_ROLLBAR } = config;
+  const {
+    POOLING_INTERVAL,
+    GAP_FILLER_ACTIVE,
+    GAP_FILLER_INTERVAL,
+    LOG_TO_CONSOLE,
+    LOG_TO_FILE,
+    LOG_TO_ROLLBAR,
+  } = config;
   const logger: winston.Logger = genLogger(LOG_TO_CONSOLE, LOG_TO_FILE, LOG_TO_ROLLBAR);
 
   // externals
@@ -45,7 +52,7 @@ async function main() {
   // link all the parts
   orbsAdapter.RegisterToNewBlocks(ws);
   orbsAdapter.RegisterToNewBlocks(storage);
-  await orbsAdapter.init();
+  await orbsAdapter.initPooling(POOLING_INTERVAL);
 
   if (GAP_FILLER_ACTIVE) {
     const GAP_FILLER_INITIAL_DELAY = 60 * 1000; // We wait a minute before we start the gap filler
