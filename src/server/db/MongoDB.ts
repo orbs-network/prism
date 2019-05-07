@@ -50,6 +50,15 @@ const txSchema = new mongoose.Schema({
   outputEvents: Array,
 });
 
+const blockHeighToBigInt = <T>(obj: T & { blockHeight: string }): T & { blockHeight: bigint } => ({
+  ...obj,
+  blockHeight: BigInt(obj.blockHeight),
+});
+const blockHeighToString = <T>(obj: T & { blockHeight: bigint }): T & { blockHeight: string } => ({
+  ...obj,
+  blockHeight: obj.blockHeight.toString(),
+});
+
 export class MongoDB implements IDB {
   private db: mongoose.Mongoose;
   private BlockModel: mongoose.Model<mongoose.Document>;
@@ -103,7 +112,7 @@ export class MongoDB implements IDB {
       return;
     }
     const startTime = Date.now();
-    const blockInstance = new this.BlockModel(block);
+    const blockInstance = new this.BlockModel(blockHeighToBigInt(block));
     await blockInstance.save();
     this.logger.info(`block stored [${Date.now() - startTime}ms.]`);
   }
@@ -119,9 +128,7 @@ export class MongoDB implements IDB {
 
     if (result) {
       this.logger.info(`${count} blocks found [${Date.now() - startTime}ms.]`);
-      // in the db we store the blockHeight as long (For better search), here we convert it back to string
-      result.forEach(block => (block.blockHeight = block.blockHeight.toString()));
-      return result;
+      return result.map(blockHeighToString);
     } else {
       this.logger.info(`no blocks found [${Date.now() - startTime}ms.]`);
       return null;
@@ -137,9 +144,7 @@ export class MongoDB implements IDB {
 
     if (result) {
       this.logger.info(`block found [${Date.now() - startTime}ms.]`);
-      // in the db we store the blockHeight as long (For better search), here we convert it back to string
-      result.blockHeight = result.blockHeight.toString();
-      return result;
+      return blockHeighToString<IBlock>(result);
     } else {
       this.logger.info(`block not found [${Date.now() - startTime}ms.]`);
       return null;
@@ -155,9 +160,7 @@ export class MongoDB implements IDB {
 
     if (result) {
       this.logger.info(`block found [${Date.now() - startTime}ms.]`);
-      // in the db we store the blockHeight as long (For better search), here we convert it back to string
-      result.blockHeight = result.blockHeight.toString();
-      return result;
+      return blockHeighToString<IBlock>(result);
     } else {
       this.logger.info(`block not found [${Date.now() - startTime}ms.]`);
       return null;
@@ -182,7 +185,7 @@ export class MongoDB implements IDB {
 
     if (result) {
       this.logger.info(`contract found [${Date.now() - startTime}ms.]`);
-      return result;
+      return blockHeighToString<IRawTx>(result);
     } else {
       this.logger.info(`contract not found [${Date.now() - startTime}ms.]`);
       return null;
@@ -211,7 +214,7 @@ export class MongoDB implements IDB {
 
     if (result) {
       this.logger.info(`found ${result.length} txes for contract ${contractName} in [${Date.now() - startTime}ms.]`);
-      return result;
+      return result.map(blockHeighToString);
     } else {
       this.logger.info(`no txes found for contract ${contractName} [${Date.now() - startTime}ms.]`);
       return null;
@@ -257,7 +260,7 @@ export class MongoDB implements IDB {
     }
     return Promise.all(
       txes.map(async t => {
-        const txInstance = new this.TxModel(t);
+        const txInstance = new this.TxModel(blockHeighToBigInt(t));
         await txInstance.save();
       }),
     );
@@ -271,6 +274,7 @@ export class MongoDB implements IDB {
       .exec();
 
     this.logger.info(`tx found [${Date.now() - startTime}ms.]`);
-    return result;
+
+    return result ? blockHeighToString(result) : result;
   }
 }
