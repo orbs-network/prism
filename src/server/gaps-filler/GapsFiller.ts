@@ -61,7 +61,7 @@ export async function fillGaps(logger: winston.Logger, storage: Storage, orbsAda
   const toHeight = await storage.getLatestBlockHeight();
   const fromHeight = (await storage.getHeighestConsecutiveBlockHeight()) + 1n;
   logger.info(`Searching for gaps from ${fromHeight} to ${toHeight}`, { func: 'fillGaps' });
-  const gaps = await detectBlockChainGaps(logger, storage, fromHeight, toHeight);
+  const gaps = await detectBlockChainGaps(storage, fromHeight, toHeight);
   logger.info(`${gaps.length} missing blocks to fill`, { func: 'fillGaps' });
 
   for (let i = 0; i < gaps.length; i += CHUCK_SIZE) {
