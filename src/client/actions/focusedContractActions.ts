@@ -12,11 +12,14 @@ import { IContractData } from '../../shared/IContractData';
 import { loadContractData } from '../utils/api-facade';
 
 // Action Creators
-export const loadContractDataAction = (contractName: string): ThunkAction<void, {}, {}, AnyAction> => {
+export const loadContractDataAction = (
+  contractName: string,
+  blockHeight?: string,
+): ThunkAction<void, {}, {}, AnyAction> => {
   return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
     dispatch(loadContractDataStartedAction(contractName));
     try {
-      const contractData: IContractData = await loadContractData(contractName); // Call the server api
+      const contractData: IContractData = await loadContractData(contractName, blockHeight); // Call the server api
       dispatch(loadContractDataCompletedAction(contractData));
     } catch (e) {
       dispatch(loadContractDataErrorAction(contractName, 'Contract Not Found'));
@@ -57,4 +60,7 @@ export const loadContractDataErrorAction = (contractName: string, error: string)
 });
 
 // All Actions
-export type FocusedContractActions = ILoadingContractDataStartedAction | ILoadingContractDataCompletedAction | ILoadingContractDataErrorAction;
+export type FocusedContractActions =
+  | ILoadingContractDataStartedAction
+  | ILoadingContractDataCompletedAction
+  | ILoadingContractDataErrorAction;

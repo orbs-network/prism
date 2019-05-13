@@ -22,8 +22,9 @@ export async function loadBlock(blockHeight: string): Promise<IBlock> {
   return res.data as IBlock;
 }
 
-export async function loadContractData(contractName: string): Promise<IContractData> {
-  const res = await axios.get(`/api/contract/${contractName}`);
+export async function loadContractData(contractName: string, blockHeight?: string): Promise<IContractData> {
+  const query = blockHeight ? `?blockHeight=${blockHeight}` : '';
+  const res = await axios.get(`/api/contract/${contractName}${query}`);
   return res.data as IContractData;
 }
 
