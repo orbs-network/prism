@@ -192,13 +192,19 @@ export class MongoDB implements IDB {
     }
   }
 
-  public async getContractTxes(contractName: string, limit: number): Promise<IRawTx[]> {
+  public async getContractTxes(contractName: string, limit: number, startFromBlockHeight: bigint): Promise<IRawTx[]> {
     const startTime = Date.now();
     this.logger.info(`Searching for all txes for contract: ${contractName}`);
+    const conditions: any = {
+      contractName,
+    };
+
+    if (startFromBlockHeight > 0n) {
+      conditions.blockHeight = { $lte: startFromBlockHeight };
+    }
+
     const result = await this.TxModel.find(
-      {
-        contractName,
-      },
+      conditions,
       { _id: false, __v: false },
       {
         skip: 0,
