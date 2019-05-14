@@ -49,8 +49,8 @@ export function apiRouter(storage: Storage) {
     let compoundTxIdx: ICompoundTxIdx;
     if (req.query.blockHeight) {
       compoundTxIdx = { blockHeight: BigInt(req.query.blockHeight) };
-      if (req.query.txIdx) {
-        compoundTxIdx.txIdx = Number(req.query.txIdx);
+      if (req.query.contractExecutionIdx) {
+        compoundTxIdx.contractExecutionIdx = Number(req.query.contractExecutionIdx);
       }
     }
     const contractData: IContractData = await storage.getContractData(contractName, compoundTxIdx);

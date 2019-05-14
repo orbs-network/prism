@@ -41,10 +41,9 @@ export function rawBlockToBlock(block: IRawBlock): IBlock {
   };
 }
 
-export function rawTxToTx(rawTx: IRawTx, idxInBlock: number, contractExecutionIdx: number): ITx {
+export function rawTxToTx(rawTx: IRawTx, contractExecutionIdx: number): ITx {
   return {
     contractExecutionIdx,
-    idxInBlock,
     ...rawTx,
   };
 }

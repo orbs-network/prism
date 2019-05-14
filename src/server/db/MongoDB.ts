@@ -35,7 +35,6 @@ const blockSchema = new mongoose.Schema({
 });
 
 const txSchema = new mongoose.Schema({
-  idxInBlock: Number,
   contractExecutionIdx: Number,
   txId: String,
   blockHeight: (mongoose.Schema.Types as any).Long,
@@ -209,11 +208,11 @@ export class MongoDB implements IDB {
     };
 
     if (compoundTxIdx) {
-      const { blockHeight, txIdx } = compoundTxIdx;
+      const { blockHeight, contractExecutionIdx } = compoundTxIdx;
       if (blockHeight && blockHeight > 0n) {
-        if (txIdx && txIdx > 0) {
+        if (contractExecutionIdx && contractExecutionIdx > 0) {
           conditions.$or = [
-            { blockHeight: { $eq: blockHeight }, idxInBlock: { $lte: txIdx } },
+            { blockHeight: { $eq: blockHeight }, contractExecutionIdx: { $lte: contractExecutionIdx } },
             { blockHeight: { $lt: blockHeight } },
           ];
         } else {
@@ -229,7 +228,7 @@ export class MongoDB implements IDB {
         skip: 0,
         sort: {
           blockHeight: -1,
-          idxInBlock: -1,
+          contractExecutionIdx: -1,
         },
         limit,
       },

@@ -10,7 +10,6 @@ import { IArgument } from './IArgument';
 import { IOutputEvent } from './IOutputEvent';
 
 export interface ITx {
-  idxInBlock: number;
   contractExecutionIdx: number;
   txId: string;
   blockHeight: string;

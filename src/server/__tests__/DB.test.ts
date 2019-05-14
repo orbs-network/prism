@@ -87,7 +87,7 @@ function testDb(db: IDB, dbName: string) {
     it('should store and retrive txs', async () => {
       const rawBlock = generateRandomRawBlock(1n);
 
-      const txes = rawBlock.transactions.map((tx, idx) => rawTxToTx(tx, idx, idx));
+      const txes = rawBlock.transactions.map((tx, idx) => rawTxToTx(tx, idx));
       await db.storeTxes(txes);
 
       for (const tx of txes) {
@@ -99,7 +99,7 @@ function testDb(db: IDB, dbName: string) {
     it('should ignore case when retrive txs', async () => {
       const rawBlock = generateRandomRawBlock(1n);
 
-      const txes = rawBlock.transactions.map((tx, idx) => rawTxToTx(tx, idx, idx));
+      const txes = rawBlock.transactions.map((tx, idx) => rawTxToTx(tx, idx));
       // conver all to upper case
       rawBlock.transactions.forEach(tx => (tx.txId = tx.txId.toUpperCase()));
 
@@ -153,7 +153,7 @@ function testDb(db: IDB, dbName: string) {
       const btx: BlockTransaction = generateContractDeployTransaction('test-contract', code);
       const rawBlock = generateRawBlockWithTransaction(1n, btx);
 
-      const tx = rawTxToTx(rawBlock.transactions[0], 0, 0);
+      const tx = rawTxToTx(rawBlock.transactions[0], 0);
       await db.storeTxes([tx]);
 
       const actual = await db.getDeployContractTx('test-contract', 1);
@@ -203,18 +203,18 @@ function testDb(db: IDB, dbName: string) {
         await db.storeBlock(rawBlockToBlock(rawBlock3));
         await db.storeBlock(rawBlockToBlock(rawBlock4));
 
-        block1DeployTx = rawTxToTx(deployRawBlock.transactions[0], 0, 0);
+        block1DeployTx = rawTxToTx(deployRawBlock.transactions[0], 0);
 
-        block2Tx1 = rawTxToTx(rawBlock2.transactions[0], 0, 0);
-        block2Tx2 = rawTxToTx(rawBlock2.transactions[1], 1, 0);
+        block2Tx1 = rawTxToTx(rawBlock2.transactions[0], 0);
+        block2Tx2 = rawTxToTx(rawBlock2.transactions[1], 0);
 
-        block3Tx3 = rawTxToTx(rawBlock3.transactions[0], 0, 1);
-        block3Tx4 = rawTxToTx(rawBlock3.transactions[1], 1, 2);
-        block3Tx5 = rawTxToTx(rawBlock3.transactions[2], 2, 1);
-        block3Tx6 = rawTxToTx(rawBlock3.transactions[3], 3, 3);
+        block3Tx3 = rawTxToTx(rawBlock3.transactions[0], 1);
+        block3Tx4 = rawTxToTx(rawBlock3.transactions[1], 2);
+        block3Tx5 = rawTxToTx(rawBlock3.transactions[2], 1);
+        block3Tx6 = rawTxToTx(rawBlock3.transactions[3], 3);
 
-        block4Tx7 = rawTxToTx(rawBlock4.transactions[0], 0, 4);
-        block4Tx8 = rawTxToTx(rawBlock4.transactions[1], 1, 5);
+        block4Tx7 = rawTxToTx(rawBlock4.transactions[0], 4);
+        block4Tx8 = rawTxToTx(rawBlock4.transactions[1], 5);
 
         await db.storeTxes([block1DeployTx]);
         await db.storeTxes([block2Tx1, block2Tx2]);
@@ -237,18 +237,18 @@ function testDb(db: IDB, dbName: string) {
         expect([block3Tx6, block3Tx4, block3Tx3, block2Tx2]).toEqual(actual);
       });
 
-      it('starting from the given block height and txIdx', async () => {
-        const actual = await db.getContractTxes(contractName, 100, { blockHeight: 3n, txIdx: 1 });
+      it('starting from the given block height and contractExecutionIdx', async () => {
+        const actual = await db.getContractTxes(contractName, 100, { blockHeight: 3n, contractExecutionIdx: 1 });
         expect([block3Tx4, block3Tx3, block2Tx2]).toEqual(actual);
       });
 
-      it('should ignore txIdx if a block height was not given', async () => {
-        const actual = await db.getContractTxes(contractName, 100, { txIdx: 1 });
+      it('should ignore contractExecutionIdx if a block height was not given', async () => {
+        const actual = await db.getContractTxes(contractName, 100, { contractExecutionIdx: 1 });
         expect([block4Tx8, block4Tx7, block3Tx6, block3Tx4, block3Tx3, block2Tx2]).toEqual(actual);
       });
 
-      it('should accept unrelated txIdx', async () => {
-        const actual = await db.getContractTxes(contractName, 100, { blockHeight: 3n, txIdx: 666 });
+      it('should accept unrelated contractExecutionIdx', async () => {
+        const actual = await db.getContractTxes(contractName, 100, { blockHeight: 3n, contractExecutionIdx: 666 });
         expect([block3Tx6, block3Tx4, block3Tx3, block2Tx2]).toEqual(actual);
       });
     });

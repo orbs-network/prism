@@ -39,7 +39,7 @@ describe('storage', () => {
     const storage = new Storage(db);
     const block = generateRandomRawBlock(1n);
     await storage.handleNewBlock(block);
-    const txes = block.transactions.map((tx, idx) => rawTxToTx(tx, idx, idx));
+    const txes = block.transactions.map((tx, idx) => rawTxToTx(tx, idx));
 
     for (const tx of txes) {
       const actual = await storage.getTx(tx.txId);
@@ -71,7 +71,7 @@ describe('storage', () => {
       await storage.handleNewBlock(block1);
       await storage.handleNewBlock(block2);
 
-      const tx = rawTxToTx(block2.transactions[0], 0, 0);
+      const tx = rawTxToTx(block2.transactions[0], 0);
       const expected: ISearchResult = {
         type: 'tx',
         tx,

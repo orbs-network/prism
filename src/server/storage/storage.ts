@@ -80,7 +80,7 @@ export class Storage {
   }
 
   public async handleNewBlock(rawBlock: IRawBlock): Promise<void> {
-    const txes: ITx[] = rawBlock.transactions.map((tx, idxInBlock) => rawTxToTx(tx, idxInBlock, idxInBlock));
+    const txes: ITx[] = rawBlock.transactions.map((tx, contractExecutionIdx) => rawTxToTx(tx, contractExecutionIdx));
     await Promise.all([this.db.storeBlock(rawBlockToBlock(rawBlock)), this.db.storeTxes(txes)]);
   }
 

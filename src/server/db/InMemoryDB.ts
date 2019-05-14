@@ -123,11 +123,12 @@ export class InMemoryDB implements IDB {
   public async getContractTxes(contractName: string, limit: number, compoundTxIdx?: ICompoundTxIdx): Promise<ITx[]> {
     let filterByHeight: (tx: ITx) => boolean = (tx: ITx) => true;
     if (compoundTxIdx) {
-      const { blockHeight, txIdx } = compoundTxIdx;
+      const { blockHeight, contractExecutionIdx } = compoundTxIdx;
       if (blockHeight && blockHeight > 0n) {
-        if (txIdx && txIdx > 0) {
+        if (contractExecutionIdx && contractExecutionIdx > 0) {
           filterByHeight = (tx: ITx) =>
-            (BigInt(tx.blockHeight) === blockHeight && tx.idxInBlock <= txIdx) || BigInt(tx.blockHeight) < blockHeight;
+            (BigInt(tx.blockHeight) === blockHeight && tx.contractExecutionIdx <= contractExecutionIdx) ||
+            BigInt(tx.blockHeight) < blockHeight;
         } else {
           filterByHeight = (tx: ITx) => BigInt(tx.blockHeight) <= blockHeight;
         }
@@ -139,7 +140,10 @@ export class InMemoryDB implements IDB {
       .map(item => item[1])
       .filter(tx => tx.contractName === contractName)
       .filter(filterByHeight)
-      .sort((a, b) => Number(BigInt(b.blockHeight) - BigInt(a.blockHeight)) || b.idxInBlock - a.idxInBlock);
+      .sort(
+        (a, b) =>
+          Number(BigInt(b.blockHeight) - BigInt(a.blockHeight)) || b.contractExecutionIdx - a.contractExecutionIdx,
+      );
     return allTxes.splice(0, limit);
   }
 
