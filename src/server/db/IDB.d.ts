@@ -8,11 +8,7 @@
 
 import { IBlock } from '../../shared/IBlock';
 import { IRawTx } from '../../shared/IRawData';
-
-export interface ICompoundTxIdx {
-  blockHeight?: bigint;
-  txIdx?: number;
-}
+import { ICompoundTxIdx } from '../../shared/ICompoundTxIdx';
 
 export interface IDB {
   init(): Promise<void>;

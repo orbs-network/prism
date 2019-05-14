@@ -9,7 +9,8 @@
 import * as mongoose from 'mongoose';
 import { IBlock } from '../../shared/IBlock';
 import { IRawTx } from '../../shared/IRawData';
-import { IDB, ICompoundTxIdx } from './IDB';
+import { ICompoundTxIdx } from '../../shared/ICompoundTxIdx';
+import { IDB } from './IDB';
 import * as mongooseLong from 'mongoose-long';
 import * as winston from 'winston';
 
@@ -192,7 +193,11 @@ export class MongoDB implements IDB {
     }
   }
 
-  public async getContractTxes(contractName: string, vector: number, compoundTxIdx?: ICompoundTxIdx): Promise<IRawTx[]> {
+  public async getContractTxes(
+    contractName: string,
+    vector: number,
+    compoundTxIdx?: ICompoundTxIdx,
+  ): Promise<IRawTx[]> {
     const startTime = Date.now();
     this.logger.info(`Searching for all txes for contract: ${contractName}`);
     const conditions: any = {

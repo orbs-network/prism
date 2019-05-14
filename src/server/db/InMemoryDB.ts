@@ -6,7 +6,8 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { IDB, ICompoundTxIdx } from './IDB';
+import { IDB } from './IDB';
+import { ICompoundTxIdx } from '../../shared/ICompoundTxIdx';
 import { IBlock } from '../../shared/IBlock';
 import { IRawTx } from '../../shared/IRawData';
 

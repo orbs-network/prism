@@ -121,7 +121,7 @@ describe('storage', () => {
           },
         },
       };
-      const actual = await storage.getContractData(contractName);
+      const actual = await storage.getContractData(contractName, 100);
       expect(expected).toEqual(actual);
     });
   });

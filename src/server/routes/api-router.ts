@@ -12,6 +12,7 @@ import { IBlock, IBlockSummary } from '../../shared/IBlock';
 import { IRawTx } from '../../shared/IRawData';
 import { IContractData } from '../../shared/IContractData';
 import { Storage } from '../storage/storage';
+import { ICompoundTxIdx } from '../../shared/ICompoundTxIdx';
 
 export function apiRouter(storage: Storage) {
   const router = Router();
@@ -44,8 +45,16 @@ export function apiRouter(storage: Storage) {
 
   router.get('/api/contract/:contractName', async (req, res) => {
     const contractName: string = req.params.contractName;
-    const blockHeight: bigint = req.query.blockHeight ? BigInt(req.query.blockHeight) : 0n;
-    const contractData: IContractData = await storage.getContractData(contractName, blockHeight);
+    const vector: number = req.query.vector ? Number(req.query.vector) : 100;
+
+    let compoundTxIdx: ICompoundTxIdx;
+    if (req.query.blockHeight) {
+      compoundTxIdx = { blockHeight: BigInt(req.query.blockHeight) };
+      if (req.query.txIdx) {
+        compoundTxIdx.txIdx = Number(req.query.txIdx);
+      }
+    }
+    const contractData: IContractData = await storage.getContractData(contractName, vector, compoundTxIdx);
     if (!contractData) {
       return res.send(404);
     }
