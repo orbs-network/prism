@@ -9,6 +9,7 @@
   "scripts": {
     "publish": "node release.js",
     "test": "npm run test-server",
+    "type-check": "tsc -p ./src/client/tsconfig.json",
     "test-server": "node env-checker.js && jest --config ./src/server/__tests__/jest.config.js",
     "test-client": "jest --config ./src/client/__tests__/jest.config.js",
     "test-e2e": "node env-checker.js && cross-env DISABLE_ANIMATIONS=true jest --config ./e2e/jest-e2e.config.js",
