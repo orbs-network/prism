@@ -19,6 +19,7 @@ import { Storage } from '../storage/storage';
 import { IContractData } from '../../shared/IContractData';
 import { BlockTransaction } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import { txToShortTx } from '../transformers/txTransform';
+import { ITx } from '../../shared/ITx';
 
 describe('storage', () => {
   it('should store and retrive blocks', async () => {
@@ -108,17 +109,21 @@ describe('storage', () => {
       await storage.handleNewBlock(rawBlock2);
       await storage.handleNewBlock(rawBlock3);
 
+      const block2tx0: ITx = rawTxToTx(rawBlock2.transactions[0], 0);
+      const block2tx1: ITx = rawTxToTx(rawBlock2.transactions[1], 1);
+      const block3tx3: ITx = rawTxToTx(rawBlock3.transactions[0], 0);
+
       const expected: IContractData = {
         code,
         contractName,
         blockInfo: {
           2: {
             stateDiff: null,
-            txes: [txToShortTx(rawBlock2.transactions[1]), txToShortTx(rawBlock2.transactions[0])],
+            txes: [txToShortTx(block2tx1), txToShortTx(block2tx0)],
           },
           3: {
             stateDiff: null,
-            txes: [txToShortTx(rawBlock3.transactions[0])],
+            txes: [txToShortTx(block3tx3)],
           },
         },
       };

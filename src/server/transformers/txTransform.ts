@@ -1,5 +1,5 @@
 import { IShortTx } from '../../shared/IContractData';
-import { IRawTx } from '../orbs-adapter/IRawData';
+import { ITx } from '../../shared/ITx';
 
 /**
  * Copyright 2019 the prism authors
@@ -9,8 +9,11 @@ import { IRawTx } from '../orbs-adapter/IRawData';
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-export function txToShortTx(tx: Pick<IRawTx, 'methodName' | 'txId' | 'signerAddress' | 'executionResult'>): IShortTx {
+export function txToShortTx(
+  tx: Pick<ITx, 'contractExecutionIdx' | 'methodName' | 'txId' | 'signerAddress' | 'executionResult'>,
+): IShortTx {
   return {
+    contractExecutionIdx: tx.contractExecutionIdx,
     method: tx.methodName,
     txId: tx.txId,
     signerAddress: tx.signerAddress,

@@ -1,5 +1,6 @@
 export interface IShortTx {
   method: string;
+  contractExecutionIdx: number;
   txId: string;
   signerAddress: string;
   successful: boolean;

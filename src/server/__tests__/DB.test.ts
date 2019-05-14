@@ -238,7 +238,7 @@ function testDb(db: IDB, dbName: string) {
       });
 
       it('starting from the given block height and contractExecutionIdx', async () => {
-        const actual = await db.getContractTxes(contractName, 100, { blockHeight: 3n, contractExecutionIdx: 1 });
+        const actual = await db.getContractTxes(contractName, 100, { blockHeight: 3n, contractExecutionIdx: 2 });
         expect([block3Tx4, block3Tx3, block2Tx2]).toEqual(actual);
       });
 
