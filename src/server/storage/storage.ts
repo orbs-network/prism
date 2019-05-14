@@ -8,13 +8,14 @@
 
 import { IBlock, IBlockSummary } from '../../shared/IBlock';
 import { ISearchResult } from '../../shared/ISearchResult';
-import { IRawTx, IRawBlock } from '../../shared/IRawData';
-import { rawBlockToBlock, blockToBlockSummary } from '../transformers/blockTransform';
+import { IRawTx, IRawBlock } from '../orbs-adapter/IRawData';
+import { rawBlockToBlock, blockToBlockSummary, rawTxToTx } from '../transformers/blockTransform';
 import { IDB } from '../db/IDB';
 import { IContractData, IContractBlockInfo } from '../../shared/IContractData';
 import { decodeHex } from 'orbs-client-sdk';
 import { txToShortTx } from '../transformers/txTransform';
 import { ICompoundTxIdx } from '../../shared/ICompoundTxIdx';
+import { ITx } from '../../shared/ITx';
 
 export class Storage {
   constructor(private db: IDB) {}
@@ -44,7 +45,7 @@ export class Storage {
     return this.db.setHeighestConsecutiveBlockHeight(value);
   }
 
-  public getTx(txId: string): Promise<IRawTx> {
+  public getTx(txId: string): Promise<ITx> {
     return this.db.getTxById(txId);
   }
 
@@ -83,7 +84,8 @@ export class Storage {
   }
 
   public async handleNewBlock(rawBlock: IRawBlock): Promise<void> {
-    await Promise.all([this.db.storeBlock(rawBlockToBlock(rawBlock)), this.db.storeTxes(rawBlock.transactions)]);
+    const txes: ITx[] = rawBlock.transactions.map((tx, idxInBlock) => rawTxToTx(tx, idxInBlock));
+    await Promise.all([this.db.storeBlock(rawBlockToBlock(rawBlock)), this.db.storeTxes(txes)]);
   }
 
   public async search(term: string): Promise<ISearchResult> {

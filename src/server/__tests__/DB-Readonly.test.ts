@@ -44,7 +44,7 @@ function testReadOnlyDb(db: IDB, dbName: string) {
     it('should NOT store txs', async () => {
       const rawBlock = generateRandomRawBlock(1n);
 
-      await db.storeTxes(rawBlock.transactions);
+      await db.storeBlock(rawBlockToBlock(rawBlock));
 
       for (const tx of rawBlock.transactions) {
         const actual = await db.getTxById(tx.txId);

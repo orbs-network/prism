@@ -8,7 +8,7 @@
 
 import { blockResponseToRawBlock } from '../transformers/blockTransform';
 import { IOrbsClient } from '../orbs-client/IOrbsClient';
-import { IRawBlock } from '../../shared/IRawData';
+import { IRawBlock } from './IRawData';
 import * as winston from 'winston';
 import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import { sleep } from '../gaps-filler/Cron';

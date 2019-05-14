@@ -7,7 +7,7 @@
  */
 
 import { ISearchResult } from '../../shared/ISearchResult';
-import { rawBlockToBlock } from '../transformers/blockTransform';
+import { rawBlockToBlock, rawTxToTx } from '../transformers/blockTransform';
 import { InMemoryDB } from '../db/InMemoryDB';
 import {
   generateRandomRawBlock,
@@ -40,7 +40,8 @@ describe('storage', () => {
     const block = generateRandomRawBlock(1n);
     await storage.handleNewBlock(block);
 
-    for (const tx of block.transactions) {
+    for (let i = 0; i < block.transactions.length; i++) {
+      const tx = rawTxToTx(block.transactions[i], i);
       const actual = await storage.getTx(tx.txId);
       expect(tx).toEqual(actual);
     }
@@ -70,7 +71,7 @@ describe('storage', () => {
       await storage.handleNewBlock(block1);
       await storage.handleNewBlock(block2);
 
-      const tx = block2.transactions[0];
+      const tx = rawTxToTx(block2.transactions[0], 0);
       const expected: ISearchResult = {
         type: 'tx',
         tx,

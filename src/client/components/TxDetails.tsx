@@ -13,7 +13,7 @@ import CardHeader from '@material-ui/core/CardHeader';
 import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { IRawArgument, IRawEvent } from '../../shared/IRawData';
+import { IRawArgument, IRawEvent } from '../../shared/ITx';
 import { loadTxAction } from '../actions/txActions';
 import { IRootState } from '../reducers/rootReducer';
 import { getTxData, isTxLoading, ITxData } from '../reducers/txsReducer';

@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { rawBlockToBlock } from '../transformers/blockTransform';
+import { rawBlockToBlock, rawTxToTx } from '../transformers/blockTransform';
 import { MONGODB_URI } from '../config';
 import { IDB } from '../db/IDB';
 import { InMemoryDB } from '../db/InMemoryDB';
@@ -20,12 +20,16 @@ import {
 import * as winston from 'winston';
 import { genLogger } from '../logger/LoggerFactory';
 import { BlockTransaction } from 'orbs-client-sdk/dist/codec/OpGetBlock';
-import { IRawTx } from '../../shared/IRawData';
+import { IRawTx, IRawBlock } from '../orbs-adapter/IRawData';
+import { ITx } from '../../shared/ITx';
 
 const logger: winston.Logger = genLogger(false, false, false);
 
 testDb(new InMemoryDB(), 'InMemoryDB');
 testDb(new MongoDB(logger, MONGODB_URI), 'MongoDB');
+
+const blockTxesToTxes = (rawBlock: IRawBlock): ITx[] =>
+  rawBlock.transactions.map((tx, idxInBlock) => rawTxToTx(tx, idxInBlock));
 
 function testDb(db: IDB, dbName: string) {
   describe(dbName, async () => {
@@ -86,9 +90,10 @@ function testDb(db: IDB, dbName: string) {
     it('should store and retrive txs', async () => {
       const rawBlock = generateRandomRawBlock(1n);
 
-      await db.storeTxes(rawBlock.transactions);
+      await db.storeTxes(blockTxesToTxes(rawBlock));
 
-      for (const tx of rawBlock.transactions) {
+      for (let i = 0; i < rawBlock.transactions.length; i++) {
+        const tx = rawTxToTx(rawBlock.transactions[i], i);
         const actual = await db.getTxById(tx.txId);
         expect(tx).toEqual(actual);
       }
@@ -100,9 +105,10 @@ function testDb(db: IDB, dbName: string) {
       // conver all to upper case
       rawBlock.transactions.forEach(tx => (tx.txId = tx.txId.toUpperCase()));
 
-      await db.storeTxes(rawBlock.transactions);
+      await db.storeTxes(blockTxesToTxes(rawBlock));
 
-      for (const tx of rawBlock.transactions) {
+      for (let i = 0; i < rawBlock.transactions.length; i++) {
+        const tx = rawTxToTx(rawBlock.transactions[i], i);
         const actual = await db.getTxById(tx.txId.toLowerCase());
         expect(tx).toEqual(actual);
       }
@@ -150,10 +156,11 @@ function testDb(db: IDB, dbName: string) {
       const tx: BlockTransaction = generateContractDeployTransaction('test-contract', code);
       const rawBlock = generateRawBlockWithTransaction(1n, tx);
 
-      await db.storeTxes(rawBlock.transactions);
+      await db.storeTxes(blockTxesToTxes(rawBlock));
 
       const actual = await db.getDeployContractTx('test-contract', 1);
-      expect(rawBlock.transactions[0]).toEqual(actual);
+      const expected = rawTxToTx(rawBlock.transactions[0], 0);
+      expect(expected).toEqual(actual);
     });
 
     describe('Retriving txes by contract name', async () => {
@@ -197,21 +204,21 @@ function testDb(db: IDB, dbName: string) {
         await db.storeBlock(rawBlockToBlock(rawBlock2));
         await db.storeBlock(rawBlockToBlock(rawBlock3));
         await db.storeBlock(rawBlockToBlock(rawBlock4));
-        await db.storeTxes(deployRawBlock.transactions);
-        await db.storeTxes(rawBlock2.transactions);
-        await db.storeTxes(rawBlock3.transactions);
-        await db.storeTxes(rawBlock4.transactions);
+        await db.storeTxes(blockTxesToTxes(deployRawBlock));
+        await db.storeTxes(blockTxesToTxes(rawBlock2));
+        await db.storeTxes(blockTxesToTxes(rawBlock3));
+        await db.storeTxes(blockTxesToTxes(rawBlock4));
 
-        block2Tx1 = rawBlock2.transactions[0];
-        block2Tx2 = rawBlock2.transactions[1];
+        block2Tx1 = rawTxToTx(rawBlock2.transactions[0], 0);
+        block2Tx2 = rawTxToTx(rawBlock2.transactions[1], 1);
 
-        block3Tx3 = rawBlock3.transactions[0];
-        block3Tx4 = rawBlock3.transactions[1];
-        block3Tx5 = rawBlock3.transactions[2];
-        block3Tx6 = rawBlock3.transactions[3];
+        block3Tx3 = rawTxToTx(rawBlock3.transactions[0], 0);
+        block3Tx4 = rawTxToTx(rawBlock3.transactions[1], 1);
+        block3Tx5 = rawTxToTx(rawBlock3.transactions[2], 2);
+        block3Tx6 = rawTxToTx(rawBlock3.transactions[3], 3);
 
-        block4Tx7 = rawBlock4.transactions[0];
-        block4Tx8 = rawBlock4.transactions[1];
+        block4Tx7 = rawTxToTx(rawBlock4.transactions[0], 0);
+        block4Tx8 = rawTxToTx(rawBlock4.transactions[1], 1);
       });
 
       it('Simple contract details extraction', async () => {

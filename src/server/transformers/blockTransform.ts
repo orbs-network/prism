@@ -11,7 +11,8 @@ import { Argument } from 'orbs-client-sdk/dist/codec/Arguments';
 import { Event } from 'orbs-client-sdk/dist/codec/Events';
 import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import { IBlock, IBlockSummary } from '../../shared/IBlock';
-import { IRawArgument, IRawBlock, IRawEvent } from '../../shared/IRawData';
+import { IRawArgument, IRawBlock, IRawEvent, IRawTx } from '../orbs-adapter/IRawData';
+import { ITx } from '../../shared/ITx';
 
 export function blockToBlockSummary(block: IBlock): IBlockSummary {
   return {
@@ -40,6 +41,13 @@ export function rawBlockToBlock(block: IRawBlock): IBlock {
   };
 }
 
+export function rawTxToTx(rawTx: IRawTx, idxInBlock: number): ITx {
+  return {
+    idxInBlock,
+    ...rawTx,
+  };
+}
+
 export function blockResponseToRawBlock(getBlockResponse: GetBlockResponse): IRawBlock {
   const blockHash = encodeHex(getBlockResponse.resultsBlockHash);
   const blockHeight = getBlockResponse.resultsBlockHeader.blockHeight.toString();
@@ -47,8 +55,7 @@ export function blockResponseToRawBlock(getBlockResponse: GetBlockResponse): IRa
     blockHeight,
     blockHash,
     timeStamp: getBlockResponse.blockTimestamp.getTime(),
-    transactions: getBlockResponse.transactions.map((tx, idx) => ({
-      idxInBlock: idx,
+    transactions: getBlockResponse.transactions.map(tx => ({
       txId: encodeHex(tx.txId),
       blockHeight,
       protocolVersion: tx.protocolVersion,

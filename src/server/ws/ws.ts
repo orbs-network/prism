@@ -9,7 +9,7 @@
 import { Server } from 'http';
 import * as socketIO from 'socket.io';
 import * as winston from 'winston';
-import { IRawBlock } from '../../shared/IRawData';
+import { IRawBlock } from '../orbs-adapter/IRawData';
 import { rawBlockToBlockSummary } from '../transformers/blockTransform';
 import { INewBlocksHandler } from '../orbs-adapter/OrbsAdapter';
 

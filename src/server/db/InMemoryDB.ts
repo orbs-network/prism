@@ -9,11 +9,13 @@
 import { IDB } from './IDB';
 import { ICompoundTxIdx } from '../../shared/ICompoundTxIdx';
 import { IBlock } from '../../shared/IBlock';
-import { IRawTx } from '../../shared/IRawData';
+import { ITx } from '../../shared/ITx';
+import { IRawBlock, IRawTx } from '../orbs-adapter/IRawData';
+import { rawBlockToBlock, rawTxToTx } from '../transformers/blockTransform';
 
 export class InMemoryDB implements IDB {
   private blocks: Map<string, IBlock>;
-  private txes: Map<string, IRawTx>;
+  private txes: Map<string, ITx>;
   private heighestConsecutiveBlockHeight: bigint = 0n;
 
   constructor(private readOnlyMode: boolean = false) {}
@@ -42,6 +44,14 @@ export class InMemoryDB implements IDB {
     }
     this.blocks.set(block.blockHash, block);
     this.capBlocks();
+  }
+
+  public async storeTxes(txes: ITx[]): Promise<void> {
+    if (this.readOnlyMode) {
+      return;
+    }
+    txes.map(tx => this.txes.set(tx.txId.toLowerCase(), tx));
+    this.capTxes();
   }
 
   public async getLatestBlocks(count: number): Promise<IBlock[]> {
@@ -88,19 +98,11 @@ export class InMemoryDB implements IDB {
     return result;
   }
 
-  public async storeTxes(txes: IRawTx[]): Promise<void> {
-    if (this.readOnlyMode) {
-      return;
-    }
-    txes.map(t => this.txes.set(t.txId.toLowerCase(), t));
-    this.capTxes();
-  }
-
-  public async getTxById(txId: string): Promise<IRawTx> {
+  public async getTxById(txId: string): Promise<ITx> {
     return this.txes.get(txId.toLowerCase()) || null;
   }
 
-  public async getDeployContractTx(contractName: string, lang: number): Promise<IRawTx> {
+  public async getDeployContractTx(contractName: string, lang: number): Promise<ITx> {
     for (const tx of this.txes.values()) {
       if (tx.contractName === '_Deployments' && tx.methodName === 'deployService' && tx.executionResult === 'SUCCESS') {
         const { inputArguments: args } = tx;
@@ -118,20 +120,16 @@ export class InMemoryDB implements IDB {
     }
   }
 
-  public async getContractTxes(
-    contractName: string,
-    vector: number,
-    compoundTxIdx?: ICompoundTxIdx,
-  ): Promise<IRawTx[]> {
-    let filterByHeight: (tx: IRawTx) => boolean = (tx: IRawTx) => true;
+  public async getContractTxes(contractName: string, vector: number, compoundTxIdx?: ICompoundTxIdx): Promise<ITx[]> {
+    let filterByHeight: (tx: ITx) => boolean = (tx: ITx) => true;
     if (compoundTxIdx) {
       const { blockHeight, txIdx } = compoundTxIdx;
       if (blockHeight && blockHeight > 0n) {
         if (txIdx && txIdx > 0) {
-          filterByHeight = (tx: IRawTx) =>
+          filterByHeight = (tx: ITx) =>
             (BigInt(tx.blockHeight) === blockHeight && tx.idxInBlock <= txIdx) || BigInt(tx.blockHeight) < blockHeight;
         } else {
-          filterByHeight = (tx: IRawTx) => BigInt(tx.blockHeight) <= blockHeight;
+          filterByHeight = (tx: ITx) => BigInt(tx.blockHeight) <= blockHeight;
         }
       }
     }

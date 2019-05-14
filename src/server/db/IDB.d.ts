@@ -7,22 +7,23 @@
  */
 
 import { IBlock } from '../../shared/IBlock';
-import { IRawTx } from '../../shared/IRawData';
+import { ITx } from '../../shared/ITx';
 import { ICompoundTxIdx } from '../../shared/ICompoundTxIdx';
+import { IRawBlock } from '../orbs-adapter/IRawData';
 
 export interface IDB {
   init(): Promise<void>;
   destroy(): Promise<void>;
   clearAll(): Promise<void>;
   storeBlock(block: IBlock): Promise<void>;
+  storeTxes(txes: ITx[]): Promise<void>;
   getLatestBlocks(count: number): Promise<IBlock[]>;
   getBlockByHash(blockHash: string): Promise<IBlock>;
   getBlockByHeight(blockHeight: string): Promise<IBlock>;
   getLatestBlockHeight(): Promise<bigint>;
   getHeighestConsecutiveBlockHeight(): Promise<bigint>;
   setHeighestConsecutiveBlockHeight(value: bigint): Promise<void>;
-  storeTxes(txes: IRawTx[]): Promise<void>;
-  getTxById(txId: string): Promise<IRawTx>;
-  getDeployContractTx(contractName: string, lang: number): Promise<IRawTx>;
-  getContractTxes(contractName: string, vector: number, compoundTxIdx?: ICompoundTxIdx): Promise<IRawTx[]>;
+  getTxById(txId: string): Promise<ITx>;
+  getDeployContractTx(contractName: string, lang: number): Promise<ITx>;
+  getContractTxes(contractName: string, vector: number, compoundTxIdx?: ICompoundTxIdx): Promise<ITx[]>;
 }

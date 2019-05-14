@@ -8,11 +8,13 @@
 
 import * as mongoose from 'mongoose';
 import { IBlock } from '../../shared/IBlock';
-import { IRawTx } from '../../shared/IRawData';
+import { ITx } from '../../shared/ITx';
 import { ICompoundTxIdx } from '../../shared/ICompoundTxIdx';
 import { IDB } from './IDB';
 import * as mongooseLong from 'mongoose-long';
 import * as winston from 'winston';
+import { IRawBlock, IRawTx } from '../orbs-adapter/IRawData';
+import { rawBlockToBlock, rawTxToTx } from '../transformers/blockTransform';
 
 mongooseLong(mongoose);
 mongoose.set('useFindAndModify', false);
@@ -118,6 +120,13 @@ export class MongoDB implements IDB {
     this.logger.info(`block stored [${Date.now() - startTime}ms.]`);
   }
 
+  public async storeTxes(txes: ITx[]): Promise<any> {
+    if (this.readOnlyMode) {
+      return;
+    }
+    return Promise.all(txes.map(async tx => await this.storeTx(tx)));
+  }
+
   public async getLatestBlocks(count: number): Promise<IBlock[]> {
     const startTime = Date.now();
     this.logger.info(`Quering for the latest ${count} blocks`);
@@ -168,7 +177,7 @@ export class MongoDB implements IDB {
     }
   }
 
-  public async getDeployContractTx(contractName: string, lang: number): Promise<IRawTx> {
+  public async getDeployContractTx(contractName: string, lang: number): Promise<ITx> {
     const startTime = Date.now();
     this.logger.info(`Searching for deployment of contract: ${contractName}`);
     const result = await this.TxModel.findOne(
@@ -186,18 +195,14 @@ export class MongoDB implements IDB {
 
     if (result) {
       this.logger.info(`contract found [${Date.now() - startTime}ms.]`);
-      return blockHeighToString<IRawTx>(result);
+      return blockHeighToString<ITx>(result);
     } else {
       this.logger.info(`contract not found [${Date.now() - startTime}ms.]`);
       return null;
     }
   }
 
-  public async getContractTxes(
-    contractName: string,
-    vector: number,
-    compoundTxIdx?: ICompoundTxIdx,
-  ): Promise<IRawTx[]> {
+  public async getContractTxes(contractName: string, vector: number, compoundTxIdx?: ICompoundTxIdx): Promise<ITx[]> {
     const startTime = Date.now();
     this.logger.info(`Searching for all txes for contract: ${contractName}`);
     const conditions: any = {
@@ -275,19 +280,7 @@ export class MongoDB implements IDB {
     return 0n;
   }
 
-  public async storeTxes(txes: IRawTx[]): Promise<any> {
-    if (this.readOnlyMode) {
-      return;
-    }
-    return Promise.all(
-      txes.map(async t => {
-        const txInstance = new this.TxModel(blockHeighToBigInt(t));
-        await txInstance.save();
-      }),
-    );
-  }
-
-  public async getTxById(txId: string): Promise<IRawTx> {
+  public async getTxById(txId: string): Promise<ITx> {
     const startTime = Date.now();
     this.logger.info(`Searching for tx by txId: ${txId}`);
     const result = await this.TxModel.findOne({ $text: { $search: txId } }, { _id: false, __v: false })
@@ -297,5 +290,10 @@ export class MongoDB implements IDB {
     this.logger.info(`tx found [${Date.now() - startTime}ms.]`);
 
     return result ? blockHeighToString(result) : result;
+  }
+
+  private async storeTx(tx: ITx): Promise<void> {
+    const txInstance = new this.TxModel(blockHeighToBigInt(tx));
+    await txInstance.save();
   }
 }
