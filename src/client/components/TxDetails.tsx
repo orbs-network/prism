@@ -13,13 +13,14 @@ import CardHeader from '@material-ui/core/CardHeader';
 import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { IRawArgument, IRawEvent } from '../../shared/ITx';
 import { loadTxAction } from '../actions/txActions';
 import { IRootState } from '../reducers/rootReducer';
 import { getTxData, isTxLoading, ITxData } from '../reducers/txsReducer';
 import { ConsoleText } from './ConsoleText';
 import { PrismLink } from './PrismLink';
 import { TimeStampField } from './TimeStampField';
+import { IOutputEvent } from '../../shared/IOutputEvent';
+import { IArgument } from '../../shared/IArgument';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -160,7 +161,7 @@ const TxDetailsImpl = withStyles(styles)(
       );
     }
 
-    private renderEvents(events: IRawEvent[]) {
+    private renderEvents(events: IOutputEvent[]) {
       if (!events || events.length === 0) {
         return <div>-</div>;
       }
@@ -178,7 +179,7 @@ const TxDetailsImpl = withStyles(styles)(
       );
     }
 
-    private renderArgs(args: IRawArgument[]) {
+    private renderArgs(args: IArgument[]) {
       if (!args || args.length === 0) {
         return <div>-</div>;
       }

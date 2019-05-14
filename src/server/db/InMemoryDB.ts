@@ -120,7 +120,7 @@ export class InMemoryDB implements IDB {
     }
   }
 
-  public async getContractTxes(contractName: string, vector: number, compoundTxIdx?: ICompoundTxIdx): Promise<ITx[]> {
+  public async getContractTxes(contractName: string, limit: number, compoundTxIdx?: ICompoundTxIdx): Promise<ITx[]> {
     let filterByHeight: (tx: ITx) => boolean = (tx: ITx) => true;
     if (compoundTxIdx) {
       const { blockHeight, txIdx } = compoundTxIdx;
@@ -140,7 +140,7 @@ export class InMemoryDB implements IDB {
       .filter(tx => tx.contractName === contractName)
       .filter(filterByHeight)
       .sort((a, b) => Number(BigInt(b.blockHeight) - BigInt(a.blockHeight)) || b.idxInBlock - a.idxInBlock);
-    return allTxes.splice(0, vector);
+    return allTxes.splice(0, limit);
   }
 
   private capTxes(): void {

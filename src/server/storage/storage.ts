@@ -49,17 +49,13 @@ export class Storage {
     return this.db.getTxById(txId);
   }
 
-  public async getContractData(
-    contractName: string,
-    vector: number,
-    compoundTxIdx?: ICompoundTxIdx,
-  ): Promise<IContractData> {
+  public async getContractData(contractName: string, compoundTxIdx?: ICompoundTxIdx): Promise<IContractData> {
     const deployTx = await this.db.getDeployContractTx(contractName, 1);
     let code = null;
     if (deployTx) {
       code = Buffer.from(decodeHex(deployTx.inputArguments[2].value)).toString();
     }
-    const txes = await this.db.getContractTxes(contractName, vector, compoundTxIdx);
+    const txes = await this.db.getContractTxes(contractName, 100, compoundTxIdx);
     const blockInfo: IContractBlockInfo = txes.reduce(
       (prev, tx) => {
         if (prev[tx.blockHeight]) {
@@ -84,7 +80,7 @@ export class Storage {
   }
 
   public async handleNewBlock(rawBlock: IRawBlock): Promise<void> {
-    const txes: ITx[] = rawBlock.transactions.map((tx, idxInBlock) => rawTxToTx(tx, idxInBlock));
+    const txes: ITx[] = rawBlock.transactions.map((tx, idxInBlock) => rawTxToTx(tx, idxInBlock, idxInBlock));
     await Promise.all([this.db.storeBlock(rawBlockToBlock(rawBlock)), this.db.storeTxes(txes)]);
   }
 

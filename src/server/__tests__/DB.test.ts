@@ -28,9 +28,6 @@ const logger: winston.Logger = genLogger(false, false, false);
 testDb(new InMemoryDB(), 'InMemoryDB');
 testDb(new MongoDB(logger, MONGODB_URI), 'MongoDB');
 
-const blockTxesToTxes = (rawBlock: IRawBlock): ITx[] =>
-  rawBlock.transactions.map((tx, idxInBlock) => rawTxToTx(tx, idxInBlock));
-
 function testDb(db: IDB, dbName: string) {
   describe(dbName, async () => {
     beforeEach(async () => {
@@ -90,10 +87,10 @@ function testDb(db: IDB, dbName: string) {
     it('should store and retrive txs', async () => {
       const rawBlock = generateRandomRawBlock(1n);
 
-      await db.storeTxes(blockTxesToTxes(rawBlock));
+      const txes = rawBlock.transactions.map((tx, idx) => rawTxToTx(tx, idx, idx));
+      await db.storeTxes(txes);
 
-      for (let i = 0; i < rawBlock.transactions.length; i++) {
-        const tx = rawTxToTx(rawBlock.transactions[i], i);
+      for (const tx of txes) {
         const actual = await db.getTxById(tx.txId);
         expect(tx).toEqual(actual);
       }
@@ -102,13 +99,13 @@ function testDb(db: IDB, dbName: string) {
     it('should ignore case when retrive txs', async () => {
       const rawBlock = generateRandomRawBlock(1n);
 
+      const txes = rawBlock.transactions.map((tx, idx) => rawTxToTx(tx, idx, idx));
       // conver all to upper case
       rawBlock.transactions.forEach(tx => (tx.txId = tx.txId.toUpperCase()));
 
-      await db.storeTxes(blockTxesToTxes(rawBlock));
+      await db.storeTxes(txes);
 
-      for (let i = 0; i < rawBlock.transactions.length; i++) {
-        const tx = rawTxToTx(rawBlock.transactions[i], i);
+      for (const tx of txes) {
         const actual = await db.getTxById(tx.txId.toLowerCase());
         expect(tx).toEqual(actual);
       }
@@ -153,27 +150,28 @@ function testDb(db: IDB, dbName: string) {
 
     it('should retrive contract by name', async () => {
       const code: string = 'this is go code';
-      const tx: BlockTransaction = generateContractDeployTransaction('test-contract', code);
-      const rawBlock = generateRawBlockWithTransaction(1n, tx);
+      const btx: BlockTransaction = generateContractDeployTransaction('test-contract', code);
+      const rawBlock = generateRawBlockWithTransaction(1n, btx);
 
-      await db.storeTxes(blockTxesToTxes(rawBlock));
+      const tx = rawTxToTx(rawBlock.transactions[0], 0, 0);
+      await db.storeTxes([tx]);
 
       const actual = await db.getDeployContractTx('test-contract', 1);
-      const expected = rawTxToTx(rawBlock.transactions[0], 0);
-      expect(expected).toEqual(actual);
+      expect(tx).toEqual(actual);
     });
 
     describe('Retriving txes by contract name', async () => {
       const contractName = 'test-contract';
 
-      let block2Tx1: IRawTx;
-      let block2Tx2: IRawTx;
-      let block3Tx3: IRawTx;
-      let block3Tx4: IRawTx;
-      let block3Tx5: IRawTx;
-      let block3Tx6: IRawTx;
-      let block4Tx7: IRawTx;
-      let block4Tx8: IRawTx;
+      let block1DeployTx: ITx;
+      let block2Tx1: ITx;
+      let block2Tx2: ITx;
+      let block3Tx3: ITx;
+      let block3Tx4: ITx;
+      let block3Tx5: ITx;
+      let block3Tx6: ITx;
+      let block4Tx7: ITx;
+      let block4Tx8: ITx;
 
       beforeEach(async () => {
         //
@@ -204,21 +202,24 @@ function testDb(db: IDB, dbName: string) {
         await db.storeBlock(rawBlockToBlock(rawBlock2));
         await db.storeBlock(rawBlockToBlock(rawBlock3));
         await db.storeBlock(rawBlockToBlock(rawBlock4));
-        await db.storeTxes(blockTxesToTxes(deployRawBlock));
-        await db.storeTxes(blockTxesToTxes(rawBlock2));
-        await db.storeTxes(blockTxesToTxes(rawBlock3));
-        await db.storeTxes(blockTxesToTxes(rawBlock4));
 
-        block2Tx1 = rawTxToTx(rawBlock2.transactions[0], 0);
-        block2Tx2 = rawTxToTx(rawBlock2.transactions[1], 1);
+        block1DeployTx = rawTxToTx(deployRawBlock.transactions[0], 0, 0);
 
-        block3Tx3 = rawTxToTx(rawBlock3.transactions[0], 0);
-        block3Tx4 = rawTxToTx(rawBlock3.transactions[1], 1);
-        block3Tx5 = rawTxToTx(rawBlock3.transactions[2], 2);
-        block3Tx6 = rawTxToTx(rawBlock3.transactions[3], 3);
+        block2Tx1 = rawTxToTx(rawBlock2.transactions[0], 0, 0);
+        block2Tx2 = rawTxToTx(rawBlock2.transactions[1], 1, 0);
 
-        block4Tx7 = rawTxToTx(rawBlock4.transactions[0], 0);
-        block4Tx8 = rawTxToTx(rawBlock4.transactions[1], 1);
+        block3Tx3 = rawTxToTx(rawBlock3.transactions[0], 0, 1);
+        block3Tx4 = rawTxToTx(rawBlock3.transactions[1], 1, 2);
+        block3Tx5 = rawTxToTx(rawBlock3.transactions[2], 2, 1);
+        block3Tx6 = rawTxToTx(rawBlock3.transactions[3], 3, 3);
+
+        block4Tx7 = rawTxToTx(rawBlock4.transactions[0], 0, 4);
+        block4Tx8 = rawTxToTx(rawBlock4.transactions[1], 1, 5);
+
+        await db.storeTxes([block1DeployTx]);
+        await db.storeTxes([block2Tx1, block2Tx2]);
+        await db.storeTxes([block3Tx3, block3Tx4, block3Tx5, block3Tx6]);
+        await db.storeTxes([block4Tx7, block4Tx8]);
       });
 
       it('Simple contract details extraction', async () => {

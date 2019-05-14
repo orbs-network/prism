@@ -11,6 +11,7 @@ import { IOutputEvent } from './IOutputEvent';
 
 export interface ITx {
   idxInBlock: number;
+  contractExecutionIdx: number;
   txId: string;
   blockHeight: string;
   protocolVersion: number;

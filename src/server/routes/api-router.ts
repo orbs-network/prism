@@ -45,7 +45,6 @@ export function apiRouter(storage: Storage) {
 
   router.get('/api/contract/:contractName', async (req, res) => {
     const contractName: string = req.params.contractName;
-    const vector: number = req.query.vector ? Number(req.query.vector) : 100;
 
     let compoundTxIdx: ICompoundTxIdx;
     if (req.query.blockHeight) {
@@ -54,7 +53,7 @@ export function apiRouter(storage: Storage) {
         compoundTxIdx.txIdx = Number(req.query.txIdx);
       }
     }
-    const contractData: IContractData = await storage.getContractData(contractName, vector, compoundTxIdx);
+    const contractData: IContractData = await storage.getContractData(contractName, compoundTxIdx);
     if (!contractData) {
       return res.send(404);
     }

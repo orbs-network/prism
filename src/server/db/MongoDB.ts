@@ -7,14 +7,12 @@
  */
 
 import * as mongoose from 'mongoose';
-import { IBlock } from '../../shared/IBlock';
-import { ITx } from '../../shared/ITx';
-import { ICompoundTxIdx } from '../../shared/ICompoundTxIdx';
-import { IDB } from './IDB';
 import * as mongooseLong from 'mongoose-long';
 import * as winston from 'winston';
-import { IRawBlock, IRawTx } from '../orbs-adapter/IRawData';
-import { rawBlockToBlock, rawTxToTx } from '../transformers/blockTransform';
+import { IBlock } from '../../shared/IBlock';
+import { ICompoundTxIdx } from '../../shared/ICompoundTxIdx';
+import { ITx } from '../../shared/ITx';
+import { IDB } from './IDB';
 
 mongooseLong(mongoose);
 mongoose.set('useFindAndModify', false);
@@ -38,6 +36,7 @@ const blockSchema = new mongoose.Schema({
 
 const txSchema = new mongoose.Schema({
   idxInBlock: Number,
+  contractExecutionIdx: Number,
   txId: String,
   blockHeight: (mongoose.Schema.Types as any).Long,
   protocolVersion: Number,
@@ -202,7 +201,7 @@ export class MongoDB implements IDB {
     }
   }
 
-  public async getContractTxes(contractName: string, vector: number, compoundTxIdx?: ICompoundTxIdx): Promise<ITx[]> {
+  public async getContractTxes(contractName: string, limit: number, compoundTxIdx?: ICompoundTxIdx): Promise<ITx[]> {
     const startTime = Date.now();
     this.logger.info(`Searching for all txes for contract: ${contractName}`);
     const conditions: any = {
@@ -232,7 +231,7 @@ export class MongoDB implements IDB {
           blockHeight: -1,
           idxInBlock: -1,
         },
-        limit: vector,
+        limit,
       },
     )
       .lean()
