@@ -162,21 +162,36 @@ function testDb(db: IDB, dbName: string) {
       let block2Tx1: IRawTx;
       let block2Tx2: IRawTx;
       let block3Tx3: IRawTx;
-      let block4Tx4: IRawTx;
-      let block4Tx5: IRawTx;
+      let block3Tx4: IRawTx;
+      let block3Tx5: IRawTx;
+      let block3Tx6: IRawTx;
+      let block4Tx7: IRawTx;
+      let block4Tx8: IRawTx;
 
       beforeEach(async () => {
+        //
+        // ------------       ------------      ----------------------      ------------
+        // | h=1n     |       | h=2n     |      | h=3n               |      | h=4n     |
+        // |          |  -->  |          | -->  |                    | -->  |          |
+        // | deployTx |       | tx1, tx2 |      | tx3, tx4, tx5, tx6 |      | tx7, tx8 |
+        // ------------       ------------      ----------------------      ------------
+        //
+        // Note: tx1 and tx5 are not the same contract as the other txes.
+
         const code: string = 'this is go code';
         const deployTx: BlockTransaction = generateContractDeployTransaction(contractName, code);
         const tx1 = generateBlockTransaction('other-contract', 'some-other-method');
         const tx2 = generateBlockTransaction('test-contract', 'some-method1');
         const tx3 = generateBlockTransaction('test-contract', 'some-method2');
         const tx4 = generateBlockTransaction('test-contract', 'some-method3');
-        const tx5 = generateBlockTransaction('test-contract', 'some-method4');
+        const tx5 = generateBlockTransaction('other-contract', 'some-other-method');
+        const tx6 = generateBlockTransaction('test-contract', 'some-method4');
+        const tx7 = generateBlockTransaction('test-contract', 'some-method5');
+        const tx8 = generateBlockTransaction('test-contract', 'some-method6');
         const deployRawBlock = generateRawBlockWithTransaction(1n, deployTx);
         const rawBlock2 = generateRawBlockWithTransaction(2n, [tx1, tx2]);
-        const rawBlock3 = generateRawBlockWithTransaction(3n, [tx3]);
-        const rawBlock4 = generateRawBlockWithTransaction(4n, [tx4, tx5]);
+        const rawBlock3 = generateRawBlockWithTransaction(3n, [tx3, tx4, tx5, tx6]);
+        const rawBlock4 = generateRawBlockWithTransaction(4n, [tx7, tx8]);
 
         await db.storeBlock(rawBlockToBlock(deployRawBlock));
         await db.storeBlock(rawBlockToBlock(rawBlock2));
@@ -189,24 +204,29 @@ function testDb(db: IDB, dbName: string) {
 
         block2Tx1 = rawBlock2.transactions[0];
         block2Tx2 = rawBlock2.transactions[1];
+
         block3Tx3 = rawBlock3.transactions[0];
-        block4Tx4 = rawBlock4.transactions[0];
-        block4Tx5 = rawBlock4.transactions[1];
+        block3Tx4 = rawBlock3.transactions[1];
+        block3Tx5 = rawBlock3.transactions[2];
+        block3Tx6 = rawBlock3.transactions[3];
+
+        block4Tx7 = rawBlock4.transactions[0];
+        block4Tx8 = rawBlock4.transactions[1];
       });
 
       it('Simple contract details extraction', async () => {
-        const actual = await db.getContractTxes(contractName, 100, 0n);
-        expect([block4Tx5, block4Tx4, block3Tx3, block2Tx2]).toEqual(actual);
-      });
-
-      it('starting from the given block height', async () => {
-        const actual = await db.getContractTxes(contractName, 100, 3n);
-        expect([block3Tx3, block2Tx2]).toEqual(actual);
+        const actual = await db.getContractTxes(contractName, 100);
+        expect([block4Tx8, block4Tx7, block3Tx6, block3Tx4, block3Tx3, block2Tx2]).toEqual(actual);
       });
 
       it('should return only the requested number of txes', async () => {
-        const actual = await db.getContractTxes(contractName, 3, 0n);
-        expect([block4Tx5, block4Tx4, block3Tx3]).toEqual(actual);
+        const actual = await db.getContractTxes(contractName, 3);
+        expect([block4Tx8, block4Tx7, block3Tx6]).toEqual(actual);
+      });
+
+      it('starting from the given block height', async () => {
+        const actual = await db.getContractTxes(contractName, 100, { blockHeight: 3n });
+        expect([block3Tx6, block3Tx4, block3Tx3, block2Tx2]).toEqual(actual);
       });
     });
   });
