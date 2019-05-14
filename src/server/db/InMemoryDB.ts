@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { IDB } from './IDB';
+import { IDB, ICompoundTxIdx } from './IDB';
 import { IBlock } from '../../shared/IBlock';
 import { IRawTx } from '../../shared/IRawData';
 
@@ -117,12 +117,20 @@ export class InMemoryDB implements IDB {
     }
   }
 
-  public async getContractTxes(contractName: string, limit: number, startFromBlockHeight: bigint): Promise<IRawTx[]> {
+  public async getContractTxes(contractName: string, limit: number, compoundTxIdx?: ICompoundTxIdx): Promise<IRawTx[]> {
+    let filterByHeight: (tx: IRawTx) => boolean = (tx: IRawTx) => true;
+    if (compoundTxIdx) {
+      const { blockHeight, txIdx } = compoundTxIdx;
+      if (blockHeight > 0n) {
+        filterByHeight = (tx: IRawTx) => BigInt(tx.blockHeight) <= blockHeight;
+      }
+    }
+
     const txArr = Array.from(this.txes);
     const allTxes = txArr
       .map(item => item[1])
       .filter(tx => tx.contractName === contractName)
-      .filter(tx => (startFromBlockHeight > 0n ? Number(BigInt(tx.blockHeight)) <= startFromBlockHeight : true))
+      .filter(filterByHeight)
       .sort((a, b) => Number(BigInt(b.blockHeight) - BigInt(a.blockHeight)) || b.idxInBlock - a.idxInBlock);
     return allTxes.splice(0, limit);
   }

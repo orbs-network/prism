@@ -53,7 +53,7 @@ export class Storage {
     if (deployTx) {
       code = Buffer.from(decodeHex(deployTx.inputArguments[2].value)).toString();
     }
-    const txes = await this.db.getContractTxes(contractName, 100, startFromBlockHeight);
+    const txes = await this.db.getContractTxes(contractName, 100, { blockHeight: startFromBlockHeight });
     const blockInfo: IContractBlockInfo = txes.reduce(
       (prev, tx) => {
         if (prev[tx.blockHeight]) {

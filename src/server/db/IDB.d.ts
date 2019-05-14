@@ -9,6 +9,11 @@
 import { IBlock } from '../../shared/IBlock';
 import { IRawTx } from '../../shared/IRawData';
 
+export interface ICompoundTxIdx {
+  blockHeight?: bigint;
+  txIdx?: number;
+}
+
 export interface IDB {
   init(): Promise<void>;
   destroy(): Promise<void>;
@@ -23,5 +28,5 @@ export interface IDB {
   storeTxes(txes: IRawTx[]): Promise<void>;
   getTxById(txId: string): Promise<IRawTx>;
   getDeployContractTx(contractName: string, lang: number): Promise<IRawTx>;
-  getContractTxes(contractName: string, limit: number, startFromBlockHeight: bigint): Promise<IRawTx[]>;
+  getContractTxes(contractName: string, limit: number, compoundTxIdx?: ICompoundTxIdx): Promise<IRawTx[]>;
 }
