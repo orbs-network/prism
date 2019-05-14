@@ -121,8 +121,13 @@ export class InMemoryDB implements IDB {
     let filterByHeight: (tx: IRawTx) => boolean = (tx: IRawTx) => true;
     if (compoundTxIdx) {
       const { blockHeight, txIdx } = compoundTxIdx;
-      if (blockHeight > 0n) {
-        filterByHeight = (tx: IRawTx) => BigInt(tx.blockHeight) <= blockHeight;
+      if (blockHeight && blockHeight > 0n) {
+        if (txIdx && txIdx > 0) {
+          filterByHeight = (tx: IRawTx) =>
+            (BigInt(tx.blockHeight) === blockHeight && tx.idxInBlock <= txIdx) || BigInt(tx.blockHeight) < blockHeight;
+        } else {
+          filterByHeight = (tx: IRawTx) => BigInt(tx.blockHeight) <= blockHeight;
+        }
       }
     }
 

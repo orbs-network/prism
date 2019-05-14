@@ -228,6 +228,21 @@ function testDb(db: IDB, dbName: string) {
         const actual = await db.getContractTxes(contractName, 100, { blockHeight: 3n });
         expect([block3Tx6, block3Tx4, block3Tx3, block2Tx2]).toEqual(actual);
       });
+
+      it('starting from the given block height and txIdx', async () => {
+        const actual = await db.getContractTxes(contractName, 100, { blockHeight: 3n, txIdx: 1 });
+        expect([block3Tx4, block3Tx3, block2Tx2]).toEqual(actual);
+      });
+
+      it('should ignore txIdx if a block height was not given', async () => {
+        const actual = await db.getContractTxes(contractName, 100, { txIdx: 1 });
+        expect([block4Tx8, block4Tx7, block3Tx6, block3Tx4, block3Tx3, block2Tx2]).toEqual(actual);
+      });
+
+      it('should accept unrelated txIdx', async () => {
+        const actual = await db.getContractTxes(contractName, 100, { blockHeight: 3n, txIdx: 666 });
+        expect([block3Tx6, block3Tx4, block3Tx3, block2Tx2]).toEqual(actual);
+      });
     });
   });
 }

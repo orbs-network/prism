@@ -202,7 +202,14 @@ export class MongoDB implements IDB {
     if (compoundTxIdx) {
       const { blockHeight, txIdx } = compoundTxIdx;
       if (blockHeight && blockHeight > 0n) {
-        conditions.blockHeight = { $lte: blockHeight };
+        if (txIdx && txIdx > 0) {
+          conditions.$or = [
+            { blockHeight: { $eq: blockHeight }, idxInBlock: { $lte: txIdx } },
+            { blockHeight: { $lt: blockHeight } },
+          ];
+        } else {
+          conditions.blockHeight = { $lte: blockHeight };
+        }
       }
     }
 
