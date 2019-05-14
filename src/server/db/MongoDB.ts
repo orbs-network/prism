@@ -192,7 +192,7 @@ export class MongoDB implements IDB {
     }
   }
 
-  public async getContractTxes(contractName: string, limit: number, compoundTxIdx?: ICompoundTxIdx): Promise<IRawTx[]> {
+  public async getContractTxes(contractName: string, vector: number, compoundTxIdx?: ICompoundTxIdx): Promise<IRawTx[]> {
     const startTime = Date.now();
     this.logger.info(`Searching for all txes for contract: ${contractName}`);
     const conditions: any = {
@@ -222,7 +222,7 @@ export class MongoDB implements IDB {
           blockHeight: -1,
           idxInBlock: -1,
         },
-        limit,
+        limit: vector,
       },
     )
       .lean()
