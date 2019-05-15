@@ -17,6 +17,7 @@ import { TermNotFound } from './components/TermNotFound';
 import { TxDetails } from './components/TxDetails';
 import { ContractDetails } from './components/contract/ContractDetails';
 import { DISABLE_ANIMATIONS } from './config';
+import * as queryString from 'query-string';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -70,11 +71,14 @@ const AppImpl = ({ classes, location }: IProps) => {
           />
           <Route
             path='/contract/:contractName'
-            render={({ match }) => (
-              <div style={props} className={classes.swipeContainer}>
-                <ContractDetails contractName={match.params.contractName} />
-              </div>
-            )}
+            render={({ match }) => {
+              const blockHeight = queryString.parse(location.search).blockHeight as string;
+              return (
+                <div style={props} className={classes.swipeContainer}>
+                  <ContractDetails contractName={match.params.contractName} blockHeight={blockHeight} />
+                </div>
+              );
+            }}
           />
           <Route
             path='/not-found/:term'

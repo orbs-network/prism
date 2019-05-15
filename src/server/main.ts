@@ -19,11 +19,19 @@ import { genLogger } from './logger/LoggerFactory';
 
 async function main() {
   console.log(`*******************************************`);
+  console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
   console.log(`config: ${JSON.stringify(config, null, 2)}`);
   console.log(`*******************************************`);
 
-  const { GAP_FILLER_ACTIVE, GAP_FILLER_INTERVAL, GAP_FILLER_INITIAL_DELAY, IS_PRODUCTION } = config;
-  const logger: winston.Logger = genLogger(true, IS_PRODUCTION, IS_PRODUCTION);
+  const {
+    POOLING_INTERVAL,
+    GAP_FILLER_ACTIVE,
+    GAP_FILLER_INTERVAL,
+    LOG_TO_CONSOLE,
+    LOG_TO_FILE,
+    LOG_TO_ROLLBAR,
+  } = config;
+  const logger: winston.Logger = genLogger(LOG_TO_CONSOLE, LOG_TO_FILE, LOG_TO_ROLLBAR);
 
   // externals
   const orbsAdapter = genOrbsAdapter(logger);
@@ -44,12 +52,13 @@ async function main() {
   // link all the parts
   orbsAdapter.RegisterToNewBlocks(ws);
   orbsAdapter.RegisterToNewBlocks(storage);
-  await orbsAdapter.init();
+  await orbsAdapter.initPooling(POOLING_INTERVAL);
 
   if (GAP_FILLER_ACTIVE) {
+    const GAP_FILLER_INITIAL_DELAY = 60 * 1000; // We wait a minute before we start the gap filler
     await sleep(GAP_FILLER_INITIAL_DELAY);
     fillGapsForever(logger, storage, orbsAdapter, GAP_FILLER_INTERVAL);
   }
 }
 
-main().then(() => console.log('running'));
+main();

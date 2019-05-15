@@ -13,7 +13,7 @@ import { generateRandomRawBlock } from '../orbs-adapter/fake-blocks-generator';
 import { detectBlockChainGaps } from '../gaps-filler/GapsDetector';
 import { genLogger } from '../logger/LoggerFactory';
 
-describe('Gaps Filler', () => {
+describe('Gaps Detector', () => {
   it('should detect gaps in the storage', async () => {
     const logger = genLogger(false, false, false);
     const db: IDB = new InMemoryDB();
@@ -28,7 +28,7 @@ describe('Gaps Filler', () => {
     await storage.handleNewBlock(generateRandomRawBlock(10n));
 
     const latestHeight = await storage.getLatestBlockHeight();
-    const actual = await detectBlockChainGaps(logger, storage, 1n, latestHeight);
+    const actual = await detectBlockChainGaps(storage, 1n, latestHeight);
     expect(actual).toEqual([4n, 5n, 9n]);
   });
 
@@ -42,7 +42,7 @@ describe('Gaps Filler', () => {
     await storage.handleNewBlock(generateRandomRawBlock(10n));
     await storage.handleNewBlock(generateRandomRawBlock(20n));
 
-    const actual = await detectBlockChainGaps(logger, storage, 4n, 15n);
+    const actual = await detectBlockChainGaps(storage, 4n, 15n);
     expect(actual).toEqual([4n, 5n, 8n, 9n, 11n, 12n, 13n, 14n, 15n]);
   });
 });

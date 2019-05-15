@@ -6,26 +6,18 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
+import { loopInChunks } from '../chunker/LoopInChunks';
 import { Storage } from '../storage/storage';
 import winston = require('winston');
 
 export async function detectBlockChainGaps(
-  logger: winston.Logger,
   storage: Storage,
   fromHeight: bigint,
   toHeight: bigint,
 ): Promise<Array<bigint>> {
-  const result: Array<bigint> = [];
-  for (let height = fromHeight; height <= toHeight; height++) {
-    logger.info(`Asking storage for block at ${height}?`, { func: 'detectBlockChainGaps' });
-    const storageBlock = await storage.getBlockByHeight(height.toString());
-    if (!storageBlock) {
-      logger.info(`No block found in storage for height ${height}`);
-      result.push(height);
-    } else {
-      logger.info(`A block found in storage for height ${height}`);
-    }
-  }
-
-  return result;
+  const missingBlocks = await loopInChunks(fromHeight, toHeight, 100n, async idx => {
+    const block = await storage.getBlockByHeight(idx.toString());
+    return block ? null : idx;
+  });
+  return missingBlocks.filter(b => b !== null);
 }

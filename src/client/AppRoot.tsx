@@ -28,6 +28,7 @@ import { configureStore } from './store';
 import { VChainDetails } from './VChainDetails';
 
 const vchainId = (window as any).vchainId;
+const prismVersion = (window as any).prismVersion;
 
 const store = configureStore();
 store.dispatch(loadLatestBlocksSummaryAction() as any);
@@ -72,7 +73,7 @@ export const AppRoot = withStyles(styles)(({ classes }: IProps) => (
     <Provider store={store}>
       <MuiThemeProvider theme={baseTheme}>
         <CssBaseline />
-        <Background />
+        <Background prismVersion={prismVersion} />
         <Header />
         <div className={classes.appContainer}>
           <VChainDetails vchainId={vchainId} />

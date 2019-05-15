@@ -6,16 +6,9 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import * as dotEnv from 'dotenv';
-import * as findUp from 'find-up';
 import { argAddress, argUint64, Client, createAccount, decodeHex, NetworkType } from 'orbs-client-sdk';
 import { Account } from 'orbs-client-sdk/dist/orbs/Account';
-
-dotEnv.config({ path: findUp.sync('.env') });
-
-const ORBS_ENDPOINT = process.env.ORBS_ENDPOINT;
-const ORBS_VIRTUAL_CHAIN_ID = parseInt(process.env.ORBS_VIRTUAL_CHAIN_ID, 10);
-const ORBS_NETWORK_TYPE = process.env.ORBS_NETWORK_TYPE;
+import { ORBS_ENDPOINT, ORBS_VIRTUAL_CHAIN_ID, ORBS_NETWORK_TYPE } from '../src/server/config';
 
 // We use the same sender because he is the token holder (the first address that does a transaction of the token contract)
 const sender: Account = {

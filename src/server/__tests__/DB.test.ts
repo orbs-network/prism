@@ -20,6 +20,7 @@ import {
 import * as winston from 'winston';
 import { genLogger } from '../logger/LoggerFactory';
 import { BlockTransaction } from 'orbs-client-sdk/dist/codec/OpGetBlock';
+import { IRawTx } from '../../shared/IRawData';
 
 const logger: winston.Logger = genLogger(false, false, false);
 
@@ -155,63 +156,58 @@ function testDb(db: IDB, dbName: string) {
       expect(rawBlock.transactions[0]).toEqual(actual);
     });
 
-    it('should retrive txes by contract name', async () => {
-      const code: string = 'this is go code';
+    describe('Retriving txes by contract name', async () => {
       const contractName = 'test-contract';
-      const deployTx: BlockTransaction = generateContractDeployTransaction(contractName, code);
-      const tx1 = generateBlockTransaction('test-contract', 'some-method1');
-      const tx2 = generateBlockTransaction('test-contract', 'some-method2');
-      const tx3 = generateBlockTransaction('test-contract', 'some-method3');
-      const deployRawBlock = generateRawBlockWithTransaction(1n, deployTx);
-      const rawBlock1 = generateRawBlockWithTransaction(2n, tx1);
-      const rawBlock2 = generateRawBlockWithTransaction(3n, tx2);
-      const rawBlock3 = generateRawBlockWithTransaction(4n, tx3);
 
-      await db.storeBlock(rawBlockToBlock(deployRawBlock));
-      await db.storeBlock(rawBlockToBlock(rawBlock1));
-      await db.storeBlock(rawBlockToBlock(rawBlock2));
-      await db.storeBlock(rawBlockToBlock(rawBlock3));
-      await db.storeTxes(deployRawBlock.transactions);
-      await db.storeTxes(rawBlock1.transactions);
-      await db.storeTxes(rawBlock2.transactions);
-      await db.storeTxes(rawBlock3.transactions);
+      let block2Tx1: IRawTx;
+      let block2Tx2: IRawTx;
+      let block3Tx3: IRawTx;
+      let block4Tx4: IRawTx;
+      let block4Tx5: IRawTx;
 
-      const rawTx1 = rawBlock1.transactions[0];
-      const rawTx2 = rawBlock2.transactions[0];
-      const rawTx3 = rawBlock3.transactions[0];
+      beforeEach(async () => {
+        const code: string = 'this is go code';
+        const deployTx: BlockTransaction = generateContractDeployTransaction(contractName, code);
+        const tx1 = generateBlockTransaction('other-contract', 'some-other-method');
+        const tx2 = generateBlockTransaction('test-contract', 'some-method1');
+        const tx3 = generateBlockTransaction('test-contract', 'some-method2');
+        const tx4 = generateBlockTransaction('test-contract', 'some-method3');
+        const tx5 = generateBlockTransaction('test-contract', 'some-method4');
+        const deployRawBlock = generateRawBlockWithTransaction(1n, deployTx);
+        const rawBlock2 = generateRawBlockWithTransaction(2n, [tx1, tx2]);
+        const rawBlock3 = generateRawBlockWithTransaction(3n, [tx3]);
+        const rawBlock4 = generateRawBlockWithTransaction(4n, [tx4, tx5]);
 
-      const actual = await db.getContractTxes(contractName, 100);
-      expect([rawTx3, rawTx2, rawTx1]).toEqual(actual);
-    });
+        await db.storeBlock(rawBlockToBlock(deployRawBlock));
+        await db.storeBlock(rawBlockToBlock(rawBlock2));
+        await db.storeBlock(rawBlockToBlock(rawBlock3));
+        await db.storeBlock(rawBlockToBlock(rawBlock4));
+        await db.storeTxes(deployRawBlock.transactions);
+        await db.storeTxes(rawBlock2.transactions);
+        await db.storeTxes(rawBlock3.transactions);
+        await db.storeTxes(rawBlock4.transactions);
 
-    it('should retrive txes by contract name with limited number of txes', async () => {
-      const code: string = 'this is go code';
-      const contractName = 'test-contract';
-      const deployTx: BlockTransaction = generateContractDeployTransaction(contractName, code);
-      const tx1 = generateBlockTransaction('other-contract', 'some-other-method');
-      const tx2 = generateBlockTransaction('test-contract', 'some-method1');
-      const tx3 = generateBlockTransaction('test-contract', 'some-method2');
-      const tx4 = generateBlockTransaction('test-contract', 'some-method3');
-      const tx5 = generateBlockTransaction('test-contract', 'some-method4');
-      const deployRawBlock = generateRawBlockWithTransaction(1n, deployTx);
-      const rawBlock1 = generateRawBlockWithTransaction(2n, [tx1, tx2]);
-      const rawBlock2 = generateRawBlockWithTransaction(3n, [tx3]);
-      const rawBlock3 = generateRawBlockWithTransaction(4n, [tx4, tx5]);
+        block2Tx1 = rawBlock2.transactions[0];
+        block2Tx2 = rawBlock2.transactions[1];
+        block3Tx3 = rawBlock3.transactions[0];
+        block4Tx4 = rawBlock4.transactions[0];
+        block4Tx5 = rawBlock4.transactions[1];
+      });
 
-      await db.storeBlock(rawBlockToBlock(deployRawBlock));
-      await db.storeBlock(rawBlockToBlock(rawBlock1));
-      await db.storeBlock(rawBlockToBlock(rawBlock2));
-      await db.storeBlock(rawBlockToBlock(rawBlock3));
-      await db.storeTxes(deployRawBlock.transactions);
-      await db.storeTxes(rawBlock1.transactions);
-      await db.storeTxes(rawBlock2.transactions);
-      await db.storeTxes(rawBlock3.transactions);
+      it('Simple contract details extraction', async () => {
+        const actual = await db.getContractTxes(contractName, 100, 0n);
+        expect([block4Tx5, block4Tx4, block3Tx3, block2Tx2]).toEqual(actual);
+      });
 
-      const rawTx5 = rawBlock3.transactions[1];
-      const rawTx4 = rawBlock3.transactions[0];
-      const rawTx3 = rawBlock2.transactions[0];
-      const actual = await db.getContractTxes(contractName, 3);
-      expect([rawTx5, rawTx4, rawTx3]).toEqual(actual);
+      it('starting from the given block height', async () => {
+        const actual = await db.getContractTxes(contractName, 100, 3n);
+        expect([block3Tx3, block2Tx2]).toEqual(actual);
+      });
+
+      it('should return only the requested number of txes', async () => {
+        const actual = await db.getContractTxes(contractName, 3, 0n);
+        expect([block4Tx5, block4Tx4, block3Tx3]).toEqual(actual);
+      });
     });
   });
 }

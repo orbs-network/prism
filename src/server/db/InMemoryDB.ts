@@ -117,11 +117,12 @@ export class InMemoryDB implements IDB {
     }
   }
 
-  public async getContractTxes(contractName: string, limit: number): Promise<IRawTx[]> {
+  public async getContractTxes(contractName: string, limit: number, startFromBlockHeight: bigint): Promise<IRawTx[]> {
     const txArr = Array.from(this.txes);
     const allTxes = txArr
       .map(item => item[1])
       .filter(tx => tx.contractName === contractName)
+      .filter(tx => (startFromBlockHeight > 0n ? Number(BigInt(tx.blockHeight)) <= startFromBlockHeight : true))
       .sort((a, b) => Number(BigInt(b.blockHeight) - BigInt(a.blockHeight)) || b.idxInBlock - a.idxInBlock);
     return allTxes.splice(0, limit);
   }
