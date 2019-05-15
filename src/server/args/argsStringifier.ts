@@ -1,4 +1,4 @@
-import { IRawTx } from '../../shared/IRawData';
+import { IRawTx } from '../orbs-adapter/IRawData';
 
 export function stringifyMethodCall(tx: IRawTx): string {
   const inputArgsStr = tx.inputArguments

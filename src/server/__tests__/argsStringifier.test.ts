@@ -8,7 +8,6 @@
 
 import { stringifyMethodCall } from '../args/argsStringifier';
 import { generateRandomRawBlock } from '../orbs-adapter/fake-blocks-generator';
-import { argString, argUint32 } from 'orbs-client-sdk';
 
 describe('argsStringifier', () => {
   it('should stringify Tx method name', async () => {
@@ -80,8 +79,8 @@ describe('argsStringifier', () => {
     tx.inputArguments = tx.outputArguments = [{ type: 'string', value: '1234567' }];
     expect(stringifyMethodCall(tx)).toEqual(`METHOD_NAME('1234567') => ('1234567')`);
 
-    tx.inputArguments = tx.outputArguments = [{ type: 'string', value: '1234567890' }];
-    expect(stringifyMethodCall(tx)).toEqual(`METHOD_NAME('123...') => ('123...')`);
+    tx.inputArguments = tx.outputArguments = [{ type: 'string', value: '12345678' }];
+    expect(stringifyMethodCall(tx)).toEqual(`METHOD_NAME('12345...') => ('12345...')`);
 
   });
 });
