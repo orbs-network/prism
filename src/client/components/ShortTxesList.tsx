@@ -20,7 +20,7 @@ import green from '@material-ui/core/colors/green';
 const styles = (theme: Theme) =>
   createStyles({
     signerAddress: {
-      marginLeft: theme.spacing.unit,
+      marginRight: theme.spacing.unit,
     },
     errorIcon: {
       marginLeft: theme.spacing.unit,
@@ -47,10 +47,10 @@ export const ShortTxesList = withStyles(styles)(({ classes, txes }: IProps) => (
     {txes.length > 0 ? (
       txes.map(tx => (
         <div key={tx.txId}>
+          <ConsoleText className={classes.signerAddress}>{tx.signerAddress}</ConsoleText>
           <ConsoleText id={`tx-${tx.txId.toLowerCase()}`}>
             <PrismLink to={`/tx/${tx.txId}`}>{tx.method}</PrismLink>
           </ConsoleText>
-          <ConsoleText className={classes.signerAddress}>{tx.signerAddress}</ConsoleText>
           {tx.successful ? (
             <SuccessIcon className={classes.successIcon} />
           ) : (
