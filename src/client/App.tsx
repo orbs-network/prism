@@ -11,7 +11,7 @@ import * as React from 'react';
 import { withRouter } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
 import { config, Transition } from 'react-spring/renderprops';
-import { BlockDetails } from './components/BlockDetails';
+import { BlockDetails } from './components/BlockDetails/BlockDetails';
 import { Home } from './components/Home';
 import { TermNotFound } from './components/TermNotFound';
 import { TxDetails } from './components/TxDetails';
@@ -73,9 +73,11 @@ const AppImpl = ({ classes, location }: IProps) => {
             path='/contract/:contractName'
             render={({ match }) => {
               const blockHeight = queryString.parse(location.search).blockHeight as string;
+              const contractExecutionIdx = queryString.parse(location.search).contractExecutionIdx as string;
+              const contractExecutionIdxAsNumber = contractExecutionIdx ? Number(contractExecutionIdx) : undefined;
               return (
                 <div style={props} className={classes.swipeContainer}>
-                  <ContractDetails contractName={match.params.contractName} blockHeight={blockHeight} />
+                  <ContractDetails contractName={match.params.contractName} blockHeight={blockHeight} contractExecutionIdx={contractExecutionIdxAsNumber}/>
                 </div>
               );
             }}

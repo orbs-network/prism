@@ -13,12 +13,12 @@ import CardHeader from '@material-ui/core/CardHeader';
 import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { loadBlockAction } from '../actions/blockActions';
-import { getBlockData, IBlockData, isBlockLoading } from '../reducers/blocksReducer';
-import { IRootState } from '../reducers/rootReducer';
-import { TxesList } from './TxesList';
-import { ConsoleText } from './ConsoleText';
-import { TimeStampField } from './TimeStampField';
+import { loadBlockAction } from '../../actions/blockActions';
+import { getBlockData, IBlockData, isBlockLoading } from '../../reducers/blocksReducer';
+import { IRootState } from '../../reducers/rootReducer';
+import { TxesList } from '../TxesList';
+import { ConsoleText } from '../ConsoleText';
+import { TimeStampField } from '../TimeStampField';
 import { PrevBlockButton } from './PrevBlockButton';
 import { NextBlockButton } from './NextBlockButton';
 

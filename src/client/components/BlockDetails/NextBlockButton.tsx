@@ -10,10 +10,10 @@ import { IconButton } from '@material-ui/core';
 import NavigateNext from '@material-ui/icons/NavigateNext';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { IBlock } from '../../shared/IBlock';
-import { calcNextBlock } from '../utils/blockHeightUtils';
-import { IRootState } from '../reducers/rootReducer';
-import { getHeighestBlockHeight } from '../reducers/recentBlocksReducer';
+import { IBlock } from '../../../shared/IBlock';
+import { calcNextBlock } from '../../utils/blockHeightUtils';
+import { IRootState } from '../../reducers/rootReducer';
+import { getHeighestBlockHeight } from '../../reducers/recentBlocksReducer';
 import { connect } from 'react-redux';
 
 interface IOwnProps {

@@ -125,7 +125,7 @@ export class InMemoryDB implements IDB {
     if (compoundTxIdx) {
       const { blockHeight, contractExecutionIdx } = compoundTxIdx;
       if (blockHeight && blockHeight > 0n) {
-        if (contractExecutionIdx && contractExecutionIdx > 0) {
+        if (typeof contractExecutionIdx !== undefined) {
           filterByHeight = (tx: ITx) =>
             (BigInt(tx.blockHeight) === blockHeight && tx.contractExecutionIdx <= contractExecutionIdx) ||
             BigInt(tx.blockHeight) < blockHeight;

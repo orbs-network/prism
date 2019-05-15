@@ -10,8 +10,8 @@ import { IconButton } from '@material-ui/core';
 import NavigateBefore from '@material-ui/icons/NavigateBefore';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { IBlock } from '../../shared/IBlock';
-import { calcPrevBlock } from '../utils/blockHeightUtils';
+import { IBlock } from '../../../shared/IBlock';
+import { calcPrevBlock } from '../../utils/blockHeightUtils';
 
 interface IProps {
   block: IBlock;

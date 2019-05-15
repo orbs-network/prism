@@ -15,11 +15,12 @@ import { loadContractData } from '../utils/api-facade';
 export const loadContractDataAction = (
   contractName: string,
   blockHeight?: string,
+  contractExecutionIdx?: number
 ): ThunkAction<void, {}, {}, AnyAction> => {
   return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
     dispatch(loadContractDataStartedAction(contractName));
     try {
-      const contractData: IContractData = await loadContractData(contractName, blockHeight); // Call the server api
+      const contractData: IContractData = await loadContractData(contractName, blockHeight, contractExecutionIdx); // Call the server api
       dispatch(loadContractDataCompletedAction(contractData));
     } catch (e) {
       dispatch(loadContractDataErrorAction(contractName, 'Contract Not Found'));

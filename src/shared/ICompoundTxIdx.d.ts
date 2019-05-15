@@ -1,4 +1,4 @@
 export interface ICompoundTxIdx {
-  blockHeight?: bigint;
+  blockHeight: bigint;
   contractExecutionIdx?: number;
 }

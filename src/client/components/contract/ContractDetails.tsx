@@ -20,14 +20,15 @@ const styles = (theme: Theme) => createStyles({});
 
 interface IOwnProps {
   contractName: string;
-  blockHeight: string;
+  blockHeight?: string;
+  contractExecutionIdx?: number;
 }
 
 interface IProps extends WithStyles<typeof styles> {
   contractData: IContractData;
   isLoading: boolean;
   error: string;
-  loadContract: (contractName: string, blockHeight?: string) => void;
+  loadContract: (contractName: string, blockHeight?: string, contractExecutionIdx?: number) => void;
 }
 
 const ContractDetailsImpl = withStyles(styles)(
@@ -35,7 +36,7 @@ const ContractDetailsImpl = withStyles(styles)(
     public componentDidMount() {
       if (!this.props.isLoading) {
         if (!this.props.contractData || this.props.error) {
-          this.props.loadContract(this.props.contractName, this.props.blockHeight);
+          this.props.loadContract(this.props.contractName, this.props.blockHeight, this.props.contractExecutionIdx);
         }
       }
     }
@@ -60,7 +61,7 @@ const ContractDetailsImpl = withStyles(styles)(
             <ContractCode code={code} contractName={contractName} />
           </Grid>
           <Grid item xs={12}>
-            <ContractHistory blockInfo={blockInfo} />
+            <ContractHistory blockInfo={blockInfo} contractName={contractName} />
           </Grid>
         </Grid>
       );
