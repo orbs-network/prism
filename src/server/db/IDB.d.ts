@@ -8,7 +8,7 @@
 
 import { IBlock } from '../../shared/IBlock';
 import { ITx } from '../../shared/ITx';
-import { ICompoundTxIdx } from '../../shared/ICompoundTxIdx';
+import { ICompoundTxIdx } from '../storage/ICompoundTxIdx';
 import { IRawBlock } from '../orbs-adapter/IRawData';
 
 export interface IDB {

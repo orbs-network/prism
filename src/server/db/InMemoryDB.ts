@@ -7,7 +7,7 @@
  */
 
 import { IDB } from './IDB';
-import { ICompoundTxIdx } from '../../shared/ICompoundTxIdx';
+import { ICompoundTxIdx } from '../storage/ICompoundTxIdx';
 import { IBlock } from '../../shared/IBlock';
 import { ITx } from '../../shared/ITx';
 import { IRawBlock, IRawTx } from '../orbs-adapter/IRawData';
@@ -125,7 +125,7 @@ export class InMemoryDB implements IDB {
     if (compoundTxIdx) {
       const { blockHeight, contractExecutionIdx } = compoundTxIdx;
       if (blockHeight && blockHeight > 0n) {
-        if (typeof contractExecutionIdx !== undefined) {
+        if (contractExecutionIdx !== undefined) {
           filterByHeight = (tx: ITx) =>
             (BigInt(tx.blockHeight) === blockHeight && tx.contractExecutionIdx <= contractExecutionIdx) ||
             BigInt(tx.blockHeight) < blockHeight;

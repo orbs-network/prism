@@ -12,7 +12,7 @@ import { IBlock, IBlockSummary } from '../../shared/IBlock';
 import { ITx } from '../../shared/ITx';
 import { IContractData } from '../../shared/IContractData';
 import { Storage } from '../storage/storage';
-import { ICompoundTxIdx } from '../../shared/ICompoundTxIdx';
+import { ICompoundTxIdx } from '../storage/ICompoundTxIdx';
 
 export function apiRouter(storage: Storage) {
   const router = Router();

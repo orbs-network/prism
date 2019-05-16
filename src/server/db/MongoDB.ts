@@ -10,7 +10,7 @@ import * as mongoose from 'mongoose';
 import * as mongooseLong from 'mongoose-long';
 import * as winston from 'winston';
 import { IBlock } from '../../shared/IBlock';
-import { ICompoundTxIdx } from '../../shared/ICompoundTxIdx';
+import { ICompoundTxIdx } from '../storage/ICompoundTxIdx';
 import { ITx } from '../../shared/ITx';
 import { IDB } from './IDB';
 
@@ -210,7 +210,7 @@ export class MongoDB implements IDB {
     if (compoundTxIdx) {
       const { blockHeight, contractExecutionIdx } = compoundTxIdx;
       if (blockHeight && blockHeight > 0n) {
-        if (typeof contractExecutionIdx !== undefined) {
+        if (contractExecutionIdx !== undefined) {
           conditions.$or = [
             { blockHeight: { $eq: blockHeight }, contractExecutionIdx: { $lte: contractExecutionIdx } },
             { blockHeight: { $lt: blockHeight } },
