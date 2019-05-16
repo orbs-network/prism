@@ -17,7 +17,7 @@ import { TermNotFound } from './components/TermNotFound';
 import { TxDetails } from './components/TxDetails';
 import { ContractDetails } from './components/contract/ContractDetails';
 import { DISABLE_ANIMATIONS } from './config';
-import * as queryString from 'query-string';
+import { HistoryPaginator } from './components/contract/HistoryTxPaginator';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -72,12 +72,10 @@ const AppImpl = ({ classes, location }: IProps) => {
           <Route
             path='/contract/:contractName'
             render={({ match }) => {
-              const blockHeight = queryString.parse(location.search).blockHeight as string;
-              const contractExecutionIdx = queryString.parse(location.search).contractExecutionIdx as string;
-              const contractExecutionIdxAsNumber = contractExecutionIdx ? Number(contractExecutionIdx) : undefined;
+              const historyPaginator = HistoryPaginator.FromQueryString(location.search);
               return (
                 <div style={props} className={classes.swipeContainer}>
-                  <ContractDetails contractName={match.params.contractName} blockHeight={blockHeight} contractExecutionIdx={contractExecutionIdxAsNumber}/>
+                  <ContractDetails contractName={match.params.contractName} historyPaginator={historyPaginator} />
                 </div>
               );
             }}

@@ -10,17 +10,17 @@ import { AnyAction } from 'redux';
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import { IContractData } from '../../shared/IContractData';
 import { loadContractData } from '../utils/api-facade';
+import { HistoryPaginator } from '../components/contract/HistoryTxPaginator';
 
 // Action Creators
 export const loadContractDataAction = (
   contractName: string,
-  blockHeight?: string,
-  contractExecutionIdx?: number
+  historyPaginator: HistoryPaginator,
 ): ThunkAction<void, {}, {}, AnyAction> => {
   return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
     dispatch(loadContractDataStartedAction(contractName));
     try {
-      const contractData: IContractData = await loadContractData(contractName, blockHeight, contractExecutionIdx); // Call the server api
+      const contractData: IContractData = await loadContractData(contractName, historyPaginator); // Call the server api
       dispatch(loadContractDataCompletedAction(contractData));
     } catch (e) {
       dispatch(loadContractDataErrorAction(contractName, 'Contract Not Found'));

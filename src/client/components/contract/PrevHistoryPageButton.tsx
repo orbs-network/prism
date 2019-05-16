@@ -7,16 +7,29 @@
  */
 
 import { IconButton } from '@material-ui/core';
-import NavigateBefore from '@material-ui/icons/NavigateBefore';
+import NavigateNext from '@material-ui/icons/NavigateNext';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
+import { HistoryPaginator } from './HistoryTxPaginator';
 
-interface IProps {}
-export const PrevHistoryPageButton = () => {
+interface IProps {
+  contractName: string;
+  prevPage: HistoryPaginator;
+}
+
+export const PrevHistoryPageButton = ({ contractName, prevPage }: IProps) => {
+  if (!prevPage) {
+    return (
+      <IconButton disabled>
+        <NavigateNext />
+      </IconButton>
+    );
+  }
+
   return (
-    <Link to={`/block/123`}>
+    <Link to={`/contract/${contractName}${prevPage.getAsQueryString()}`}>
       <IconButton>
-        <NavigateBefore />
+        <NavigateNext />
       </IconButton>
     </Link>
   );

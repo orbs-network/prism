@@ -15,20 +15,20 @@ import { loadContractDataAction } from '../../actions/focusedContractActions';
 import { IRootState } from '../../reducers/rootReducer';
 import { ContractCode } from './ContractCode';
 import { ContractHistory } from './ContractHistory';
+import { HistoryPaginator } from './HistoryTxPaginator';
 
 const styles = (theme: Theme) => createStyles({});
 
 interface IOwnProps {
   contractName: string;
-  blockHeight?: string;
-  contractExecutionIdx?: number;
+  historyPaginator: HistoryPaginator;
 }
 
 interface IProps extends WithStyles<typeof styles> {
   contractData: IContractData;
   isLoading: boolean;
   error: string;
-  loadContract: (contractName: string, blockHeight?: string, contractExecutionIdx?: number) => void;
+  loadContract: (contractName: string, historyPaginator: HistoryPaginator) => void;
 }
 
 const ContractDetailsImpl = withStyles(styles)(
@@ -36,7 +36,7 @@ const ContractDetailsImpl = withStyles(styles)(
     public componentDidMount() {
       if (!this.props.isLoading) {
         if (!this.props.contractData || this.props.error) {
-          this.props.loadContract(this.props.contractName, this.props.blockHeight, this.props.contractExecutionIdx);
+          this.props.loadContract(this.props.contractName, this.props.historyPaginator);
         }
       }
     }

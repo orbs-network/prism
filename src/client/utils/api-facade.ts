@@ -11,6 +11,7 @@ import { IBlock, IBlockSummary } from '../../shared/IBlock';
 import { IContractData } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 import { ISearchResult } from '../../shared/ISearchResult';
+import { HistoryPaginator } from '../components/contract/HistoryTxPaginator';
 
 export async function getLatestBlocksSummary(numOfBlocks: number): Promise<IBlockSummary[]> {
   const res = await axios.get(`/api/blocks/summary?count=${numOfBlocks}`);
@@ -22,16 +23,11 @@ export async function loadBlock(blockHeight: string): Promise<IBlock> {
   return res.data as IBlock;
 }
 
-export async function loadContractData(contractName: string, blockHeight?: string, contractExecutionIdx?: number): Promise<IContractData> {
-  let query = '';
-  if (blockHeight) {
-    if (typeof contractExecutionIdx !== undefined) {
-      query = `?blockHeight=${blockHeight}&contractExecutionIdx=${contractExecutionIdx}`;
-    } else {
-      query = `?blockHeight=${blockHeight}`;
-    }
-  }
-  const res = await axios.get(`/api/contract/${contractName}${query}`);
+export async function loadContractData(
+  contractName: string,
+  historyPaginator: HistoryPaginator,
+): Promise<IContractData> {
+  const res = await axios.get(`/api/contract/${contractName}${historyPaginator.getAsQueryString()}`);
   return res.data as IContractData;
 }
 

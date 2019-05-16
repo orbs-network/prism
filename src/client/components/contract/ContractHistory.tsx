@@ -28,8 +28,9 @@ import { subtract, calcPrevBlock } from '../../utils/blockHeightUtils';
 import { ConsoleText } from '../ConsoleText';
 import { PrismLink } from '../PrismLink';
 import { ShortTxesList } from '../ShortTxesList';
-import { NextHistoryPageButton, INextTxIdx } from './NextHistoryPageButton';
 import { PrevHistoryPageButton } from './PrevHistoryPageButton';
+import { NextHistoryPageButton } from './NextHistoryPageButton';
+import { HistoryPaginator } from './HistoryTxPaginator';
 
 SyntaxHighlighter.registerLanguage('go', goLang);
 
@@ -50,24 +51,19 @@ interface IProps extends WithStyles<typeof styles> {
 
 export const ContractHistory = withStyles(styles)(({ blockInfo, contractName, classes }: IProps) => {
   const blockHeights = Object.keys(blockInfo).sort((a, b) => subtract(b, a));
-  let nextTxIdx: INextTxIdx;
+  let prevPage: HistoryPaginator;
+  let nextPage: HistoryPaginator;
   // TODO: also if it's smaller than the page size.
   if (blockHeights.length > 0) {
-    let blockHeight = blockHeights[blockHeights.length - 1];
-    const { txes } = blockInfo[blockHeight];
+    const lastBlockHeight = blockHeights[blockHeights.length - 1];
+    const { txes } = blockInfo[lastBlockHeight];
     const lastTx = txes[txes.length - 1];
-    let { contractExecutionIdx } = lastTx;
-    if (contractExecutionIdx === 0) {
-      contractExecutionIdx = undefined;
-      blockHeight = calcPrevBlock(blockHeight);
-    } else {
-      contractExecutionIdx--;
-    }
+    prevPage = new HistoryPaginator(lastBlockHeight, lastTx.contractExecutionIdx);
+    prevPage.back();
 
-    nextTxIdx = {
-      blockHeight,
-      contractExecutionIdx,
-    };
+    const firstBlockHeight = blockHeights[0];
+    const firstTx = blockInfo[firstBlockHeight].txes[0];
+    nextPage = new HistoryPaginator(lastBlockHeight, firstTx.contractExecutionIdx);
   }
   return (
     <Card>
@@ -76,8 +72,8 @@ export const ContractHistory = withStyles(styles)(({ blockInfo, contractName, cl
         id='contract-history'
         action={
           <>
-            <PrevHistoryPageButton />
-            <NextHistoryPageButton contractName={contractName} nextTxIdx={nextTxIdx} />
+            <NextHistoryPageButton contractName={contractName} nextPage={nextPage} />
+            <PrevHistoryPageButton contractName={contractName} prevPage={prevPage} />
           </>
         }
         classes={{ root: classes.header, action: classes.headerActions }}
