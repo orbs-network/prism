@@ -56,6 +56,9 @@ export class InMemoryDB implements IDB {
   }
 
   public async storeContractExecutionCounter(contractName: string, counter: number): Promise<void> {
+    if (this.readOnlyMode) {
+      return;
+    }
     this.executionCountersMap.set(contractName, counter);
   }
 

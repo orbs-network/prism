@@ -52,12 +52,20 @@ function testReadOnlyDb(db: IDB, dbName: string) {
       }
     });
 
-    it('should NOT store the heighest consecutive block height ', async () => {
-      const initial = await db.getHeighestConsecutiveBlockHeight();
-
+    it('should NOT store the heighest consecutive block height', async () => {
       await db.setHeighestConsecutiveBlockHeight(123n);
       const actual = await db.getHeighestConsecutiveBlockHeight();
-      expect(actual).toEqual(initial);
+      expect(actual).toEqual(0n);
+    });
+
+    it('should NOT store contract execution counter', async () => {
+      await db.storeContractExecutionCounter('contract_1', 1);
+      await db.storeContractExecutionCounter('contract_1', 2);
+      await db.storeContractExecutionCounter('contract_2', 1);
+      await db.storeContractExecutionCounter('contract_1', 3);
+      const actual = await db.getContractsExecutionCounter();
+      expect(actual.get('contract_1')).toBeUndefined();
+      expect(actual.get('contract_2')).toBeUndefined();
     });
   });
 }

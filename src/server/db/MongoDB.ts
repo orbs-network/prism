@@ -118,6 +118,7 @@ export class MongoDB implements IDB {
     await this.BlockModel.remove({});
     await this.TxModel.remove({});
     await this.CacheModel.remove({});
+    await this.ContractExecutionCounterModel.remove({});
   }
 
   public async storeBlock(block: IBlock): Promise<void> {
