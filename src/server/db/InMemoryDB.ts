@@ -17,6 +17,7 @@ export class InMemoryDB implements IDB {
   private blocks: Map<string, IBlock>;
   private txes: Map<string, ITx>;
   private heighestConsecutiveBlockHeight: bigint = 0n;
+  private executionCountersMap: Map<string, number> = new Map();
 
   constructor(private readOnlyMode: boolean = false) {}
 
@@ -52,6 +53,14 @@ export class InMemoryDB implements IDB {
     }
     txes.map(tx => this.txes.set(tx.txId.toLowerCase(), tx));
     this.capTxes();
+  }
+
+  public async storeContractExecutionCounter(contractName: string, counter: number): Promise<void> {
+    this.executionCountersMap.set(contractName, counter);
+  }
+
+  public async getContractsExecutionCounter(): Promise<Map<string, number>> {
+    return this.executionCountersMap;
   }
 
   public async getLatestBlocks(count: number): Promise<IBlock[]> {

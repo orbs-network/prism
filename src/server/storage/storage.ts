@@ -14,11 +14,20 @@ import { IDB } from '../db/IDB';
 import { IContractData, IContractBlockInfo } from '../../shared/IContractData';
 import { decodeHex } from 'orbs-client-sdk';
 import { txToShortTx } from '../transformers/txTransform';
-import { ICompoundTxIdx } from '../../shared/ICompoundTxIdx';
+import { ICompoundTxIdx } from './ICompoundTxIdx';
 import { ITx } from '../../shared/ITx';
+import { ContractsExecutionCounter } from './contractsExecutionCounter';
 
 export class Storage {
-  constructor(private db: IDB) {}
+  private contractsExecutionCounter: ContractsExecutionCounter;
+
+  constructor(private db: IDB) {
+    this.contractsExecutionCounter = new ContractsExecutionCounter(db);
+  }
+
+  public async init(): Promise<void> {
+    this.contractsExecutionCounter.init();
+  }
 
   public getBlockByHash(blockHash: string): Promise<IBlock> {
     return this.db.getBlockByHash(blockHash);
@@ -78,7 +87,11 @@ export class Storage {
   }
 
   public async handleNewBlock(rawBlock: IRawBlock): Promise<void> {
-    const txes: ITx[] = rawBlock.transactions.map((tx, idx) => rawTxToTx(tx, idx));
+    const txes: ITx[] = [];
+    for (const tx of rawBlock.transactions) {
+      const contractExecutionIdx = await this.contractsExecutionCounter.incExecutionCounter(tx.contractName);
+      txes.push(rawTxToTx(tx, contractExecutionIdx));
+    }
     await Promise.all([this.db.storeBlock(rawBlockToBlock(rawBlock)), this.db.storeTxes(txes)]);
   }
 

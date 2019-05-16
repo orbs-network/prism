@@ -20,12 +20,14 @@ import { IContractData } from '../../shared/IContractData';
 import { BlockTransaction } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import { txToShortTx } from '../transformers/txTransform';
 import { ITx } from '../../shared/ITx';
+import { ContractsExecutionCounter } from '../storage/contractsExecutionCounter';
 
 describe('storage', () => {
   it('should store and retrive blocks', async () => {
     const db = new InMemoryDB();
     await db.init();
     const storage = new Storage(db);
+    await storage.init();
     const block = generateRandomRawBlock(1n);
     await storage.handleNewBlock(block);
 
@@ -38,9 +40,15 @@ describe('storage', () => {
     const db = new InMemoryDB();
     await db.init();
     const storage = new Storage(db);
+    await storage.init();
     const block = generateRandomRawBlock(1n);
     await storage.handleNewBlock(block);
-    const txes = block.transactions.map((tx, idx) => rawTxToTx(tx, idx));
+    const contractsExecutionCounter: ContractsExecutionCounter = new ContractsExecutionCounter(db);
+    const txes = [];
+    for (const tx of block.transactions) {
+      const counter = await contractsExecutionCounter.incExecutionCounter(tx.contractName);
+      txes.push(rawTxToTx(tx, counter));
+    }
 
     for (const tx of txes) {
       const actual = await storage.getTx(tx.txId);
@@ -53,6 +61,7 @@ describe('storage', () => {
       const db = new InMemoryDB();
       await db.init();
       const storage = new Storage(db);
+      await storage.init();
       const block1 = generateRandomRawBlock(1n);
       const block2 = generateRandomRawBlock(2n);
       await storage.handleNewBlock(block1);
@@ -67,17 +76,27 @@ describe('storage', () => {
       const db = new InMemoryDB();
       await db.init();
       const storage = new Storage(db);
+      await storage.init();
       const block1 = generateRandomRawBlock(1n);
       const block2 = generateRandomRawBlock(2n);
       await storage.handleNewBlock(block1);
       await storage.handleNewBlock(block2);
 
-      const tx = rawTxToTx(block2.transactions[0], 0);
+      const contractsExecutionCounter: ContractsExecutionCounter = new ContractsExecutionCounter(db);
+      for (const tx of block1.transactions) {
+        await contractsExecutionCounter.incExecutionCounter(tx.contractName);
+      }
+      const block2Txes = [];
+      for (const tx of block2.transactions) {
+        const counter = await contractsExecutionCounter.incExecutionCounter(tx.contractName);
+        block2Txes.push(rawTxToTx(tx, counter));
+      }
+
       const expected: ISearchResult = {
         type: 'tx',
-        tx,
+        tx: block2Txes[0],
       };
-      const actual = await storage.search(block2.transactions[0].txId);
+      const actual = await storage.search(block2Txes[0].txId);
       expect(expected).toEqual(actual);
     });
 
@@ -85,6 +104,7 @@ describe('storage', () => {
       const db = new InMemoryDB();
       await db.init();
       const storage = new Storage(db);
+      await storage.init();
 
       const expected: ISearchResult = null;
       const actual = await storage.search('fake hash');
@@ -105,13 +125,14 @@ describe('storage', () => {
       const db = new InMemoryDB();
       await db.init();
       const storage = new Storage(db);
+      await storage.init();
       await storage.handleNewBlock(deployBlock);
       await storage.handleNewBlock(rawBlock2);
       await storage.handleNewBlock(rawBlock3);
 
-      const block2tx0: ITx = rawTxToTx(rawBlock2.transactions[0], 0);
-      const block2tx1: ITx = rawTxToTx(rawBlock2.transactions[1], 1);
-      const block3tx3: ITx = rawTxToTx(rawBlock3.transactions[0], 0);
+      const block2tx0: ITx = rawTxToTx(rawBlock2.transactions[0], 1);
+      const block2tx1: ITx = rawTxToTx(rawBlock2.transactions[1], 2);
+      const block3tx3: ITx = rawTxToTx(rawBlock3.transactions[0], 3);
 
       const expected: IContractData = {
         code,

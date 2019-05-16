@@ -6,22 +6,21 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { rawBlockToBlock, rawTxToTx } from '../transformers/blockTransform';
+import { BlockTransaction } from 'orbs-client-sdk/dist/codec/OpGetBlock';
+import * as winston from 'winston';
+import { ITx } from '../../shared/ITx';
 import { MONGODB_URI } from '../config';
 import { IDB } from '../db/IDB';
 import { InMemoryDB } from '../db/InMemoryDB';
 import { MongoDB } from '../db/MongoDB';
+import { genLogger } from '../logger/LoggerFactory';
 import {
+  generateBlockTransaction,
+  generateContractDeployTransaction,
   generateRandomRawBlock,
   generateRawBlockWithTransaction,
-  generateContractDeployTransaction,
-  generateBlockTransaction,
 } from '../orbs-adapter/fake-blocks-generator';
-import * as winston from 'winston';
-import { genLogger } from '../logger/LoggerFactory';
-import { BlockTransaction } from 'orbs-client-sdk/dist/codec/OpGetBlock';
-import { IRawTx, IRawBlock } from '../orbs-adapter/IRawData';
-import { ITx } from '../../shared/ITx';
+import { rawBlockToBlock, rawTxToTx } from '../transformers/blockTransform';
 
 const logger: winston.Logger = genLogger(false, false, false);
 
@@ -160,6 +159,16 @@ function testDb(db: IDB, dbName: string) {
       expect(tx).toEqual(actual);
     });
 
+    it('should store and retrive contract execution counter', async () => {
+      await db.storeContractExecutionCounter('contract_1', 1);
+      await db.storeContractExecutionCounter('contract_1', 2);
+      await db.storeContractExecutionCounter('contract_2', 1);
+      await db.storeContractExecutionCounter('contract_1', 3);
+      const actual = await db.getContractsExecutionCounter();
+      expect(actual.get('contract_1')).toEqual(3);
+      expect(actual.get('contract_2')).toEqual(1);
+    });
+
     describe('Retriving txes by contract name', async () => {
       const contractName = 'test-contract';
 
@@ -240,11 +249,6 @@ function testDb(db: IDB, dbName: string) {
       it('starting from the given block height and contractExecutionIdx', async () => {
         const actual = await db.getContractTxes(contractName, 100, { blockHeight: 3n, contractExecutionIdx: 2 });
         expect([block3Tx4, block3Tx3, block2Tx2]).toEqual(actual);
-      });
-
-      it('should ignore contractExecutionIdx if a block height was not given', async () => {
-        const actual = await db.getContractTxes(contractName, 100, { contractExecutionIdx: 1 });
-        expect([block4Tx8, block4Tx7, block3Tx6, block3Tx4, block3Tx3, block2Tx2]).toEqual(actual);
       });
 
       it('should accept unrelated contractExecutionIdx', async () => {

@@ -17,6 +17,8 @@ export interface IDB {
   clearAll(): Promise<void>;
   storeBlock(block: IBlock): Promise<void>;
   storeTxes(txes: ITx[]): Promise<void>;
+  storeContractExecutionCounter(contractName: string, counter: number): Promise<void>;
+  getContractsExecutionCounter(): Promise<Map<string, number>>;
   getLatestBlocks(count: number): Promise<IBlock[]>;
   getBlockByHash(blockHash: string): Promise<IBlock>;
   getBlockByHeight(blockHeight: string): Promise<IBlock>;

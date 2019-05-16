@@ -46,6 +46,8 @@ async function main() {
 
   // internals
   const storage = new Storage(db);
+  await storage.init();
+
   const server = initServer(storage);
   const ws = new WS(logger, server);
 

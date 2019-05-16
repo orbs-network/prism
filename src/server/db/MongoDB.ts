@@ -27,6 +27,16 @@ const cacheSchema = new mongoose.Schema({
   heighestConsecutiveBlockHeight: (mongoose.Schema.Types as any).Long,
 });
 
+interface IContractExecutionCounterDocument extends mongoose.Document {
+  _id: string;
+  counter: number;
+}
+
+const contractExecutionCounterSchema = new mongoose.Schema({
+  _id: String,
+  counter: Number,
+});
+
 const blockSchema = new mongoose.Schema({
   blockHash: String,
   blockHeight: (mongoose.Schema.Types as any).Long,
@@ -65,6 +75,7 @@ export class MongoDB implements IDB {
   private BlockModel: mongoose.Model<mongoose.Document>;
   private TxModel: mongoose.Model<mongoose.Document>;
   private CacheModel: mongoose.Model<ICacheDocument>;
+  private ContractExecutionCounterModel: mongoose.Model<IContractExecutionCounterDocument>;
 
   constructor(private logger: winston.Logger, private connectionUrl: string, private readOnlyMode: boolean = false) {}
 
@@ -87,6 +98,7 @@ export class MongoDB implements IDB {
         this.BlockModel = mongoose.model('Block', blockSchema);
         this.TxModel = mongoose.model('Tx', txSchema);
         this.CacheModel = mongoose.model('Cache', cacheSchema);
+        this.ContractExecutionCounterModel = mongoose.model('ContractExecution', contractExecutionCounterSchema);
         resolve();
       });
     });
@@ -123,6 +135,31 @@ export class MongoDB implements IDB {
       return;
     }
     return Promise.all(txes.map(async tx => await this.storeTx(tx)));
+  }
+
+  public async storeContractExecutionCounter(contractName: string, counter: number): Promise<void> {
+    if (this.readOnlyMode) {
+      return;
+    }
+    await this.ContractExecutionCounterModel.findOneAndUpdate(
+      { _id: contractName },
+      { _id: contractName, counter },
+      { upsert: true },
+    );
+  }
+
+  public async getContractsExecutionCounter(): Promise<Map<string, number>> {
+    const result = await this.ContractExecutionCounterModel.find({}, { __v: false })
+      .lean()
+      .exec();
+
+    if (result) {
+      const map = new Map();
+      result.forEach(row => map.set(row._id, row.counter));
+      return map;
+    }
+
+    return null;
   }
 
   public async getLatestBlocks(count: number): Promise<IBlock[]> {
