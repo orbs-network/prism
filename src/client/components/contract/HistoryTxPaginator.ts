@@ -1,5 +1,4 @@
 import * as queryString from 'query-string';
-
 export class HistoryPaginator {
   public static FromQueryString(search: string): HistoryPaginator {
     const contractExecutionIdx = queryString.parse(search).contractExecutionIdx as string;
@@ -14,14 +13,8 @@ export class HistoryPaginator {
 
     if (this.contractExecutionIdx !== undefined) {
       return `${prefix}contractExecutionIdx=${this.contractExecutionIdx}`;
-    }
-  }
-
-  public back(): void {
-    if (this.contractExecutionIdx === 0) {
-      this.contractExecutionIdx = undefined;
     } else {
-      this.contractExecutionIdx = this.contractExecutionIdx - 5;
+      return '';
     }
   }
 }

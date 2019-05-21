@@ -31,6 +31,7 @@ import { ShortTxesList } from '../ShortTxesList';
 import { PrevHistoryPageButton } from './PrevHistoryPageButton';
 import { NextHistoryPageButton } from './NextHistoryPageButton';
 import { HistoryPaginator } from './HistoryTxPaginator';
+import { CONTRACT_TXES_HISTORY_PAGE_SIZE } from '../../../shared/Constants';
 
 SyntaxHighlighter.registerLanguage('go', goLang);
 
@@ -53,17 +54,17 @@ export const ContractHistory = withStyles(styles)(({ blockInfo, contractName, cl
   const blockHeights = Object.keys(blockInfo).sort((a, b) => subtract(b, a));
   let prevPage: HistoryPaginator;
   let nextPage: HistoryPaginator;
-  // TODO: also if it's smaller than the page size.
   if (blockHeights.length > 0) {
     const lastBlockHeight = blockHeights[blockHeights.length - 1];
     const { txes } = blockInfo[lastBlockHeight];
     const lastTx = txes[txes.length - 1];
-    prevPage = new HistoryPaginator(lastTx.contractExecutionIdx);
-    prevPage.back();
+    if (lastTx.contractExecutionIdx > 1) {
+      prevPage = new HistoryPaginator(lastTx.contractExecutionIdx - 1);
+    }
 
     const firstBlockHeight = blockHeights[0];
     const firstTx = blockInfo[firstBlockHeight].txes[0];
-    nextPage = new HistoryPaginator(firstTx.contractExecutionIdx);
+    nextPage = new HistoryPaginator(firstTx.contractExecutionIdx + CONTRACT_TXES_HISTORY_PAGE_SIZE);
   }
   return (
     <Card>
