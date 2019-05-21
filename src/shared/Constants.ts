@@ -1,0 +1,1 @@
+export const CONTRACT_TXES_HISTORY_PAGE_SIZE = 5;

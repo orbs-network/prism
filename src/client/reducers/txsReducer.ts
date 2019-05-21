@@ -6,20 +6,20 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { ITx } from '../../shared/ITx';
+import { IRawTx } from '../../shared/IRawData';
 import { RootAction } from '../actions/rootAction';
 import { IRootState } from './rootReducer';
 
 export interface ITxData {
   error?: string;
   isLoading: boolean;
-  tx?: ITx;
+  tx?: IRawTx;
 }
 
 export interface ITxsById {
   [txId: string]: ITxData;
 }
-function appendTxToState(state: ITxsById, tx: ITx): ITxsById {
+function appendTxToState(state: ITxsById, tx: IRawTx): ITxsById {
   const { txId } = tx;
   return {
     ...state,

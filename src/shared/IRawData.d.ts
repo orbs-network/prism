@@ -6,11 +6,18 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { IArgument } from './IArgument';
-import { IOutputEvent } from './IOutputEvent';
+export interface IRawArgument {
+  type: string;
+  value: string;
+}
 
-export interface ITx {
-  contractExecutionIdx: number;
+export interface IRawEvent {
+  contractName: string;
+  eventName: string;
+  arguments: IRawArgument[];
+}
+
+export interface IRawTx {
   txId: string;
   blockHeight: string;
   protocolVersion: number;
@@ -20,8 +27,19 @@ export interface ITx {
   signerAddress: string;
   contractName: string;
   methodName: string;
-  inputArguments: IArgument[];
+  inputArguments: IRawArgument[];
   executionResult: string;
-  outputArguments: IArgument[];
-  outputEvents: IOutputEvent[];
+  outputArguments: IRawArgument[];
+  outputEvents: IRawEvent[];
+}
+
+export interface ITx extends IRawTx {
+  idxInBlock: number;
+}
+
+export interface IRawBlock {
+  blockHeight: string;
+  blockHash: string;
+  timeStamp: number;
+  transactions: IRawTx[];
 }

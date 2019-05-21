@@ -9,10 +9,9 @@
 import * as bodyParser from 'body-parser';
 import { Router } from 'express';
 import { IBlock, IBlockSummary } from '../../shared/IBlock';
-import { ITx } from '../../shared/ITx';
 import { IContractData } from '../../shared/IContractData';
+import { IRawTx } from '../../shared/IRawData';
 import { Storage } from '../storage/storage';
-import { ICompoundTxIdx } from '../storage/ICompoundTxIdx';
 
 export function apiRouter(storage: Storage) {
   const router = Router();
@@ -36,7 +35,7 @@ export function apiRouter(storage: Storage) {
 
   router.get('/api/tx/:txId', async (req, res) => {
     const txId: string = req.params.txId;
-    const tx: ITx = await storage.getTx(txId);
+    const tx: IRawTx = await storage.getTx(txId);
     if (!tx) {
       return res.send(404);
     }
@@ -46,14 +45,10 @@ export function apiRouter(storage: Storage) {
   router.get('/api/contract/:contractName', async (req, res) => {
     const contractName: string = req.params.contractName;
 
-    let compoundTxIdx: ICompoundTxIdx;
-    if (req.query.blockHeight) {
-      compoundTxIdx = { blockHeight: BigInt(req.query.blockHeight) };
-      if (req.query.contractExecutionIdx) {
-        compoundTxIdx.contractExecutionIdx = Number(req.query.contractExecutionIdx);
-      }
-    }
-    const contractData: IContractData = await storage.getContractData(contractName, compoundTxIdx);
+    const contractExecutionIdx: number = req.query.contractExecutionIdx
+      ? Number(req.query.contractExecutionIdx)
+      : undefined;
+    const contractData: IContractData = await storage.getContractData(contractName, contractExecutionIdx);
     if (!contractData) {
       return res.send(404);
     }

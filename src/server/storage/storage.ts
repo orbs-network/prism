@@ -6,28 +6,19 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { IBlock, IBlockSummary } from '../../shared/IBlock';
-import { ISearchResult } from '../../shared/ISearchResult';
-import { IRawTx, IRawBlock } from '../orbs-adapter/IRawData';
-import { rawBlockToBlock, blockToBlockSummary, rawTxToTx } from '../transformers/blockTransform';
-import { IDB } from '../db/IDB';
-import { IContractData, IContractBlockInfo } from '../../shared/IContractData';
 import { decodeHex } from 'orbs-client-sdk';
-import { txToShortTx } from '../transformers/txTransform';
-import { ICompoundTxIdx } from './ICompoundTxIdx';
-import { ITx } from '../../shared/ITx';
-import { ContractsExecutionCounter } from './contractsExecutionCounter';
+import { CONTRACT_TXES_HISTORY_PAGE_SIZE } from '../../shared/Constants';
+import { IBlock, IBlockSummary } from '../../shared/IBlock';
+import { IContractBlockInfo, IContractData } from '../../shared/IContractData';
+import { IRawBlock, IRawTx } from '../../shared/IRawData';
+import { ISearchResult } from '../../shared/ISearchResult';
+import { IDB } from '../db/IDB';
+import { blockToBlockSummary, rawBlockToBlock } from '../transformers/blockTransform';
+import { raw } from 'body-parser';
+import { rawTxToTx } from '../transformers/txTransform';
 
 export class Storage {
-  private contractsExecutionCounter: ContractsExecutionCounter;
-
-  constructor(private db: IDB) {
-    this.contractsExecutionCounter = new ContractsExecutionCounter(db);
-  }
-
-  public async init(): Promise<void> {
-    this.contractsExecutionCounter.init();
-  }
+  constructor(private db: IDB) {}
 
   public getBlockByHash(blockHash: string): Promise<IBlock> {
     return this.db.getBlockByHash(blockHash);
@@ -54,25 +45,25 @@ export class Storage {
     return this.db.setHeighestConsecutiveBlockHeight(value);
   }
 
-  public getTx(txId: string): Promise<ITx> {
+  public getTx(txId: string): Promise<IRawTx> {
     return this.db.getTxById(txId);
   }
 
-  public async getContractData(contractName: string, compoundTxIdx?: ICompoundTxIdx): Promise<IContractData> {
+  public async getContractData(contractName: string, contractExecutionIdx?: number): Promise<IContractData> {
     const deployTx = await this.db.getDeployContractTx(contractName, 1);
     let code = null;
     if (deployTx) {
       code = Buffer.from(decodeHex(deployTx.inputArguments[2].value)).toString();
     }
-    const txes = await this.db.getContractTxes(contractName, 5, compoundTxIdx);
+    const txes = await this.db.getContractTxes(contractName, CONTRACT_TXES_HISTORY_PAGE_SIZE, contractExecutionIdx);
     const blockInfo: IContractBlockInfo = txes.reduce(
       (prev, tx) => {
         if (prev[tx.blockHeight]) {
-          prev[tx.blockHeight].txes.push(txToShortTx(tx));
+          prev[tx.blockHeight].txes.push(tx);
         } else {
           prev[tx.blockHeight] = {
             stateDiff: null,
-            txes: [txToShortTx(tx)],
+            txes: [tx],
           };
         }
         return prev;
@@ -87,11 +78,7 @@ export class Storage {
   }
 
   public async handleNewBlock(rawBlock: IRawBlock): Promise<void> {
-    const txes: ITx[] = [];
-    for (const tx of rawBlock.transactions) {
-      const contractExecutionIdx = await this.contractsExecutionCounter.incExecutionCounter(tx.contractName);
-      txes.push(rawTxToTx(tx, contractExecutionIdx));
-    }
+    const txes = rawBlock.transactions.map((tx, idx) => rawTxToTx(tx, idx));
     await Promise.all([this.db.storeBlock(rawBlockToBlock(rawBlock)), this.db.storeTxes(txes)]);
   }
 

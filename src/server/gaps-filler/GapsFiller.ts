@@ -6,23 +6,26 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
+import * as winston from 'winston';
+import { IDB } from '../db/IDB';
 import { OrbsAdapter } from '../orbs-adapter/OrbsAdapter';
 import { Storage } from '../storage/storage';
-import { detectBlockChainGaps } from './GapsDetector';
 import { cron } from './Cron';
-import * as winston from 'winston';
+import { detectBlockChainGaps } from './GapsDetector';
 
 const CHUCK_SIZE = 100;
 
 export function fillGapsForever(
   logger: winston.Logger,
   storage: Storage,
+  db: IDB,
   orbsAdapter: OrbsAdapter,
   interval: number,
 ): void {
   cron(async () => {
     logger.info(`Cron Job started.`);
     await fillGaps(logger, storage, orbsAdapter);
+    await processContractsExecutionOrder(db);
   }, interval);
 }
 
@@ -74,4 +77,20 @@ export async function fillGaps(logger: winston.Logger, storage: Storage, orbsAda
     );
   }
   await storage.setHeighestConsecutiveBlockHeight(toHeight);
+}
+
+export async function processContractsExecutionOrder(db: IDB): Promise<void> {
+  const fromHeight = (await db.getExecutionCounterBlockHeight()) + 1n;
+  const toHeight = await db.getHeighestConsecutiveBlockHeight();
+  const map = await db.getContractsLatestExecutionIdx();
+
+  for (let height = fromHeight; height <= toHeight; height++) {
+    const txes = await db.getBlockTxes(height);
+    for (const tx of txes) {
+      const executionIdx = (map.get(tx.contractName) || 0) + 1;
+      await db.storeContractTxExecution(tx.contractName, tx.txId, executionIdx);
+      map.set(tx.contractName, executionIdx);
+    }
+    await db.setExecutionCounterBlockHeight(height);
+  }
 }

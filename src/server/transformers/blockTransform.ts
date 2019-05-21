@@ -11,8 +11,7 @@ import { Argument } from 'orbs-client-sdk/dist/codec/Arguments';
 import { Event } from 'orbs-client-sdk/dist/codec/Events';
 import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import { IBlock, IBlockSummary } from '../../shared/IBlock';
-import { IRawArgument, IRawBlock, IRawEvent, IRawTx } from '../orbs-adapter/IRawData';
-import { ITx } from '../../shared/ITx';
+import { IRawArgument, IRawBlock, IRawEvent } from '../../shared/IRawData';
 
 export function blockToBlockSummary(block: IBlock): IBlockSummary {
   return {
@@ -38,13 +37,6 @@ export function rawBlockToBlock(block: IRawBlock): IBlock {
     blockHeight: block.blockHeight,
     blockTimestamp: block.timeStamp,
     txIds: block.transactions.map(tx => tx.txId),
-  };
-}
-
-export function rawTxToTx(rawTx: IRawTx, contractExecutionIdx: number): ITx {
-  return {
-    contractExecutionIdx,
-    ...rawTx,
   };
 }
 

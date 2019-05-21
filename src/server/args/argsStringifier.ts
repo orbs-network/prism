@@ -1,4 +1,4 @@
-import { IRawTx } from '../orbs-adapter/IRawData';
+import { IRawTx } from '../../shared/IRawData';
 
 export function stringifyMethodCall(tx: IRawTx): string {
   const inputArgsStr = tx.inputArguments
@@ -9,8 +9,8 @@ export function stringifyMethodCall(tx: IRawTx): string {
           return arg.value.toString();
 
         case 'string':
-        const value = arg.value.length < 8 ? arg.value : arg.value.substr(0, 5) + '...';
-        return `'${value}'`;
+          const value = arg.value.length < 8 ? arg.value : arg.value.substr(0, 5) + '...';
+          return `'${value}'`;
 
         case 'bytes':
           return 'bytes';

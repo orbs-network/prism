@@ -8,7 +8,7 @@
 
 import { AnyAction } from 'redux';
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
-import { ITx } from '../../shared/ITx';
+import { IRawTx } from '../../shared/IRawData';
 import { loadTx } from '../utils/api-facade';
 
 // Action Creators
@@ -16,7 +16,7 @@ export const loadTxAction = (txId: string): ThunkAction<void, {}, {}, AnyAction>
   return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
     dispatch(loadTxStartedAction(txId));
     try {
-      const tx: ITx = await loadTx(txId); // Call the server api
+      const tx: IRawTx = await loadTx(txId); // Call the server api
       dispatch(loadTxCompletedAction(tx));
     } catch (e) {
       dispatch(loadTxErrorAction(txId, 'Tx Not Found'));
@@ -36,10 +36,10 @@ export const loadTxStartedAction = (txId: string): ILoadingTxStartedAction => ({
 
 export interface ILoadingTxCompletedAction {
   type: 'LOAD_TX_COMPLETED';
-  tx: ITx;
+  tx: IRawTx;
 }
 
-export const loadTxCompletedAction = (tx: ITx): ILoadingTxCompletedAction => ({
+export const loadTxCompletedAction = (tx: IRawTx): ILoadingTxCompletedAction => ({
   type: 'LOAD_TX_COMPLETED',
   tx,
 });

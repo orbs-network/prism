@@ -9,7 +9,7 @@
 import axios from 'axios';
 import { IBlock, IBlockSummary } from '../../shared/IBlock';
 import { IContractData } from '../../shared/IContractData';
-import { ITx } from '../../shared/ITx';
+import { IRawTx } from '../../shared/IRawData';
 import { ISearchResult } from '../../shared/ISearchResult';
 import { HistoryPaginator } from '../components/contract/HistoryTxPaginator';
 
@@ -31,9 +31,9 @@ export async function loadContractData(
   return res.data as IContractData;
 }
 
-export async function loadTx(txId: string): Promise<ITx> {
+export async function loadTx(txId: string): Promise<IRawTx> {
   const res = await axios.get(`/api/tx/${txId}`);
-  return res.data as ITx;
+  return res.data as IRawTx;
 }
 
 export async function search(term: string): Promise<ISearchResult> {

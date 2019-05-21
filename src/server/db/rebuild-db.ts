@@ -83,7 +83,6 @@ async function waitForHeighestBlockHeight(orbsAdapter: OrbsAdapter): Promise<big
   const logger: winston.Logger = genLogger(false, false, false);
   const localDb = new MongoDB(logger, LOCAL_MONGODB_URI, false);
   const storage = new Storage(localDb);
-  await storage.init();
 
   const nodeConfigJson = {
     'node-address': 'a328846cd5b4979d68a8c58a9bdfeee657b34de7',

@@ -19,7 +19,6 @@ describe('Gaps Detector', () => {
     const db: IDB = new InMemoryDB();
     await db.init();
     const storage: Storage = new Storage(db);
-    await storage.init();
     await storage.handleNewBlock(generateRandomRawBlock(1n));
     await storage.handleNewBlock(generateRandomRawBlock(2n));
     await storage.handleNewBlock(generateRandomRawBlock(3n));
@@ -38,7 +37,6 @@ describe('Gaps Detector', () => {
     const db: IDB = new InMemoryDB();
     await db.init();
     const storage: Storage = new Storage(db);
-    await storage.init();
     await storage.handleNewBlock(generateRandomRawBlock(6n));
     await storage.handleNewBlock(generateRandomRawBlock(7n));
     await storage.handleNewBlock(generateRandomRawBlock(10n));

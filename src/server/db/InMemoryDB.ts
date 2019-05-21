@@ -6,18 +6,18 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { IDB } from './IDB';
-import { ICompoundTxIdx } from '../storage/ICompoundTxIdx';
 import { IBlock } from '../../shared/IBlock';
-import { ITx } from '../../shared/ITx';
-import { IRawBlock, IRawTx } from '../orbs-adapter/IRawData';
-import { rawBlockToBlock, rawTxToTx } from '../transformers/blockTransform';
+import { IShortTx } from '../../shared/IContractData';
+import { ITx } from '../../shared/IRawData';
+import { rawTxToShortTx } from '../transformers/txTransform';
+import { IDB } from './IDB';
 
 export class InMemoryDB implements IDB {
   private blocks: Map<string, IBlock>;
   private txes: Map<string, ITx>;
   private heighestConsecutiveBlockHeight: bigint = 0n;
-  private executionCountersMap: Map<string, number> = new Map();
+  private executionCounterBlockHeight: bigint = 0n;
+  private executionCountersMap: Map<string, string[]> = new Map();
 
   constructor(private readOnlyMode: boolean = false) {}
 
@@ -36,7 +36,9 @@ export class InMemoryDB implements IDB {
     }
     this.blocks = new Map();
     this.txes = new Map();
+    this.executionCountersMap = new Map();
     this.heighestConsecutiveBlockHeight = 0n;
+    this.executionCounterBlockHeight = 0n;
   }
 
   public async storeBlock(block: IBlock): Promise<void> {
@@ -55,15 +57,26 @@ export class InMemoryDB implements IDB {
     this.capTxes();
   }
 
-  public async storeContractExecutionCounter(contractName: string, counter: number): Promise<void> {
+  public async storeContractTxExecution(contractName: string, txId: string): Promise<void> {
     if (this.readOnlyMode) {
       return;
     }
-    this.executionCountersMap.set(contractName, counter);
+
+    let contractExecutionTxes = this.executionCountersMap.get(contractName);
+    if (contractExecutionTxes !== undefined) {
+      contractExecutionTxes.push(txId);
+    } else {
+      contractExecutionTxes = [txId];
+    }
+    this.executionCountersMap.set(contractName, contractExecutionTxes);
   }
 
-  public async getContractsExecutionCounter(): Promise<Map<string, number>> {
-    return this.executionCountersMap;
+  public async getContractsLatestExecutionIdx(): Promise<Map<string, number>> {
+    const result: Map<string, number> = new Map();
+    for (const val of this.executionCountersMap) {
+      result.set(val[0], val[1].length - 1);
+    }
+    return result;
   }
 
   public async getLatestBlocks(count: number): Promise<IBlock[]> {
@@ -92,6 +105,17 @@ export class InMemoryDB implements IDB {
       return;
     }
     this.heighestConsecutiveBlockHeight = value;
+  }
+
+  public async getExecutionCounterBlockHeight(): Promise<bigint> {
+    return this.executionCounterBlockHeight;
+  }
+
+  public async setExecutionCounterBlockHeight(value: bigint): Promise<void> {
+    if (this.readOnlyMode) {
+      return;
+    }
+    this.executionCounterBlockHeight = value;
   }
 
   public async getBlockByHash(blockHash: string): Promise<IBlock> {
@@ -132,31 +156,38 @@ export class InMemoryDB implements IDB {
     }
   }
 
-  public async getContractTxes(contractName: string, limit: number, compoundTxIdx?: ICompoundTxIdx): Promise<ITx[]> {
-    let filterByHeight: (tx: ITx) => boolean = (tx: ITx) => true;
-    if (compoundTxIdx) {
-      const { blockHeight, contractExecutionIdx } = compoundTxIdx;
-      if (blockHeight && blockHeight > 0n) {
-        if (contractExecutionIdx !== undefined) {
-          filterByHeight = (tx: ITx) =>
-            (BigInt(tx.blockHeight) === blockHeight && tx.contractExecutionIdx <= contractExecutionIdx) ||
-            BigInt(tx.blockHeight) < blockHeight;
-        } else {
-          filterByHeight = (tx: ITx) => BigInt(tx.blockHeight) <= blockHeight;
-        }
-      }
+  public async getBlockTxes(blockHeight: bigint): Promise<ITx[]> {
+    const txArr = Array.from(this.txes);
+    return txArr.map(item => item[1]).filter(tx => tx.blockHeight === blockHeight.toString());
+  }
+
+  public async getContractTxes(
+    contractName: string,
+    limit: number,
+    contractExecutionIdx?: number,
+  ): Promise<IShortTx[]> {
+    let filterByHeight: (shortTx: IShortTx) => boolean;
+    if (contractExecutionIdx !== undefined) {
+      filterByHeight = (shortTx: IShortTx) => shortTx.contractExecutionIdx <= contractExecutionIdx;
+    } else {
+      filterByHeight = (shortTx: IShortTx) => true;
     }
 
-    const txArr = Array.from(this.txes);
-    const allTxes = txArr
-      .map(item => item[1])
-      .filter(tx => tx.contractName === contractName)
+    const executionOrder = this.executionCountersMap.get(contractName) || [];
+    const allTxes = executionOrder
+      .map(txId => this.getTxByIdSync(txId))
+      .map(rawTxToShortTx)
       .filter(filterByHeight)
       .sort(
         (a, b) =>
           Number(BigInt(b.blockHeight) - BigInt(a.blockHeight)) || b.contractExecutionIdx - a.contractExecutionIdx,
       );
+
     return allTxes.splice(0, limit);
+  }
+
+  private getTxByIdSync(txId: string): ITx {
+    return this.txes.get(txId.toLowerCase()) || null;
   }
 
   private capTxes(): void {

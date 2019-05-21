@@ -29,7 +29,6 @@ describe('Gaps Filler', () => {
     orbsClient = new MockOrbsClient();
     orbsAdapter = new OrbsAdapter(logger, orbsClient);
     storage = new Storage(db);
-    await storage.init();
     orbsAdapter.RegisterToNewBlocks(storage);
   });
 

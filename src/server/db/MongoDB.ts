@@ -10,8 +10,9 @@ import * as mongoose from 'mongoose';
 import * as mongooseLong from 'mongoose-long';
 import * as winston from 'winston';
 import { IBlock } from '../../shared/IBlock';
-import { ICompoundTxIdx } from '../storage/ICompoundTxIdx';
-import { ITx } from '../../shared/ITx';
+import { IShortTx } from '../../shared/IContractData';
+import { IRawTx, ITx } from '../../shared/IRawData';
+import { rawTxToShortTx } from '../transformers/txTransform';
 import { IDB } from './IDB';
 
 mongooseLong(mongoose);
@@ -20,21 +21,25 @@ mongoose.set('useFindAndModify', false);
 interface ICacheDocument extends mongoose.Document {
   _id: number;
   heighestConsecutiveBlockHeight: bigint;
+  executionCounterBlockHeight: bigint;
 }
 
 const cacheSchema = new mongoose.Schema({
   _id: Number,
   heighestConsecutiveBlockHeight: (mongoose.Schema.Types as any).Long,
+  executionCounterBlockHeight: (mongoose.Schema.Types as any).Long,
 });
 
 interface IContractExecutionCounterDocument extends mongoose.Document {
-  _id: string;
-  counter: number;
+  contractName: string;
+  txId: string;
+  executionIdx: number;
 }
 
 const contractExecutionCounterSchema = new mongoose.Schema({
-  _id: String,
-  counter: Number,
+  contractName: String,
+  txId: String,
+  executionIdx: Number,
 });
 
 const blockSchema = new mongoose.Schema({
@@ -45,8 +50,8 @@ const blockSchema = new mongoose.Schema({
 });
 
 const txSchema = new mongoose.Schema({
-  contractExecutionIdx: Number,
   txId: String,
+  idxInBlock: Number,
   blockHeight: (mongoose.Schema.Types as any).Long,
   protocolVersion: Number,
   virtualChainId: Number,
@@ -65,7 +70,7 @@ const blockHeighToBigInt = <T>(obj: T & { blockHeight: string }): T & { blockHei
   ...obj,
   blockHeight: BigInt(obj.blockHeight),
 });
-const blockHeighToString = <T>(obj: T & { blockHeight: bigint }): T & { blockHeight: string } => ({
+const blockHeightToString = <T>(obj: T & { blockHeight: bigint }): T & { blockHeight: string } => ({
   ...obj,
   blockHeight: obj.blockHeight.toString(),
 });
@@ -138,29 +143,31 @@ export class MongoDB implements IDB {
     return Promise.all(txes.map(async tx => await this.storeTx(tx)));
   }
 
-  public async storeContractExecutionCounter(contractName: string, counter: number): Promise<void> {
+  public async storeContractTxExecution(contractName: string, txId: string, executionIdx: number): Promise<void> {
     if (this.readOnlyMode) {
       return;
     }
-    await this.ContractExecutionCounterModel.findOneAndUpdate(
-      { _id: contractName },
-      { _id: contractName, counter },
-      { upsert: true },
-    );
+    const executionInstance = new this.ContractExecutionCounterModel({ contractName, txId, executionIdx });
+    await executionInstance.save();
   }
 
-  public async getContractsExecutionCounter(): Promise<Map<string, number>> {
-    const result = await this.ContractExecutionCounterModel.find({}, { __v: false })
-      .lean()
-      .exec();
+  public async getContractsLatestExecutionIdx(): Promise<Map<string, number>> {
+    const result: Map<string, number> = new Map();
 
-    if (result) {
-      const map = new Map();
-      result.forEach(row => map.set(row._id, row.counter));
-      return map;
+    const rows = await this.ContractExecutionCounterModel.aggregate([
+      {
+        $group: {
+          _id: '$contractName',
+          executionIdx: { $max: '$executionIdx' },
+        },
+      },
+    ]);
+
+    if (rows) {
+      rows.forEach(row => result.set(row._id, row.executionIdx));
     }
 
-    return null;
+    return result;
   }
 
   public async getLatestBlocks(count: number): Promise<IBlock[]> {
@@ -174,7 +181,7 @@ export class MongoDB implements IDB {
 
     if (result) {
       this.logger.info(`${count} blocks found [${Date.now() - startTime}ms.]`);
-      return result.map(blockHeighToString);
+      return result.map(blockHeightToString);
     } else {
       this.logger.info(`no blocks found [${Date.now() - startTime}ms.]`);
       return null;
@@ -190,7 +197,7 @@ export class MongoDB implements IDB {
 
     if (result) {
       this.logger.info(`block found [${Date.now() - startTime}ms.]`);
-      return blockHeighToString<IBlock>(result);
+      return blockHeightToString<IBlock>(result);
     } else {
       this.logger.info(`block not found [${Date.now() - startTime}ms.]`);
       return null;
@@ -206,7 +213,7 @@ export class MongoDB implements IDB {
 
     if (result) {
       this.logger.info(`block found [${Date.now() - startTime}ms.]`);
-      return blockHeighToString<IBlock>(result);
+      return blockHeightToString<IBlock>(result);
     } else {
       this.logger.info(`block not found [${Date.now() - startTime}ms.]`);
       return null;
@@ -231,52 +238,38 @@ export class MongoDB implements IDB {
 
     if (result) {
       this.logger.info(`contract found [${Date.now() - startTime}ms.]`);
-      return blockHeighToString<ITx>(result);
+      return blockHeightToString<ITx>(result);
     } else {
       this.logger.info(`contract not found [${Date.now() - startTime}ms.]`);
       return null;
     }
   }
 
-  public async getContractTxes(contractName: string, limit: number, compoundTxIdx?: ICompoundTxIdx): Promise<ITx[]> {
+  public async getContractTxes(
+    contractName: string,
+    limit: number,
+    contractExecutionIdx?: number,
+  ): Promise<IShortTx[]> {
     const startTime = Date.now();
     this.logger.info(`Searching for all txes for contract: ${contractName}`);
-    const conditions: any = {
+    const $match: any = {
       contractName,
     };
 
-    if (compoundTxIdx) {
-      const { blockHeight, contractExecutionIdx } = compoundTxIdx;
-      if (blockHeight && blockHeight > 0n) {
-        if (contractExecutionIdx !== undefined) {
-          conditions.$or = [
-            { blockHeight: { $eq: blockHeight }, contractExecutionIdx: { $lte: contractExecutionIdx } },
-            { blockHeight: { $lt: blockHeight } },
-          ];
-        } else {
-          conditions.blockHeight = { $lte: blockHeight };
-        }
-      }
+    if (contractExecutionIdx !== undefined) {
+      $match.executionIdx = { $lte: contractExecutionIdx };
     }
 
-    const result = await this.TxModel.find(
-      conditions,
-      { _id: false, __v: false },
-      {
-        skip: 0,
-        sort: {
-          blockHeight: -1,
-          contractExecutionIdx: -1,
-        },
-        limit,
-      },
-    )
-      .lean()
-      .exec();
+    const rows = await this.ContractExecutionCounterModel.aggregate([
+      { $match },
+      { $sort: { executionIdx: -1 } },
+      { $limit: limit },
+      { $lookup: { from: 'txes', localField: 'txId', foreignField: 'txId', as: 'tx' } },
+    ]);
 
-    if (result) {
-      this.logger.info(`found ${result.length} txes for contract ${contractName} in [${Date.now() - startTime}ms.]`);
-      return result.map(blockHeighToString);
+    if (rows) {
+      this.logger.info(`found ${rows.length} txes for contract ${contractName} in [${Date.now() - startTime}ms.]`);
+      return rows.map(row => rawTxToShortTx(row.tx[0], row.executionIdx));
     } else {
       this.logger.info(`no txes found for contract ${contractName} [${Date.now() - startTime}ms.]`);
       return null;
@@ -303,6 +296,26 @@ export class MongoDB implements IDB {
     );
   }
 
+  public async getExecutionCounterBlockHeight(): Promise<bigint> {
+    const result = await this.CacheModel.findOne({ _id: 1 });
+    if (result) {
+      return BigInt(result.executionCounterBlockHeight);
+    }
+
+    return 0n;
+  }
+
+  public async setExecutionCounterBlockHeight(value: bigint): Promise<void> {
+    if (this.readOnlyMode) {
+      return;
+    }
+    await this.CacheModel.findOneAndUpdate(
+      { _id: 1 },
+      { _id: 1, executionCounterBlockHeight: value },
+      { upsert: true },
+    );
+  }
+
   public async getLatestBlockHeight(): Promise<bigint> {
     const result = await this.BlockModel.findOne()
       .sort('-blockHeight')
@@ -316,6 +329,30 @@ export class MongoDB implements IDB {
     return 0n;
   }
 
+  public async getBlockTxes(blockHeight: bigint): Promise<ITx[]> {
+    const startTime = Date.now();
+    const result = await this.TxModel.find(
+      { blockHeight },
+      { _id: false, __v: false },
+      {
+        skip: 0,
+        sort: {
+          idxInBlock: -1,
+        },
+      },
+    )
+      .lean()
+      .exec();
+
+    if (result) {
+      this.logger.info(`found ${result.length} txes on block ${blockHeight} in [${Date.now() - startTime}ms.]`);
+      return result.map(blockHeightToString);
+    } else {
+      this.logger.info(`no txes found on block ${blockHeight} [${Date.now() - startTime}ms.]`);
+      return null;
+    }
+  }
+
   public async getTxById(txId: string): Promise<ITx> {
     const startTime = Date.now();
     this.logger.info(`Searching for tx by txId: ${txId}`);
@@ -325,10 +362,10 @@ export class MongoDB implements IDB {
 
     this.logger.info(`tx found [${Date.now() - startTime}ms.]`);
 
-    return result ? blockHeighToString(result) : result;
+    return result ? blockHeightToString(result) : result;
   }
 
-  private async storeTx(tx: ITx): Promise<void> {
+  private async storeTx(tx: IRawTx): Promise<void> {
     const txInstance = new this.TxModel(blockHeighToBigInt(tx));
     await txInstance.save();
   }

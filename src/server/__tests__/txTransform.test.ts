@@ -8,8 +8,7 @@
 
 import { IShortTx } from '../../shared/IContractData';
 import { generateRandomRawBlock } from '../orbs-adapter/fake-blocks-generator';
-import { txToShortTx } from '../transformers/txTransform';
-import { rawTxToTx } from '../transformers/blockTransform';
+import { rawTxToShortTx } from '../transformers/txTransform';
 
 describe('txTransform', () => {
   it('should convert IRawTx to IShortTx', async () => {
@@ -17,8 +16,9 @@ describe('txTransform', () => {
 
     const failingTx = block.transactions[0];
     failingTx.executionResult = 'ERROR';
-    const actualFailing = txToShortTx(rawTxToTx(failingTx, 0));
+    const actualFailing = rawTxToShortTx(failingTx, 0);
     const expectedFailing: IShortTx = {
+      blockHeight: '1',
       contractExecutionIdx: 0,
       method: failingTx.methodName,
       txId: failingTx.txId,
@@ -30,8 +30,9 @@ describe('txTransform', () => {
     const successTx = block.transactions[1];
     successTx.executionResult = 'SUCCESS';
 
-    const actualSuccess = txToShortTx(rawTxToTx(successTx, 1));
+    const actualSuccess = rawTxToShortTx(successTx, 1);
     const expectedSuccess: IShortTx = {
+      blockHeight: '1',
       contractExecutionIdx: 1,
       method: successTx.methodName,
       txId: successTx.txId,

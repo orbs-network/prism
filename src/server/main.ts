@@ -46,7 +46,6 @@ async function main() {
 
   // internals
   const storage = new Storage(db);
-  await storage.init();
 
   const server = initServer(storage);
   const ws = new WS(logger, server);
@@ -59,7 +58,7 @@ async function main() {
   if (GAP_FILLER_ACTIVE) {
     const GAP_FILLER_INITIAL_DELAY = 60 * 1000; // We wait a minute before we start the gap filler
     await sleep(GAP_FILLER_INITIAL_DELAY);
-    fillGapsForever(logger, storage, orbsAdapter, GAP_FILLER_INTERVAL);
+    fillGapsForever(logger, storage, db, orbsAdapter, GAP_FILLER_INTERVAL);
   }
 }
 

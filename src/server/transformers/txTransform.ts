@@ -1,5 +1,5 @@
 import { IShortTx } from '../../shared/IContractData';
-import { ITx } from '../../shared/ITx';
+import { IRawTx, ITx } from '../../shared/IRawData';
 
 /**
  * Copyright 2019 the prism authors
@@ -9,11 +9,16 @@ import { ITx } from '../../shared/ITx';
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-export function txToShortTx(
-  tx: Pick<ITx, 'contractExecutionIdx' | 'methodName' | 'txId' | 'signerAddress' | 'executionResult'>,
-): IShortTx {
+export function rawTxToTx(tx: IRawTx, idxInBlock: number): ITx {
+  return { idxInBlock, ...tx };
+}
+
+// tx: Pick<IRawTx, 'blockHeight' | 'methodName' | 'txId' | 'signerAddress' | 'executionResult'>,
+
+export function rawTxToShortTx(tx: IRawTx, contractExecutionIdx: number): IShortTx {
   return {
-    contractExecutionIdx: tx.contractExecutionIdx,
+    blockHeight: tx.blockHeight.toString(),
+    contractExecutionIdx,
     method: tx.methodName,
     txId: tx.txId,
     signerAddress: tx.signerAddress,
