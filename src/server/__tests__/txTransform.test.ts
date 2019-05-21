@@ -19,7 +19,7 @@ describe('txTransform', () => {
     const actualFailing = rawTxToShortTx(failingTx, 0);
     const expectedFailing: IShortTx = {
       blockHeight: '1',
-      contractExecutionIdx: 0,
+      executionIdx: 0,
       method: failingTx.methodName,
       txId: failingTx.txId,
       signerAddress: failingTx.signerAddress,
@@ -33,7 +33,7 @@ describe('txTransform', () => {
     const actualSuccess = rawTxToShortTx(successTx, 1);
     const expectedSuccess: IShortTx = {
       blockHeight: '1',
-      contractExecutionIdx: 1,
+      executionIdx: 1,
       method: successTx.methodName,
       txId: successTx.txId,
       signerAddress: successTx.signerAddress,

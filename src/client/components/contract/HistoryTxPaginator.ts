@@ -1,18 +1,18 @@
 import * as queryString from 'query-string';
 export class HistoryPaginator {
   public static FromQueryString(search: string): HistoryPaginator {
-    const contractExecutionIdx = queryString.parse(search).contractExecutionIdx as string;
-    const contractExecutionIdxAsNumber = contractExecutionIdx ? Number(contractExecutionIdx) : undefined;
-    return new HistoryPaginator(contractExecutionIdxAsNumber);
+    const executionIdx = queryString.parse(search).executionIdx as string;
+    const executionIdxAsNumber = executionIdx ? Number(executionIdx) : undefined;
+    return new HistoryPaginator(executionIdxAsNumber);
   }
 
-  constructor(private contractExecutionIdx?: number) {}
+  constructor(private executionIdx?: number) {}
 
   public getAsQueryString(firstParams: boolean = true): string {
     const prefix = firstParams ? '?' : '';
 
-    if (this.contractExecutionIdx !== undefined) {
-      return `${prefix}contractExecutionIdx=${this.contractExecutionIdx}`;
+    if (this.executionIdx !== undefined) {
+      return `${prefix}executionIdx=${this.executionIdx}`;
     } else {
       return '';
     }

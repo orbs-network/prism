@@ -29,5 +29,5 @@ export interface IDB {
   getTxById(txId: string): Promise<ITx>;
   getDeployContractTx(contractName: string, lang: number): Promise<ITx>;
   getBlockTxes(blockHeight: bigint): Promise<ITx[]>;
-  getContractTxes(contractName: string, limit: number, contractExecutionIdx?: number): Promise<IShortTx[]>;
+  getContractTxes(contractName: string, limit: number, executionIdx?: number): Promise<IShortTx[]>;
 }

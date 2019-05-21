@@ -45,10 +45,8 @@ export function apiRouter(storage: Storage) {
   router.get('/api/contract/:contractName', async (req, res) => {
     const contractName: string = req.params.contractName;
 
-    const contractExecutionIdx: number = req.query.contractExecutionIdx
-      ? Number(req.query.contractExecutionIdx)
-      : undefined;
-    const contractData: IContractData = await storage.getContractData(contractName, contractExecutionIdx);
+    const executionIdx: number = req.query.executionIdx ? Number(req.query.executionIdx) : undefined;
+    const contractData: IContractData = await storage.getContractData(contractName, executionIdx);
     if (!contractData) {
       return res.send(404);
     }

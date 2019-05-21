@@ -58,13 +58,13 @@ export const ContractHistory = withStyles(styles)(({ blockInfo, contractName, cl
     const lastBlockHeight = blockHeights[blockHeights.length - 1];
     const { txes } = blockInfo[lastBlockHeight];
     const lastTx = txes[txes.length - 1];
-    if (lastTx.contractExecutionIdx > 1) {
-      prevPage = new HistoryPaginator(lastTx.contractExecutionIdx - 1);
+    if (lastTx.executionIdx > 1) {
+      prevPage = new HistoryPaginator(lastTx.executionIdx - 1);
     }
 
     const firstBlockHeight = blockHeights[0];
     const firstTx = blockInfo[firstBlockHeight].txes[0];
-    nextPage = new HistoryPaginator(firstTx.contractExecutionIdx + CONTRACT_TXES_HISTORY_PAGE_SIZE);
+    nextPage = new HistoryPaginator(firstTx.executionIdx + CONTRACT_TXES_HISTORY_PAGE_SIZE);
   }
   return (
     <Card>

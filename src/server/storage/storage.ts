@@ -49,13 +49,13 @@ export class Storage {
     return this.db.getTxById(txId);
   }
 
-  public async getContractData(contractName: string, contractExecutionIdx?: number): Promise<IContractData> {
+  public async getContractData(contractName: string, executionIdx?: number): Promise<IContractData> {
     const deployTx = await this.db.getDeployContractTx(contractName, 1);
     let code = null;
     if (deployTx) {
       code = Buffer.from(decodeHex(deployTx.inputArguments[2].value)).toString();
     }
-    const txes = await this.db.getContractTxes(contractName, CONTRACT_TXES_HISTORY_PAGE_SIZE, contractExecutionIdx);
+    const txes = await this.db.getContractTxes(contractName, CONTRACT_TXES_HISTORY_PAGE_SIZE, executionIdx);
     const blockInfo: IContractBlockInfo = txes.reduce(
       (prev, tx) => {
         if (prev[tx.blockHeight]) {

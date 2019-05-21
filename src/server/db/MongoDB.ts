@@ -248,7 +248,7 @@ export class MongoDB implements IDB {
   public async getContractTxes(
     contractName: string,
     limit: number,
-    contractExecutionIdx?: number,
+    executionIdx?: number,
   ): Promise<IShortTx[]> {
     const startTime = Date.now();
     this.logger.info(`Searching for all txes for contract: ${contractName}`);
@@ -256,8 +256,8 @@ export class MongoDB implements IDB {
       contractName,
     };
 
-    if (contractExecutionIdx !== undefined) {
-      $match.executionIdx = { $lte: contractExecutionIdx };
+    if (executionIdx !== undefined) {
+      $match.executionIdx = { $lte: executionIdx };
     }
 
     const rows = await this.ContractExecutionCounterModel.aggregate([

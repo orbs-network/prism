@@ -161,14 +161,10 @@ export class InMemoryDB implements IDB {
     return txArr.map(item => item[1]).filter(tx => tx.blockHeight === blockHeight.toString());
   }
 
-  public async getContractTxes(
-    contractName: string,
-    limit: number,
-    contractExecutionIdx?: number,
-  ): Promise<IShortTx[]> {
+  public async getContractTxes(contractName: string, limit: number, executionIdx?: number): Promise<IShortTx[]> {
     let filterByHeight: (shortTx: IShortTx) => boolean;
-    if (contractExecutionIdx !== undefined) {
-      filterByHeight = (shortTx: IShortTx) => shortTx.contractExecutionIdx <= contractExecutionIdx;
+    if (executionIdx !== undefined) {
+      filterByHeight = (shortTx: IShortTx) => shortTx.executionIdx <= executionIdx;
     } else {
       filterByHeight = (shortTx: IShortTx) => true;
     }
@@ -178,10 +174,7 @@ export class InMemoryDB implements IDB {
       .map(txId => this.getTxByIdSync(txId))
       .map(rawTxToShortTx)
       .filter(filterByHeight)
-      .sort(
-        (a, b) =>
-          Number(BigInt(b.blockHeight) - BigInt(a.blockHeight)) || b.contractExecutionIdx - a.contractExecutionIdx,
-      );
+      .sort((a, b) => Number(BigInt(b.blockHeight) - BigInt(a.blockHeight)) || b.executionIdx - a.executionIdx);
 
     return allTxes.splice(0, limit);
   }
