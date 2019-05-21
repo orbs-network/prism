@@ -278,7 +278,7 @@ export class MongoDB implements IDB {
 
   public async getHeighestConsecutiveBlockHeight(): Promise<bigint> {
     const result = await this.CacheModel.findOne({ _id: 1 });
-    if (result) {
+    if (result && result.heighestConsecutiveBlockHeight !== undefined) {
       return BigInt(result.heighestConsecutiveBlockHeight);
     }
 
@@ -289,16 +289,12 @@ export class MongoDB implements IDB {
     if (this.readOnlyMode) {
       return;
     }
-    await this.CacheModel.findOneAndUpdate(
-      { _id: 1 },
-      { _id: 1, heighestConsecutiveBlockHeight: value },
-      { upsert: true },
-    );
+    await this.CacheModel.updateOne({ _id: 1 }, { $set: { heighestConsecutiveBlockHeight: value } }, { upsert: true });
   }
 
   public async getExecutionCounterBlockHeight(): Promise<bigint> {
     const result = await this.CacheModel.findOne({ _id: 1 });
-    if (result) {
+    if (result && result.executionCounterBlockHeight !== undefined) {
       return BigInt(result.executionCounterBlockHeight);
     }
 
@@ -309,11 +305,7 @@ export class MongoDB implements IDB {
     if (this.readOnlyMode) {
       return;
     }
-    await this.CacheModel.findOneAndUpdate(
-      { _id: 1 },
-      { _id: 1, executionCounterBlockHeight: value },
-      { upsert: true },
-    );
+    await this.CacheModel.updateOne({ _id: 1 }, { $set: { executionCounterBlockHeight: value } }, { upsert: true });
   }
 
   public async getLatestBlockHeight(): Promise<bigint> {
