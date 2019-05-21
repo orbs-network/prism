@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { createStyles, Theme, withStyles, WithStyles, Grid } from '@material-ui/core';
+import { createStyles, Grid, Theme, withStyles, WithStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -21,7 +21,7 @@ const styles = (theme: Theme) => createStyles({});
 
 interface IOwnProps {
   contractName: string;
-  historyPaginator: HistoryPaginator;
+  executionIdx?: number;
 }
 
 interface IProps extends WithStyles<typeof styles> {
@@ -36,8 +36,14 @@ const ContractDetailsImpl = withStyles(styles)(
     public componentDidMount() {
       if (!this.props.isLoading) {
         if (!this.props.contractData || this.props.error) {
-          this.props.loadContract(this.props.contractName, this.props.historyPaginator);
+          this.fetchData();
         }
+      }
+    }
+
+    public componentDidUpdate(prevProps: IOwnProps) {
+      if (this.props.contractName !== prevProps.contractName || this.props.executionIdx !== prevProps.executionIdx) {
+        this.fetchData();
       }
     }
 
@@ -65,6 +71,11 @@ const ContractDetailsImpl = withStyles(styles)(
           </Grid>
         </Grid>
       );
+    }
+
+    private fetchData() {
+      const historyPaginator: HistoryPaginator = new HistoryPaginator(this.props.executionIdx);
+      this.props.loadContract(this.props.contractName, historyPaginator);
     }
   },
 );

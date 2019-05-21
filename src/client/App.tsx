@@ -7,17 +7,17 @@
  */
 
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
+import * as queryString from 'query-string';
 import * as React from 'react';
 import { withRouter } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
 import { config, Transition } from 'react-spring/renderprops';
 import { BlockDetails } from './components/BlockDetails/BlockDetails';
+import { ContractDetails } from './components/contract/ContractDetails';
 import { Home } from './components/Home';
 import { TermNotFound } from './components/TermNotFound';
 import { TxDetails } from './components/TxDetails';
-import { ContractDetails } from './components/contract/ContractDetails';
 import { DISABLE_ANIMATIONS } from './config';
-import { HistoryPaginator } from './components/contract/HistoryTxPaginator';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -72,10 +72,11 @@ const AppImpl = ({ classes, location }: IProps) => {
           <Route
             path='/contract/:contractName'
             render={({ match }) => {
-              const historyPaginator = HistoryPaginator.FromQueryString(location.search);
+              const executionIdx = queryString.parse(location.search).executionIdx;
+              const executionIdxAsNumber = executionIdx ? Number(executionIdx) : undefined;
               return (
                 <div style={props} className={classes.swipeContainer}>
-                  <ContractDetails contractName={match.params.contractName} historyPaginator={historyPaginator} />
+                  <ContractDetails contractName={match.params.contractName} executionIdx={executionIdxAsNumber} />
                 </div>
               );
             }}
