@@ -45,10 +45,9 @@
         </script>
     <% } %>
 
-    <% if (process.env.MINIFY_JS_FILES === 'true') { %>       
+    <% if (process.env.MINIFYED_REACT_JS === 'true') { %>       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.7.0/umd/react.production.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.7.0/umd/react-dom.production.min.js"></script>
-
     <% } else { %>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.7.0/umd/react.development.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.7.0/umd/react-dom.development.js"></script>
