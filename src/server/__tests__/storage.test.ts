@@ -115,9 +115,9 @@ describe('storage', () => {
       await fillGaps(logger, storage, null);
       await processContractsExecutionOrder(db);
 
-      const block2tx0: IShortTx = rawTxToShortTx(rawBlock2.transactions[0], 0);
-      const block2tx1: IShortTx = rawTxToShortTx(rawBlock2.transactions[1], 1);
-      const block3tx3: IShortTx = rawTxToShortTx(rawBlock3.transactions[0], 2);
+      const block2tx0: IShortTx = rawTxToShortTx(rawBlock2.transactions[0]);
+      const block2tx1: IShortTx = rawTxToShortTx(rawBlock2.transactions[1]);
+      const block3tx3: IShortTx = rawTxToShortTx(rawBlock3.transactions[0]);
 
       const expected: IContractData = {
         code,

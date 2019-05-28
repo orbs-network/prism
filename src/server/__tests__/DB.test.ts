@@ -8,6 +8,7 @@
 
 import { BlockTransaction } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import * as winston from 'winston';
+import { IShortTx } from '../../shared/IContractData';
 import { ITx } from '../../shared/IRawData';
 import { MONGODB_URI } from '../config';
 import { IDB } from '../db/IDB';
@@ -21,9 +22,7 @@ import {
   generateRawBlockWithTransaction,
 } from '../orbs-adapter/fake-blocks-generator';
 import { rawBlockToBlock } from '../transformers/blockTransform';
-import { rawTxToTx, rawTxToShortTx } from '../transformers/txTransform';
-import { IShortTx } from '../../shared/IContractData';
-import { processContractsExecutionOrder } from '../gaps-filler/GapsFiller';
+import { rawTxToShortTx, rawTxToTx } from '../transformers/txTransform';
 
 const logger: winston.Logger = genLogger(false, false, false);
 
@@ -260,29 +259,37 @@ function testDb(db: IDB, dbName: string) {
       it('Simple contract details extraction', async () => {
         const actual = await db.getContractTxes(contractName, 100);
         const txes: IShortTx[] = [
-          rawTxToShortTx(block4Tx8, 5),
-          rawTxToShortTx(block4Tx7, 4),
-          rawTxToShortTx(block3Tx6, 3),
-          rawTxToShortTx(block3Tx4, 2),
-          rawTxToShortTx(block3Tx3, 1),
-          rawTxToShortTx(block2Tx2, 0),
+          rawTxToShortTx(block4Tx8),
+          rawTxToShortTx(block4Tx7),
+          rawTxToShortTx(block3Tx6),
+          rawTxToShortTx(block3Tx4),
+          rawTxToShortTx(block3Tx3),
+          rawTxToShortTx(block2Tx2),
         ];
         expect(txes).toEqual(actual);
       });
 
       it('should return only the requested number of txes', async () => {
         const actual = await db.getContractTxes(contractName, 3);
-        const txes: IShortTx[] = [
-          rawTxToShortTx(block4Tx8, 5),
-          rawTxToShortTx(block4Tx7, 4),
-          rawTxToShortTx(block3Tx6, 3),
-        ];
+        const txes: IShortTx[] = [rawTxToShortTx(block4Tx8), rawTxToShortTx(block4Tx7), rawTxToShortTx(block3Tx6)];
         expect(txes).toEqual(actual);
       });
 
-      it('should return only the txes below the fiven executionIdx', async () => {
+      it('should return only the txes below the given executionIdx', async () => {
         const actual = await db.getContractTxes(contractName, 2, 4);
-        const txes: IShortTx[] = [rawTxToShortTx(block4Tx7, 4), rawTxToShortTx(block3Tx6, 3)];
+        const txes: IShortTx[] = [rawTxToShortTx(block4Tx7), rawTxToShortTx(block3Tx6)];
+        expect(txes).toEqual(actual);
+      });
+
+      it('should ignore a too large executionIdx', async () => {
+        const actual = await db.getContractTxes(contractName, 2, 400);
+        const txes: IShortTx[] = [rawTxToShortTx(block4Tx8), rawTxToShortTx(block4Tx7)];
+        expect(txes).toEqual(actual);
+      });
+
+      it('should ignore a too small executionIdx', async () => {
+        const actual = await db.getContractTxes(contractName, 2, -400);
+        const txes: IShortTx[] = [rawTxToShortTx(block2Tx2)];
         expect(txes).toEqual(actual);
       });
     });

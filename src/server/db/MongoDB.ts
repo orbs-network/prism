@@ -245,31 +245,33 @@ export class MongoDB implements IDB {
     }
   }
 
-  public async getContractTxes(
-    contractName: string,
-    limit: number,
-    executionIdx?: number,
-  ): Promise<IShortTx[]> {
+  public async getContractTxes(contractName: string, limit: number, executionIdx?: number): Promise<IShortTx[]> {
     const startTime = Date.now();
     this.logger.info(`Searching for all txes for contract: ${contractName}`);
-    const $match: any = {
-      contractName,
-    };
 
+    let skip = 0;
     if (executionIdx !== undefined) {
-      $match.executionIdx = { $lte: executionIdx };
+      const count = await this.TxModel.count({ contractName });
+      if (count > 0) {
+        const lastIdx = count - 1;
+        executionIdx = Math.max(0, Math.min(executionIdx, lastIdx));
+        skip = lastIdx - executionIdx;
+      }
     }
 
-    const rows = await this.ContractExecutionCounterModel.aggregate([
-      { $match },
-      { $sort: { executionIdx: -1 } },
-      { $limit: limit },
-      { $lookup: { from: 'txes', localField: 'txId', foreignField: 'txId', as: 'tx' } },
-    ]);
+    const rows = await this.TxModel.find({ contractName }, { _id: false, __v: false })
+      .sort({
+        blockHeight: -1,
+        idxInBlock: -1,
+      })
+      .skip(skip)
+      .limit(limit)
+      .lean()
+      .exec();
 
     if (rows) {
       this.logger.info(`found ${rows.length} txes for contract ${contractName} in [${Date.now() - startTime}ms.]`);
-      return rows.map(row => rawTxToShortTx(row.tx[0], row.executionIdx));
+      return rows.map(rawTxToShortTx);
     } else {
       this.logger.info(`no txes found for contract ${contractName} [${Date.now() - startTime}ms.]`);
       return null;
@@ -327,7 +329,6 @@ export class MongoDB implements IDB {
       { blockHeight },
       { _id: false, __v: false },
       {
-        skip: 0,
         sort: {
           idxInBlock: -1,
         },

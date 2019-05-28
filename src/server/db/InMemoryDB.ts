@@ -162,19 +162,17 @@ export class InMemoryDB implements IDB {
   }
 
   public async getContractTxes(contractName: string, limit: number, executionIdx?: number): Promise<IShortTx[]> {
-    let filterByHeight: (shortTx: IShortTx) => boolean;
-    if (executionIdx !== undefined) {
-      filterByHeight = (shortTx: IShortTx) => shortTx.executionIdx <= executionIdx;
-    } else {
-      filterByHeight = (shortTx: IShortTx) => true;
-    }
-
     const executionOrder = this.executionCountersMap.get(contractName) || [];
-    const allTxes = executionOrder
+    let allTxes = executionOrder
       .map(txId => this.getTxByIdSync(txId))
-      .map(rawTxToShortTx)
-      .filter(filterByHeight)
-      .sort((a, b) => Number(BigInt(b.blockHeight) - BigInt(a.blockHeight)) || b.executionIdx - a.executionIdx);
+      .sort((a, b) => Number(BigInt(b.blockHeight) - BigInt(a.blockHeight)) || b.idxInBlock - a.idxInBlock)
+      .map(rawTxToShortTx);
+
+    if (executionIdx !== undefined && allTxes.length > 0) {
+      const lastIdx = allTxes.length - 1;
+      executionIdx = Math.max(0, Math.min(executionIdx, lastIdx));
+      allTxes = allTxes.slice(lastIdx - executionIdx);
+    }
 
     return allTxes.splice(0, limit);
   }

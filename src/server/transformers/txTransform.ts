@@ -15,10 +15,9 @@ export function rawTxToTx(tx: IRawTx, idxInBlock: number): ITx {
 
 // tx: Pick<IRawTx, 'blockHeight' | 'methodName' | 'txId' | 'signerAddress' | 'executionResult'>,
 
-export function rawTxToShortTx(tx: IRawTx, executionIdx: number): IShortTx {
+export function rawTxToShortTx(tx: IRawTx): IShortTx {
   return {
     blockHeight: tx.blockHeight.toString(),
-    executionIdx,
     method: tx.methodName,
     txId: tx.txId,
     signerAddress: tx.signerAddress,

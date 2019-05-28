@@ -1,7 +1,6 @@
 export interface IShortTx {
   blockHeight: string;
   method: string;
-  executionIdx: number;
   txId: string;
   signerAddress: string;
   successful: boolean;
