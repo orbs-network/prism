@@ -16,16 +16,12 @@ export interface IDB {
   clearAll(): Promise<void>;
   storeBlock(block: IBlock): Promise<void>;
   storeTxes(txes: ITx[]): Promise<void>;
-  storeContractTxExecution(contractName: string, txId: string, executionIdx: number): Promise<void>;
-  getContractsLatestExecutionIdx(): Promise<Map<string, number>>;
   getLatestBlocks(count: number): Promise<IBlock[]>;
   getBlockByHash(blockHash: string): Promise<IBlock>;
   getBlockByHeight(blockHeight: string): Promise<IBlock>;
   getLatestBlockHeight(): Promise<bigint>;
   getHeighestConsecutiveBlockHeight(): Promise<bigint>;
   setHeighestConsecutiveBlockHeight(value: bigint): Promise<void>;
-  getExecutionCounterBlockHeight(): Promise<bigint>;
-  setExecutionCounterBlockHeight(value: bigint): Promise<void>;
   getTxById(txId: string): Promise<ITx>;
   getDeployContractTx(contractName: string, lang: number): Promise<ITx>;
   getBlockTxes(blockHeight: bigint): Promise<ITx[]>;

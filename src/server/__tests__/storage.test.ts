@@ -7,9 +7,11 @@
  */
 
 import { BlockTransaction } from 'orbs-client-sdk/dist/codec/OpGetBlock';
+import * as winston from 'winston';
 import { IContractData, IShortTx } from '../../shared/IContractData';
 import { ISearchResult } from '../../shared/ISearchResult';
 import { InMemoryDB } from '../db/InMemoryDB';
+import { genLogger } from '../logger/LoggerFactory';
 import {
   generateBlockTransaction,
   generateContractDeployTransaction,
@@ -19,9 +21,6 @@ import {
 import { Storage } from '../storage/storage';
 import { rawBlockToBlock } from '../transformers/blockTransform';
 import { rawTxToShortTx, rawTxToTx } from '../transformers/txTransform';
-import { processContractsExecutionOrder, fillGaps } from '../gaps-filler/GapsFiller';
-import { genLogger } from '../logger/LoggerFactory';
-import * as winston from 'winston';
 
 describe('storage', () => {
   const logger: winston.Logger = genLogger(false, false, false);
@@ -111,9 +110,6 @@ describe('storage', () => {
       await storage.handleNewBlock(deployBlock);
       await storage.handleNewBlock(rawBlock2);
       await storage.handleNewBlock(rawBlock3);
-
-      await fillGaps(logger, storage, null);
-      await processContractsExecutionOrder(db);
 
       const block2tx0: IShortTx = rawTxToShortTx(rawBlock2.transactions[0]);
       const block2tx1: IShortTx = rawTxToShortTx(rawBlock2.transactions[1]);

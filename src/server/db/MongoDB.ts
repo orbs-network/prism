@@ -21,25 +21,11 @@ mongoose.set('useFindAndModify', false);
 interface ICacheDocument extends mongoose.Document {
   _id: number;
   heighestConsecutiveBlockHeight: bigint;
-  executionCounterBlockHeight: bigint;
 }
 
 const cacheSchema = new mongoose.Schema({
   _id: Number,
   heighestConsecutiveBlockHeight: (mongoose.Schema.Types as any).Long,
-  executionCounterBlockHeight: (mongoose.Schema.Types as any).Long,
-});
-
-interface IContractExecutionCounterDocument extends mongoose.Document {
-  contractName: string;
-  txId: string;
-  executionIdx: number;
-}
-
-const contractExecutionCounterSchema = new mongoose.Schema({
-  contractName: String,
-  txId: String,
-  executionIdx: Number,
 });
 
 const blockSchema = new mongoose.Schema({
@@ -80,7 +66,6 @@ export class MongoDB implements IDB {
   private BlockModel: mongoose.Model<mongoose.Document>;
   private TxModel: mongoose.Model<mongoose.Document>;
   private CacheModel: mongoose.Model<ICacheDocument>;
-  private ContractExecutionCounterModel: mongoose.Model<IContractExecutionCounterDocument>;
 
   constructor(private logger: winston.Logger, private connectionUrl: string, private readOnlyMode: boolean = false) {}
 
@@ -103,7 +88,6 @@ export class MongoDB implements IDB {
         this.BlockModel = mongoose.model('Block', blockSchema);
         this.TxModel = mongoose.model('Tx', txSchema);
         this.CacheModel = mongoose.model('Cache', cacheSchema);
-        this.ContractExecutionCounterModel = mongoose.model('ContractExecution', contractExecutionCounterSchema);
         resolve();
       });
     });
@@ -123,7 +107,6 @@ export class MongoDB implements IDB {
     await this.BlockModel.remove({});
     await this.TxModel.remove({});
     await this.CacheModel.remove({});
-    await this.ContractExecutionCounterModel.remove({});
   }
 
   public async storeBlock(block: IBlock): Promise<void> {
@@ -141,33 +124,6 @@ export class MongoDB implements IDB {
       return;
     }
     return Promise.all(txes.map(async tx => await this.storeTx(tx)));
-  }
-
-  public async storeContractTxExecution(contractName: string, txId: string, executionIdx: number): Promise<void> {
-    if (this.readOnlyMode) {
-      return;
-    }
-    const executionInstance = new this.ContractExecutionCounterModel({ contractName, txId, executionIdx });
-    await executionInstance.save();
-  }
-
-  public async getContractsLatestExecutionIdx(): Promise<Map<string, number>> {
-    const result: Map<string, number> = new Map();
-
-    const rows = await this.ContractExecutionCounterModel.aggregate([
-      {
-        $group: {
-          _id: '$contractName',
-          executionIdx: { $max: '$executionIdx' },
-        },
-      },
-    ]);
-
-    if (rows) {
-      rows.forEach(row => result.set(row._id, row.executionIdx));
-    }
-
-    return result;
   }
 
   public async getLatestBlocks(count: number): Promise<IBlock[]> {
@@ -292,22 +248,6 @@ export class MongoDB implements IDB {
       return;
     }
     await this.CacheModel.updateOne({ _id: 1 }, { $set: { heighestConsecutiveBlockHeight: value } }, { upsert: true });
-  }
-
-  public async getExecutionCounterBlockHeight(): Promise<bigint> {
-    const result = await this.CacheModel.findOne({ _id: 1 });
-    if (result && result.executionCounterBlockHeight !== undefined) {
-      return BigInt(result.executionCounterBlockHeight);
-    }
-
-    return 0n;
-  }
-
-  public async setExecutionCounterBlockHeight(value: bigint): Promise<void> {
-    if (this.readOnlyMode) {
-      return;
-    }
-    await this.CacheModel.updateOne({ _id: 1 }, { $set: { executionCounterBlockHeight: value } }, { upsert: true });
   }
 
   public async getLatestBlockHeight(): Promise<bigint> {

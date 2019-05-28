@@ -25,7 +25,6 @@ export function fillGapsForever(
   cron(async () => {
     logger.info(`Cron Job started.`);
     await fillGaps(logger, storage, orbsAdapter);
-    await processContractsExecutionOrder(db);
   }, interval);
 }
 
@@ -77,20 +76,4 @@ export async function fillGaps(logger: winston.Logger, storage: Storage, orbsAda
     );
   }
   await storage.setHeighestConsecutiveBlockHeight(toHeight);
-}
-
-export async function processContractsExecutionOrder(db: IDB): Promise<void> {
-  const fromHeight = (await db.getExecutionCounterBlockHeight()) + 1n;
-  const toHeight = await db.getHeighestConsecutiveBlockHeight();
-  const map = await db.getContractsLatestExecutionIdx();
-
-  for (let height = fromHeight; height <= toHeight; height++) {
-    const txes = await db.getBlockTxes(height);
-    for (const tx of txes) {
-      const executionIdx = (map.get(tx.contractName) || 0) + 1;
-      await db.storeContractTxExecution(tx.contractName, tx.txId, executionIdx);
-      map.set(tx.contractName, executionIdx);
-    }
-    await db.setExecutionCounterBlockHeight(height);
-  }
 }

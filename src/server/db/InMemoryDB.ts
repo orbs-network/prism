@@ -16,8 +16,6 @@ export class InMemoryDB implements IDB {
   private blocks: Map<string, IBlock>;
   private txes: Map<string, ITx>;
   private heighestConsecutiveBlockHeight: bigint = 0n;
-  private executionCounterBlockHeight: bigint = 0n;
-  private executionCountersMap: Map<string, string[]> = new Map();
 
   constructor(private readOnlyMode: boolean = false) {}
 
@@ -36,9 +34,7 @@ export class InMemoryDB implements IDB {
     }
     this.blocks = new Map();
     this.txes = new Map();
-    this.executionCountersMap = new Map();
     this.heighestConsecutiveBlockHeight = 0n;
-    this.executionCounterBlockHeight = 0n;
   }
 
   public async storeBlock(block: IBlock): Promise<void> {
@@ -55,28 +51,6 @@ export class InMemoryDB implements IDB {
     }
     txes.map(tx => this.txes.set(tx.txId.toLowerCase(), tx));
     this.capTxes();
-  }
-
-  public async storeContractTxExecution(contractName: string, txId: string): Promise<void> {
-    if (this.readOnlyMode) {
-      return;
-    }
-
-    let contractExecutionTxes = this.executionCountersMap.get(contractName);
-    if (contractExecutionTxes !== undefined) {
-      contractExecutionTxes.push(txId);
-    } else {
-      contractExecutionTxes = [txId];
-    }
-    this.executionCountersMap.set(contractName, contractExecutionTxes);
-  }
-
-  public async getContractsLatestExecutionIdx(): Promise<Map<string, number>> {
-    const result: Map<string, number> = new Map();
-    for (const val of this.executionCountersMap) {
-      result.set(val[0], val[1].length - 1);
-    }
-    return result;
   }
 
   public async getLatestBlocks(count: number): Promise<IBlock[]> {
@@ -105,17 +79,6 @@ export class InMemoryDB implements IDB {
       return;
     }
     this.heighestConsecutiveBlockHeight = value;
-  }
-
-  public async getExecutionCounterBlockHeight(): Promise<bigint> {
-    return this.executionCounterBlockHeight;
-  }
-
-  public async setExecutionCounterBlockHeight(value: bigint): Promise<void> {
-    if (this.readOnlyMode) {
-      return;
-    }
-    this.executionCounterBlockHeight = value;
   }
 
   public async getBlockByHash(blockHash: string): Promise<IBlock> {
@@ -162,9 +125,9 @@ export class InMemoryDB implements IDB {
   }
 
   public async getContractTxes(contractName: string, limit: number, executionIdx?: number): Promise<IShortTx[]> {
-    const executionOrder = this.executionCountersMap.get(contractName) || [];
-    let allTxes = executionOrder
-      .map(txId => this.getTxByIdSync(txId))
+    let allTxes = Array.from(this.txes)
+      .map(mapItem => mapItem[1])
+      .filter(tx => tx.contractName === contractName)
       .sort((a, b) => Number(BigInt(b.blockHeight) - BigInt(a.blockHeight)) || b.idxInBlock - a.idxInBlock)
       .map(rawTxToShortTx);
 

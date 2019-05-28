@@ -161,30 +161,6 @@ function testDb(db: IDB, dbName: string) {
       expect(tx).toEqual(actual);
     });
 
-    it('should store contract execution', async () => {
-      const rawBlock = generateRandomRawBlock(1n);
-
-      rawBlock.transactions[0].contractName = 'Contract_1';
-      rawBlock.transactions[1].contractName = 'Contract_1';
-      rawBlock.transactions[2].contractName = 'Contract_2';
-      rawBlock.transactions[3].contractName = 'Contract_1';
-
-      const tx1 = rawTxToTx(rawBlock.transactions[0], 0);
-      const tx2 = rawTxToTx(rawBlock.transactions[1], 1);
-      const tx3 = rawTxToTx(rawBlock.transactions[2], 2);
-      const tx4 = rawTxToTx(rawBlock.transactions[3], 3);
-      await db.storeTxes([tx1, tx2, tx3, tx4]);
-
-      await db.storeContractTxExecution(tx1.contractName, tx1.txId, 0);
-      await db.storeContractTxExecution(tx2.contractName, tx2.txId, 1);
-      await db.storeContractTxExecution(tx3.contractName, tx3.txId, 0);
-      await db.storeContractTxExecution(tx4.contractName, tx4.txId, 2);
-
-      const actual = await db.getContractsLatestExecutionIdx();
-      expect(actual.get('Contract_1')).toEqual(2);
-      expect(actual.get('Contract_2')).toEqual(0);
-    });
-
     describe('Retriving txes by contract name', async () => {
       const contractName = 'test-contract';
 
@@ -245,15 +221,6 @@ function testDb(db: IDB, dbName: string) {
         await db.storeTxes([block2Tx1, block2Tx2]);
         await db.storeTxes([block3Tx3, block3Tx4, block3Tx5, block3Tx6]);
         await db.storeTxes([block4Tx7, block4Tx8]);
-
-        await db.storeContractTxExecution(block2Tx1.contractName, block2Tx1.txId, 0);
-        await db.storeContractTxExecution(block2Tx2.contractName, block2Tx2.txId, 0);
-        await db.storeContractTxExecution(block3Tx3.contractName, block3Tx3.txId, 1);
-        await db.storeContractTxExecution(block3Tx4.contractName, block3Tx4.txId, 2);
-        await db.storeContractTxExecution(block3Tx5.contractName, block3Tx5.txId, 1);
-        await db.storeContractTxExecution(block3Tx6.contractName, block3Tx6.txId, 3);
-        await db.storeContractTxExecution(block4Tx7.contractName, block4Tx7.txId, 4);
-        await db.storeContractTxExecution(block4Tx8.contractName, block4Tx8.txId, 5);
       });
 
       it('Simple contract details extraction', async () => {
