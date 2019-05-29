@@ -5,10 +5,15 @@ import { IDB } from './IDB';
 export class DBBuilder {
   constructor(private db: IDB, private storage: Storage, private orbsAdapter: IOrbsAdapter) {}
 
-  public async init(): Promise<void> {
+  public async init(prismVersion: string): Promise<void> {
     const hasBlocks = (await this.db.getLatestBlockHeight()) > 0n;
     if (!hasBlocks) {
         await this.rebuildDb();
+    } else {
+        const dbVersion = await this.db.getVersion();
+        if (dbVersion !== prismVersion) {
+            await this.rebuildDb();
+        }
     }
   }
 

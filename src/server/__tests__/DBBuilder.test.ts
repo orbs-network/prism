@@ -21,48 +21,66 @@ describe(`DBBuilder`, async () => {
   let orbsAdapter: OrbsAdapterMock;
   let dbBuilder: DBBuilder;
 
+  const rawBlock1: IRawBlock = generateRandomRawBlock(1n);
+  const rawBlock2: IRawBlock = generateRandomRawBlock(2n);
+  const rawBlock3: IRawBlock = generateRandomRawBlock(3n);
+  const block1 = rawBlockToBlock(rawBlock1);
+  const block2 = rawBlockToBlock(rawBlock2);
+  const block3 = rawBlockToBlock(rawBlock3);
+
   beforeEach(async () => {
     db = new InMemoryDB();
     await db.init();
+    await db.setVersion('1.0.0');
     storage = new Storage(db);
     orbsAdapter = new OrbsAdapterMock();
+    orbsAdapter.setBlockChain([rawBlock1, rawBlock2, rawBlock3]);
     dbBuilder = new DBBuilder(db, storage, orbsAdapter);
   });
 
   it('should rebuild the db when the db is empty', async () => {
-    const block1: IRawBlock = generateRandomRawBlock(1n);
-    const block2: IRawBlock = generateRandomRawBlock(2n);
-    const block3: IRawBlock = generateRandomRawBlock(3n);
-    orbsAdapter.setBlockChain([block1, block2, block3]);
-
-    // before
     expect(await db.getLatestBlockHeight()).toBe(0n);
     expect(await db.getBlockByHeight('1')).toBeNull();
     expect(await db.getBlockByHeight('2')).toBeNull();
     expect(await db.getBlockByHeight('3')).toBeNull();
 
-    await dbBuilder.init();
+    await dbBuilder.init('1.0.0');
 
-    // after
     expect(await db.getLatestBlockHeight()).toBe(3n);
-    expect(await db.getBlockByHeight('1')).toEqual(rawBlockToBlock(block1));
-    expect(await db.getBlockByHeight('2')).toEqual(rawBlockToBlock(block2));
-    expect(await db.getBlockByHeight('3')).toEqual(rawBlockToBlock(block3));
+    expect(await db.getBlockByHeight('1')).toEqual(block1);
+    expect(await db.getBlockByHeight('2')).toEqual(block2);
+    expect(await db.getBlockByHeight('3')).toEqual(block3);
   });
 
   it('should not rebuild the db when the db has blocks', async () => {
-    await db.storeBlock(rawBlockToBlock(generateRandomRawBlock(1n)));
-    await db.storeBlock(rawBlockToBlock(generateRandomRawBlock(2n)));
-    await db.storeBlock(rawBlockToBlock(generateRandomRawBlock(3n)));
+    await db.storeBlock(block1);
+    await db.storeBlock(block2);
+    await db.storeBlock(block3);
 
     const spyStorage = jest.spyOn(storage, 'handleNewBlock');
     const spyDbStoreBlock = jest.spyOn(db, 'storeBlock');
     const spyDbStoreTxes = jest.spyOn(db, 'storeTxes');
 
-    await dbBuilder.init();
+    await dbBuilder.init('1.0.0');
 
     expect(spyStorage).not.toHaveBeenCalled();
     expect(spyDbStoreBlock).not.toHaveBeenCalled();
     expect(spyDbStoreTxes).not.toHaveBeenCalled();
+  });
+
+  it('should rebuild the db when the db version is older', async () => {
+    await db.storeBlock(block1);
+    await db.storeBlock(block2);
+    await db.storeBlock(block3);
+
+    const spyStorage = jest.spyOn(storage, 'handleNewBlock');
+    const spyDbStoreBlock = jest.spyOn(db, 'storeBlock');
+    const spyDbStoreTxes = jest.spyOn(db, 'storeTxes');
+
+    await dbBuilder.init('2.0.0');
+
+    expect(spyStorage).toHaveBeenCalled();
+    expect(spyDbStoreBlock).toHaveBeenCalled();
+    expect(spyDbStoreTxes).toHaveBeenCalled();
   });
 });
