@@ -16,6 +16,7 @@ export class InMemoryDB implements IDB {
   private blocks: Map<string, IBlock>;
   private txes: Map<string, ITx>;
   private heighestConsecutiveBlockHeight: bigint = 0n;
+  private dbVersion: string = '0.0.0';
 
   constructor(private readOnlyMode: boolean = false) {}
 
@@ -26,6 +27,17 @@ export class InMemoryDB implements IDB {
 
   public async destroy(): Promise<void> {
     // nothing to destroy...
+  }
+
+  public async getVersion(): Promise<string> {
+    return this.dbVersion;
+  }
+  public async setVersion(version: string): Promise<void> {
+    if (this.readOnlyMode) {
+      return;
+    }
+
+    this.dbVersion = version;
   }
 
   public async clearAll(): Promise<void> {
@@ -138,10 +150,6 @@ export class InMemoryDB implements IDB {
     }
 
     return allTxes.splice(0, limit);
-  }
-
-  private getTxByIdSync(txId: string): ITx {
-    return this.txes.get(txId.toLowerCase()) || null;
   }
 
   private capTxes(): void {

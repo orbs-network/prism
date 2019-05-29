@@ -12,6 +12,8 @@ import { ITx } from '../../shared/IRawData';
 
 export interface IDB {
   init(): Promise<void>;
+  getVersion(): Promise<string>;
+  setVersion(version: string): Promise<void>;
   destroy(): Promise<void>;
   clearAll(): Promise<void>;
   storeBlock(block: IBlock): Promise<void>;

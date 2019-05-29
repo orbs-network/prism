@@ -149,6 +149,30 @@ function testDb(db: IDB, dbName: string) {
       expect(actual).not.toEqual(initial);
     });
 
+    it('should have a db version 0.0.0 as the default', async () => {
+      const actual = await db.getVersion();
+      expect(actual).toEqual('0.0.0');
+    });
+
+    it('should store and retrive the db version ', async () => {
+      const initial = await db.getVersion();
+
+      await db.setVersion('0.0.4');
+      const actual = await db.getVersion();
+      expect(actual).toEqual('0.0.4');
+      expect(actual).not.toEqual(initial);
+    });
+
+    it('should be able to update existing db version ', async () => {
+      const initial = await db.getVersion();
+
+      await db.setVersion('0.1.2');
+      await db.setVersion('1.0.0');
+      const actual = await db.getVersion();
+      expect(actual).toEqual('1.0.0');
+      expect(actual).not.toEqual(initial);
+    });
+
     it('should retrive contract by name', async () => {
       const code: string = 'this is go code';
       const btx: BlockTransaction = generateContractDeployTransaction('test-contract', code);

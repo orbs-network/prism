@@ -21,11 +21,13 @@ mongoose.set('useFindAndModify', false);
 interface ICacheDocument extends mongoose.Document {
   _id: number;
   heighestConsecutiveBlockHeight: bigint;
+  dbVersion: string;
 }
 
 const cacheSchema = new mongoose.Schema({
   _id: Number,
   heighestConsecutiveBlockHeight: (mongoose.Schema.Types as any).Long,
+  dbVersion: String,
 });
 
 const blockSchema = new mongoose.Schema({
@@ -98,6 +100,22 @@ export class MongoDB implements IDB {
       await this.db.disconnect();
       this.db = null;
     }
+  }
+
+  public async getVersion(): Promise<string> {
+    const result = await this.CacheModel.findOne({ _id: 1 });
+    if (result && result.dbVersion !== undefined) {
+      return result.dbVersion;
+    }
+
+    return '0.0.0';
+  }
+
+  public async setVersion(dbVersion: string): Promise<void> {
+    if (this.readOnlyMode) {
+      return;
+    }
+    await this.CacheModel.updateOne({ _id: 1 }, { $set: { dbVersion } }, { upsert: true });
   }
 
   public async clearAll(): Promise<void> {
