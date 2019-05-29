@@ -14,7 +14,6 @@ import { IRawBlock, IRawTx } from '../../shared/IRawData';
 import { ISearchResult } from '../../shared/ISearchResult';
 import { IDB } from '../db/IDB';
 import { blockToBlockSummary, rawBlockToBlock } from '../transformers/blockTransform';
-import { raw } from 'body-parser';
 import { rawTxToTx } from '../transformers/txTransform';
 
 export class Storage {
