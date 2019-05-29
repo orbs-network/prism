@@ -14,11 +14,12 @@ import { Storage } from '../storage/storage';
 import { waitUntil } from './TimeUtils';
 import { genLogger } from '../logger/LoggerFactory';
 import * as winston from 'winston';
+import { IOrbsAdapter } from '../orbs-adapter/IOrbsAdapter';
 
 describe('Gaps Filler', () => {
   const logger: winston.Logger = genLogger(false, false, false);
   let db: InMemoryDB;
-  let orbsAdapter: OrbsAdapter;
+  let orbsAdapter: IOrbsAdapter;
   let orbsClient: MockOrbsClient;
   let storage: Storage;
 

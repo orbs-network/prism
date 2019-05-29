@@ -11,7 +11,7 @@ import * as socketIO from 'socket.io';
 import * as winston from 'winston';
 import { IRawBlock } from '../../shared/IRawData';
 import { rawBlockToBlockSummary } from '../transformers/blockTransform';
-import { INewBlocksHandler } from '../orbs-adapter/OrbsAdapter';
+import { INewBlocksHandler } from '../orbs-adapter/IOrbsAdapter';
 
 export class WS implements INewBlocksHandler {
   private sockets = {};

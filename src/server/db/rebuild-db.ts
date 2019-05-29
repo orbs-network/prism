@@ -66,7 +66,7 @@ async function waitForHeighestBlockHeight(orbsAdapter: OrbsAdapter): Promise<big
   let heighestBlockHeight = 0n;
   console.log('Waiting for Orbs Network to initialize');
   while (heighestBlockHeight === 0n || heighestBlockHeight === null) {
-    heighestBlockHeight = await orbsAdapter.getHeighestBlockHeight();
+    heighestBlockHeight = await orbsAdapter.getLatestKnownHeight();
     await pauseFor(1000);
   }
 

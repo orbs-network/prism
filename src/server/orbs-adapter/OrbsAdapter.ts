@@ -12,14 +12,9 @@ import { IRawBlock } from '../../shared/IRawData';
 import * as winston from 'winston';
 import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import { sleep } from '../gaps-filler/Cron';
+import { IOrbsAdapter, INewBlocksHandler } from './IOrbsAdapter';
 
-export type NewBlockCallback = (block: IRawBlock) => void;
-
-export interface INewBlocksHandler {
-  handleNewBlock(block: IRawBlock): Promise<void>;
-}
-
-export class OrbsAdapter {
+export class OrbsAdapter implements IOrbsAdapter {
   private latestKnownHeight: bigint = BigInt(0);
   private listeners: Map<INewBlocksHandler, INewBlocksHandler> = new Map();
   private timeoutId: NodeJS.Timeout;
@@ -78,9 +73,22 @@ export class OrbsAdapter {
     return null;
   }
 
-  public async getHeighestBlockHeight(): Promise<bigint> {
-    const getBlockResponse = await this.getBlockWrapper(0n, 'fillGaps');
-    return getBlockResponse ? BigInt(getBlockResponse.blockHeight) : null;
+  public async getLatestKnownHeight(): Promise<bigint> {
+    this.logger.info(`Asking Orbs for the lastest height`);
+    const getBlockResponse: GetBlockResponse = await this.orbsClient.getBlock(0n);
+
+    if (typeof getBlockResponse.blockHeight !== 'bigint') {
+      throw new Error(`orbsClient.getBlock(0n) returned with bad blockHeight`);
+    }
+
+    // blockHeight = 0n can happen if there was some error in the response
+    // because we expect orbs to have at least one block it is not reasonable to get block height = 0
+    if (getBlockResponse.blockHeight === 0n) {
+      throw new Error(`orbsClient.getBlock(0n) returned blockHeight = 0n, not reasonable`);
+    }
+
+    this.logger.info(`Lastest height is ${getBlockResponse.blockHeight}`);
+    return getBlockResponse.blockHeight;
   }
 
   private async checkForNewBlocks(poolingInterval: number): Promise<void> {
@@ -107,34 +115,12 @@ export class OrbsAdapter {
 
   private async initScheduler(poolingInterval: number): Promise<boolean> {
     if (this.latestKnownHeight === 0n) {
-      this.logger.info(`Asking Orbs for the lastest height`);
-      let getBlockResponse: GetBlockResponse;
       try {
-        getBlockResponse = await this.orbsClient.getBlock(0n);
+        this.latestKnownHeight = await this.getLatestKnownHeight();
       } catch (err) {
         this.logger.error('getBlock failed', { func: 'initScheduler', err });
         return false;
       }
-
-      if (typeof getBlockResponse.blockHeight !== 'bigint') {
-        this.logger.crit(`orbsClient.getBlock(0n) returned with bad blockHeight`, {
-          func: 'initScheduler',
-          blockHeight: getBlockResponse.blockHeight,
-        });
-        return false;
-      }
-
-      // blockHeight = 0n can happen if there was some error in the response
-      // because we expect orbs to have at least one block it is not reasonable to get block height = 0
-      if (getBlockResponse.blockHeight === 0n) {
-        this.logger.crit(`orbsClient.getBlock(0n) returned blockHeight = 0n, not reasonable`, {
-          func: 'initScheduler',
-        });
-        return false;
-      }
-
-      this.latestKnownHeight = getBlockResponse.blockHeight;
-      this.logger.info(`Lastest height is ${this.latestKnownHeight}`);
     }
 
     this.schedualNextRequest(poolingInterval);
