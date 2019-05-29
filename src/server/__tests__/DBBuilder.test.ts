@@ -20,6 +20,9 @@ describe(`DBBuilder`, async () => {
   let storage: Storage;
   let orbsAdapter: OrbsAdapterMock;
   let dbBuilder: DBBuilder;
+  let spyStorage: jest.SpyInstance;
+  let spyDbStoreBlock: jest.SpyInstance;
+  let spyDbStoreTxes: jest.SpyInstance;
 
   const rawBlock1: IRawBlock = generateRandomRawBlock(1n);
   const rawBlock2: IRawBlock = generateRandomRawBlock(2n);
@@ -38,6 +41,34 @@ describe(`DBBuilder`, async () => {
     dbBuilder = new DBBuilder(db, storage, orbsAdapter);
   });
 
+  afterEach(async () => {
+    jest.clearAllMocks();
+  });
+
+  async function fillDbWithBlocks(): Promise<void> {
+    await db.storeBlock(block1);
+    await db.storeBlock(block2);
+    await db.storeBlock(block3);
+  }
+
+  function expectDbToRebuild(): void {
+    expect(spyStorage).toHaveBeenCalled();
+    expect(spyDbStoreBlock).toHaveBeenCalled();
+    expect(spyDbStoreTxes).toHaveBeenCalled();
+  }
+
+  function expectDbToNotRebuild(): void {
+    expect(spyStorage).not.toHaveBeenCalled();
+    expect(spyDbStoreBlock).not.toHaveBeenCalled();
+    expect(spyDbStoreTxes).not.toHaveBeenCalled();
+  }
+
+  function initSpys(): void {
+    spyStorage = jest.spyOn(storage, 'handleNewBlock');
+    spyDbStoreBlock = jest.spyOn(db, 'storeBlock');
+    spyDbStoreTxes = jest.spyOn(db, 'storeTxes');
+  }
+
   it('should rebuild the db when the db is empty', async () => {
     expect(await db.getLatestBlockHeight()).toBe(0n);
     expect(await db.getBlockByHeight('1')).toBeNull();
@@ -53,34 +84,23 @@ describe(`DBBuilder`, async () => {
   });
 
   it('should not rebuild the db when the db has blocks', async () => {
-    await db.storeBlock(block1);
-    await db.storeBlock(block2);
-    await db.storeBlock(block3);
-
-    const spyStorage = jest.spyOn(storage, 'handleNewBlock');
-    const spyDbStoreBlock = jest.spyOn(db, 'storeBlock');
-    const spyDbStoreTxes = jest.spyOn(db, 'storeTxes');
-
+    await fillDbWithBlocks();
+    initSpys();
     await dbBuilder.init('1.0.0');
-
-    expect(spyStorage).not.toHaveBeenCalled();
-    expect(spyDbStoreBlock).not.toHaveBeenCalled();
-    expect(spyDbStoreTxes).not.toHaveBeenCalled();
+    expectDbToNotRebuild();
   });
 
   it('should rebuild the db when the db version is older', async () => {
-    await db.storeBlock(block1);
-    await db.storeBlock(block2);
-    await db.storeBlock(block3);
-
-    const spyStorage = jest.spyOn(storage, 'handleNewBlock');
-    const spyDbStoreBlock = jest.spyOn(db, 'storeBlock');
-    const spyDbStoreTxes = jest.spyOn(db, 'storeTxes');
-
+    await fillDbWithBlocks();
+    initSpys();
     await dbBuilder.init('2.0.0');
+    expectDbToRebuild();
+  });
 
-    expect(spyStorage).toHaveBeenCalled();
-    expect(spyDbStoreBlock).toHaveBeenCalled();
-    expect(spyDbStoreTxes).toHaveBeenCalled();
+  it('should not rebuild the db when the db version is newer', async () => {
+    await fillDbWithBlocks();
+    initSpys();
+    await dbBuilder.init('0.0.4');
+    expectDbToNotRebuild();
   });
 });

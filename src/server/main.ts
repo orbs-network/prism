@@ -16,6 +16,7 @@ import { sleep } from './gaps-filler/Cron';
 import * as config from './config';
 import * as winston from 'winston';
 import { genLogger } from './logger/LoggerFactory';
+import { DBBuilder } from './db/DBBuilder';
 
 async function main() {
   console.log(`*******************************************`);
@@ -30,6 +31,7 @@ async function main() {
     LOG_TO_CONSOLE,
     LOG_TO_FILE,
     LOG_TO_ROLLBAR,
+    PRISM_VERSION
   } = config;
   const logger: winston.Logger = genLogger(LOG_TO_CONSOLE, LOG_TO_FILE, LOG_TO_ROLLBAR);
 
@@ -46,6 +48,9 @@ async function main() {
 
   // internals
   const storage = new Storage(db);
+
+  const dbBuilder = new DBBuilder(db, storage, orbsAdapter);
+  await dbBuilder.init(PRISM_VERSION);
 
   const server = initServer(storage);
   const ws = new WS(logger, server);

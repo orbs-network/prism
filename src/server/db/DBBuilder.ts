@@ -1,6 +1,7 @@
 import { IOrbsAdapter } from '../orbs-adapter/IOrbsAdapter';
 import { Storage } from '../storage/storage';
 import { IDB } from './IDB';
+import * as semver from 'semver';
 
 export class DBBuilder {
   constructor(private db: IDB, private storage: Storage, private orbsAdapter: IOrbsAdapter) {}
@@ -11,7 +12,7 @@ export class DBBuilder {
         await this.rebuildDb();
     } else {
         const dbVersion = await this.db.getVersion();
-        if (dbVersion !== prismVersion) {
+        if (semver.gt(prismVersion, dbVersion)) {
             await this.rebuildDb();
         }
     }
