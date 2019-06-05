@@ -9,20 +9,21 @@ export class DBBuilder {
   public async init(prismVersion: string): Promise<void> {
     const hasBlocks = (await this.db.getLatestBlockHeight()) > 0n;
     if (!hasBlocks) {
-        await this.rebuildDb();
+      await this.rebuildDb();
     } else {
-        const dbVersion = await this.db.getVersion();
-        if (semver.gt(prismVersion, dbVersion)) {
-            await this.rebuildDb();
-        }
+      const dbVersion = await this.db.getVersion();
+      if (semver.gt(prismVersion, dbVersion)) {
+        await this.db.clearAll();
+        await this.rebuildDb();
+      }
     }
   }
 
   private async rebuildDb(): Promise<void> {
     const latestHeight = await this.orbsAdapter.getLatestKnownHeight();
     for (let h = 1n; h <= latestHeight; h++) {
-        const block = await this.orbsAdapter.getBlockAt(h);
-        await this.storage.handleNewBlock(block);
+      const block = await this.orbsAdapter.getBlockAt(h);
+      await this.storage.handleNewBlock(block);
     }
   }
 }

@@ -23,6 +23,7 @@ describe(`DBBuilder`, async () => {
   let spyStorage: jest.SpyInstance;
   let spyDbStoreBlock: jest.SpyInstance;
   let spyDbStoreTxes: jest.SpyInstance;
+  let spyDbClear: jest.SpyInstance;
 
   const rawBlock1: IRawBlock = generateRandomRawBlock(1n);
   const rawBlock2: IRawBlock = generateRandomRawBlock(2n);
@@ -63,10 +64,19 @@ describe(`DBBuilder`, async () => {
     expect(spyDbStoreTxes).not.toHaveBeenCalled();
   }
 
+  function expectDbToBeCleared(): void {
+    expect(spyDbClear).toHaveBeenCalled();
+  }
+
+  function expectDbToNotBeCleared(): void {
+    expect(spyDbClear).not.toHaveBeenCalled();
+  }
+
   function initSpys(): void {
     spyStorage = jest.spyOn(storage, 'handleNewBlock');
     spyDbStoreBlock = jest.spyOn(db, 'storeBlock');
     spyDbStoreTxes = jest.spyOn(db, 'storeTxes');
+    spyDbClear = jest.spyOn(db, 'clearAll');
   }
 
   it('should rebuild the db when the db is empty', async () => {
@@ -76,6 +86,8 @@ describe(`DBBuilder`, async () => {
     expect(await db.getBlockByHeight('3')).toBeNull();
 
     await dbBuilder.init('1.0.0');
+
+    expectDbToNotBeCleared();
 
     expect(await db.getLatestBlockHeight()).toBe(3n);
     expect(await db.getBlockByHeight('1')).toEqual(block1);
@@ -87,6 +99,7 @@ describe(`DBBuilder`, async () => {
     await fillDbWithBlocks();
     initSpys();
     await dbBuilder.init('1.0.0');
+    expectDbToNotBeCleared();
     expectDbToNotRebuild();
   });
 
@@ -94,6 +107,7 @@ describe(`DBBuilder`, async () => {
     await fillDbWithBlocks();
     initSpys();
     await dbBuilder.init('2.0.0');
+    expectDbToBeCleared();
     expectDbToRebuild();
   });
 
@@ -101,6 +115,7 @@ describe(`DBBuilder`, async () => {
     await fillDbWithBlocks();
     initSpys();
     await dbBuilder.init('0.0.4');
+    expectDbToNotBeCleared();
     expectDbToNotRebuild();
   });
 });
