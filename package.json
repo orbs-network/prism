@@ -18,7 +18,6 @@
     "lint": "tslint -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'",
     "start": "node index.js",
     "start:prod": "NODE_ENV=production node index.js",
-    "start:staging": "NODE_ENV=staging node index.js",
     "build-client": "cross-env NODE_ENV=production webpack -p",
     "dev-client": "webpack-dev-server -w",
     "build-server": "tsc -p ./src/server",
