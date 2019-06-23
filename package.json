@@ -87,6 +87,7 @@
     "socket.io-client": "^2.2.0",
     "three": "^0.101.1",
     "tslib": "^1.9.3",
+    "typescript": "^3.5.2",
     "winston": "^3.2.1",
     "winston-transport-rollbar": "^2.4.0"
   },
@@ -136,7 +137,6 @@
     "ts-jest": "^23.10.5",
     "tsc-watch": "^1.1.35",
     "tslint": "^5.12.1",
-    "typescript": "^3.3.3333",
     "url-loader": "^1.1.2",
     "webpack": "^4.28.4",
     "webpack-bundle-analyzer": "^3.0.3",
