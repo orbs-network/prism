@@ -19,7 +19,10 @@ workflows:
   version: 2
   build:
     jobs:
-      - tests
+      - tests:
+          filters:
+            tags:
+              only: /^v.*/
       - release:
           requires:
             - tests
