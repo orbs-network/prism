@@ -85,6 +85,7 @@ describe(`DBBuilder`, async () => {
     expect(await db.getBlockByHeight('2')).toBeNull();
     expect(await db.getBlockByHeight('3')).toBeNull();
 
+    initSpys();
     await dbBuilder.init('1.0.0');
 
     expectDbToNotBeCleared();
