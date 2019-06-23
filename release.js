@@ -52,6 +52,7 @@ function upgradePackageJson() {
 function commitPackageJson(newVersion) {
   run(`git add ${packageJsonPath}`);
   run(`git commit ${packageJsonPath} -m "Version ${newVersion}"`);
+  run(`git tag -a ${newVersion} -m "Version ${newVersion}"`);
   run(`git push origin master`);
 }
 
