@@ -1,18 +1,18 @@
 import * as path from 'path';
 import * as express from 'express';
 import { Router } from 'express';
-import * as proxy from 'http-proxy-middleware';
-import * as config from '../config';
+import { IS_DEV, WEBPACK_PORT } from '../config';
 
 export function staticsRouter() {
   const router = Router();
 
-  if (config.IS_DEV) {
+  if (IS_DEV) {
+    const proxy = require('http-proxy-middleware');
     // All the assets are hosted by Webpack on localhost:${config.WEBPACK_PORT} (Webpack-dev-server)
     router.use(
       '/statics',
       proxy({
-        target: `http://localhost:${config.WEBPACK_PORT}/`,
+        target: `http://localhost:${WEBPACK_PORT}/`,
       }),
     );
   } else {
