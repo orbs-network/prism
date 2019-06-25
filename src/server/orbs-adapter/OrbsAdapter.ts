@@ -88,12 +88,6 @@ export class OrbsAdapter implements IOrbsAdapter {
       throw new Error(`orbsClient.getBlock(0n) returned with bad blockHeight`);
     }
 
-    // blockHeight = 0n can happen if there was some error in the response
-    // because we expect orbs to have at least one block it is not reasonable to get block height = 0
-    if (getBlockResponse.blockHeight === 0n) {
-      throw new Error(`orbsClient.getBlock(0n) returned blockHeight = 0n, not reasonable`);
-    }
-
     this.logger.info(`Lastest height is ${getBlockResponse.blockHeight}`);
     return getBlockResponse.blockHeight;
   }
