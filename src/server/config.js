@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-const IS_DEV = process.env.NODE_ENV !== 'production';
+const IS_DEV = process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'staging';
 
 const findUp = require('find-up');
 
