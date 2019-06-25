@@ -16,7 +16,7 @@ if (IS_DEV) {
 
 const { version } = require(findUp.sync('package.json'));
 
-////////////// CONFIG VARIABLES //////////////
+////////////// CONFIG VARIABLES ///////////////
 const PRISM_VERSION = `v${version}`;
 
 // debug
