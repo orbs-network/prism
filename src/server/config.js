@@ -28,7 +28,7 @@ const LOG_TO_ROLLBAR = process.env.LOG_TO_ROLLBAR === 'true'; // default: false
 // server
 const SERVER_PORT = process.env.PORT || 3000;
 const WEBPACK_PORT = 8085; // For dev environment only
-const FORCE_HTTPS = process.env.FORCE_HTTPS !== 'false'; // default: true
+const FORCE_HTTPS = process.env.FORCE_HTTPS === 'true'; // default: false
 
 // analytics
 const ROLLBAR_ACCESS_TOKEN_SERVER = process.env.ROLLBAR_ACCESS_TOKEN_SERVER;

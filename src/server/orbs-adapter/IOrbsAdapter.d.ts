@@ -13,6 +13,7 @@ export interface INewBlocksHandler {
 }
 
 export interface IOrbsAdapter {
+  init(): Promise<void>;
   initPooling(poolingInterval: number): Promise<void>;
   RegisterToNewBlocks(handler: INewBlocksHandler): void;
   UnregisterFromNewBlocks(handler: INewBlocksHandler): void;

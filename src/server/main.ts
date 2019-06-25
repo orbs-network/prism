@@ -37,6 +37,7 @@ async function main() {
 
   // externals
   const orbsAdapter = genOrbsAdapter(logger);
+  await orbsAdapter.init();
   const db = genDb(logger);
   try {
     await db.init();

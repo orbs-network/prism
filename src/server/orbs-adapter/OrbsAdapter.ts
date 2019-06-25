@@ -21,17 +21,24 @@ export class OrbsAdapter implements IOrbsAdapter {
 
   constructor(private logger: winston.Logger, private orbsClient: IOrbsClient) {}
 
-  public async initPooling(poolingInterval: number): Promise<void> {
-    this.logger.info('initializing the scheduler');
-    let schedulerInitialized = false;
-    while (!schedulerInitialized) {
-      schedulerInitialized = await this.initScheduler(poolingInterval);
-      if (!schedulerInitialized) {
-        this.logger.warn('Unable to initialize the scheduler, retrying in 1sec.');
+  public async init(): Promise<void> {
+    this.logger.info('initializing OrbsAdapter');
+    let initialized = false;
+    while (!initialized) {
+      try {
+        this.latestKnownHeight = await this.getLatestKnownHeight();
+        initialized = true;
+      } catch (err) {
+        this.logger.warn('Unable to initialize OrbsAdapter, retrying in 1sec.');
         await sleep(1000);
       }
     }
-    this.logger.info('scheduler initialized');
+    this.logger.info('OrbsAdapter initialized');
+  }
+
+  public async initPooling(poolingInterval: number): Promise<void> {
+    this.logger.info('initializing the scheduler');
+    this.schedualNextRequest(poolingInterval);
   }
 
   public RegisterToNewBlocks(handler: INewBlocksHandler): void {
@@ -111,20 +118,6 @@ export class OrbsAdapter implements IOrbsAdapter {
       this.logger.error(`checkForNewBlocks failed`, err);
     }
     this.schedualNextRequest(poolingInterval);
-  }
-
-  private async initScheduler(poolingInterval: number): Promise<boolean> {
-    if (this.latestKnownHeight === 0n) {
-      try {
-        this.latestKnownHeight = await this.getLatestKnownHeight();
-      } catch (err) {
-        this.logger.error('getBlock failed', { func: 'initScheduler', err });
-        return false;
-      }
-    }
-
-    this.schedualNextRequest(poolingInterval);
-    return true;
   }
 
   private async getBlockWrapper(blockHeight: bigint, sourceMethod: string): Promise<GetBlockResponse> {
