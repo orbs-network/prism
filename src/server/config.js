@@ -39,8 +39,8 @@ const MONGODB_URI = process.env.MONGODB_URI;
 const DB_IS_READ_ONLY = process.env.DB_IS_READ_ONLY === 'true'; // default: false
 
 // orbs client
-const ORBS_ENDPOINT = process.env.ORBS_ENDPOINT;
-const ORBS_VIRTUAL_CHAIN_ID = parseInt(process.env.ORBS_VIRTUAL_CHAIN_ID);
+const ORBS_ENDPOINT = process.env.ORBS_ENDPOINT || `http://localhost:8080`;
+const ORBS_VIRTUAL_CHAIN_ID = parseInt(process.env.ORBS_VIRTUAL_CHAIN_ID || 42);
 const ORBS_NETWORK_TYPE = process.env.ORBS_NETWORK_TYPE || 'TEST_NET';
 
 // polling
