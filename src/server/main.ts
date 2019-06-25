@@ -36,8 +36,6 @@ async function main() {
   const logger: winston.Logger = genLogger(LOG_TO_CONSOLE, LOG_TO_FILE, LOG_TO_ROLLBAR);
 
   // externals
-  const orbsAdapter = genOrbsAdapter(logger);
-  await orbsAdapter.init();
   const db = genDb(logger);
   try {
     await db.init();
@@ -49,14 +47,15 @@ async function main() {
 
   // internals
   const storage = new Storage(db);
-
-  const dbBuilder = new DBBuilder(db, storage, orbsAdapter);
-  await dbBuilder.init(PRISM_VERSION);
-
   const server = initServer(storage);
   const ws = new WS(logger, server);
 
   // link all the parts
+  const orbsAdapter = genOrbsAdapter(logger);
+  await orbsAdapter.init();
+  const dbBuilder = new DBBuilder(db, storage, orbsAdapter);
+  await dbBuilder.init(PRISM_VERSION);
+
   orbsAdapter.RegisterToNewBlocks(ws);
   orbsAdapter.RegisterToNewBlocks(storage);
   await orbsAdapter.initPooling(POOLING_INTERVAL);
