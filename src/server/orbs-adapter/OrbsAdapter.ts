@@ -29,7 +29,7 @@ export class OrbsAdapter implements IOrbsAdapter {
         this.latestKnownHeight = await this.getLatestKnownHeight();
         initialized = true;
       } catch (err) {
-        this.logger.warn('Unable to initialize OrbsAdapter, retrying in 1sec.');
+        this.logger.warn(`Unable to initialize OrbsAdapter, retrying in 1sec. err: ${err}`);
         await sleep(1000);
       }
     }
