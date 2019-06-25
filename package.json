@@ -1,6 +1,6 @@
 {
   "name": "prism",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "description": "Prism, Orbs block explorer",
   "main": "index.js",
   "engines": {
