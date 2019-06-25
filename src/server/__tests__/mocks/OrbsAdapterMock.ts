@@ -4,6 +4,10 @@ import { IRawBlock } from '../../../shared/IRawData';
 export class OrbsAdapterMock implements IOrbsAdapter {
   private blockChain: IRawBlock[] = [];
 
+  public async init(): Promise<void> {
+    // nothing to do
+  }
+
   public async initPooling(poolingInterval: number): Promise<void> {
     // nothing to do
   }
