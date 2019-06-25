@@ -18,4 +18,6 @@ ADD dist /opt/prism/dist
 
 ADD views /opt/prism/views
 
+ENV NODE_ENV=production
+
 CMD node index.js
