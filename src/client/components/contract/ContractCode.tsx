@@ -23,16 +23,30 @@ const styles = (theme: Theme) =>
 
 interface IProps extends WithStyles<typeof styles> {
   contractName: string;
-  code: string;
+  code: string[];
 }
 
-export const ContractCode = withStyles(styles)(({ contractName, code, classes }: IProps) => (
-  <Card>
-    <CardHeader title={`Contract - ${contractName}`} id='contract-code' className={classes.header} />
-    <CardContent>
-      <SyntaxHighlighter language='go' style={darcula} customStyle={{ maxHeight: 500 }}>
-        {code ? code : 'System contract'}
+export const ContractCode = withStyles(styles)(({ contractName, code, classes }: IProps) => {
+  let codeElements = null;
+  if (code && code.length > 0) {
+    codeElements = code.map((c, idx) => (
+      <SyntaxHighlighter key={idx} language='go' style={darcula} customStyle={{ maxHeight: 500 }}>
+        {c}
       </SyntaxHighlighter>
-    </CardContent>
-  </Card>
-));
+    ));
+  } else {
+    codeElements = (
+      <SyntaxHighlighter language='go' style={darcula} customStyle={{ maxHeight: 500 }}>
+        System contract
+      </SyntaxHighlighter>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader title={`Contract - ${contractName}`} id='contract-code' className={classes.header} />
+      {codeElements}
+      <CardContent />
+    </Card>
+  );
+});

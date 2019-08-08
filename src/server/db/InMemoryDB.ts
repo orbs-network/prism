@@ -117,7 +117,7 @@ export class InMemoryDB implements IDB {
     for (const tx of this.txes.values()) {
       if (tx.contractName === '_Deployments' && tx.methodName === 'deployService' && tx.executionResult === 'SUCCESS') {
         const { inputArguments: args } = tx;
-        if (args.length === 3) {
+        if (args.length >= 3) {
           if (
             args[0].type === 'string' &&
             args[0].value === contractName &&

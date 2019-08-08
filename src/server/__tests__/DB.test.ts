@@ -185,6 +185,19 @@ function testDb(db: IDB, dbName: string) {
       expect(tx).toEqual(actual);
     });
 
+    it('should retrive multi-file contract by name', async () => {
+      const code1: string = 'this is go code 1';
+      const code2: string = 'this is go code 2';
+      const btx: BlockTransaction = generateContractDeployTransaction('test-contract', code1, code2);
+      const rawBlock = generateRawBlockWithTransaction(1n, btx);
+
+      const tx = rawTxToTx(rawBlock.transactions[0], 0);
+      await db.storeTxes([tx]);
+
+      const actual = await db.getDeployContractTx('test-contract', 1);
+      expect(tx).toEqual(actual);
+    });
+
     describe('Retriving txes by contract name', async () => {
       const contractName = 'test-contract';
 

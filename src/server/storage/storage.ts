@@ -50,9 +50,9 @@ export class Storage {
 
   public async getContractData(contractName: string, executionIdx?: number): Promise<IContractData> {
     const deployTx = await this.db.getDeployContractTx(contractName, 1);
-    let code = null;
+    let code: string[] = null;
     if (deployTx) {
-      code = Buffer.from(decodeHex(deployTx.inputArguments[2].value)).toString();
+      code = deployTx.inputArguments.splice(2).map(arg => Buffer.from(decodeHex(arg.value)).toString());
     }
     const txes = await this.db.getContractTxes(contractName, CONTRACT_TXES_HISTORY_PAGE_SIZE, executionIdx);
     const blockInfo: IContractBlockInfo = txes.reduce(

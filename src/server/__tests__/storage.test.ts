@@ -95,8 +95,9 @@ describe('storage', () => {
 
     it('should return contract data by contract name', async () => {
       const contractName: string = 'test-contract';
-      const code: string = 'This is Go code';
-      const deployTx: BlockTransaction = generateContractDeployTransaction(contractName, code);
+      const code1: string = 'This is the 1st Go code';
+      const code2: string = 'This is the 2nd Go code';
+      const deployTx: BlockTransaction = generateContractDeployTransaction(contractName, code1, code2);
       const deployBlock = generateRawBlockWithTransaction(1n, deployTx);
       const tx1 = generateBlockTransaction(contractName, 'some-method1');
       const tx2 = generateBlockTransaction(contractName, 'some-method2');
@@ -116,7 +117,7 @@ describe('storage', () => {
       const block3tx3: IShortTx = rawTxToShortTx(rawBlock3.transactions[0]);
 
       const expected: IContractData = {
-        code,
+        code: [code1, code2],
         contractName,
         blockInfo: {
           2: {

@@ -117,8 +117,9 @@ export function generateBlockTransaction(
   };
 }
 
-export function generateContractDeployTransaction(contractName: string, code: string): BlockTransaction {
-  const inputArguments = [argString(contractName), argUint32(1), argBytes(Uint8Array.from(Buffer.from(code)))];
+export function generateContractDeployTransaction(contractName: string, ...codeArray: string[]): BlockTransaction {
+  const codesAsArgs = codeArray.map(code => argBytes(Uint8Array.from(Buffer.from(code))));
+  const inputArguments = [argString(contractName), argUint32(1), ...codesAsArgs];
 
   return generateBlockTransaction('_Deployments', 'deployService', inputArguments);
 }
