@@ -6,29 +6,17 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { ExecutionResult, calcClientAddressOfEd25519PublicKey, argUint32, argString, argBytes } from 'orbs-client-sdk';
-import {
-  BlockTransaction,
-  GetBlockResponse,
-  ResultsBlockHeader,
-  TransactionsBlockHeader,
-} from 'orbs-client-sdk/dist/codec/OpGetBlock';
-import { blockResponseToRawBlock } from '../transformers/blockTransform';
-import { IRawBlock } from '../../shared/IRawData';
+import { argBytes, argString, argUint32, ExecutionResult } from 'orbs-client-sdk';
 import { Argument } from 'orbs-client-sdk/dist/codec/Arguments';
+import { BlockTransaction, GetBlockResponse, ResultsBlockHeader, TransactionsBlockHeader } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 
-export function generateRandomRawBlock(blockHeight: bigint): IRawBlock {
-  const getBlockResponse: GetBlockResponse = generateRandomGetBlockRespose(blockHeight);
-  return blockResponseToRawBlock(getBlockResponse);
-}
-
-export function generateRawBlockWithTransaction(
+export function generateBlockResponseWithTransaction(
   blockHeight: bigint,
   txes: BlockTransaction | BlockTransaction[],
-): IRawBlock {
+): GetBlockResponse {
   const getBlockResponse: GetBlockResponse = generateRandomGetBlockRespose(blockHeight);
   getBlockResponse.transactions = Array.isArray(txes) ? txes : [txes];
-  return blockResponseToRawBlock(getBlockResponse);
+  return getBlockResponse;
 }
 
 export function generateOverflowGetBlockRespose(blockHeight: bigint): GetBlockResponse {

@@ -8,7 +8,7 @@
 
 import { IBlock } from '../../shared/IBlock';
 import { IShortTx } from '../../shared/IContractData';
-import { ITx } from '../../shared/IRawData';
+import { ITx } from '../../shared/ITx';
 
 export interface IDB {
   init(): Promise<void>;

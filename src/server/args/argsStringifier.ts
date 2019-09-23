@@ -1,6 +1,6 @@
-import { IRawTx } from '../../shared/IRawData';
+import { ITx } from '../../shared/ITx';
 
-export function stringifyMethodCall(tx: IRawTx): string {
+export function stringifyMethodCall(tx: ITx): string {
   const inputArgsStr = tx.inputArguments
     .map(arg => {
       switch (arg.type) {

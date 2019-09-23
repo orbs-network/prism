@@ -6,21 +6,17 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
+import { encodeHex } from 'orbs-client-sdk';
 import { BlockTransaction } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import * as winston from 'winston';
 import { IContractData, IShortTx } from '../../shared/IContractData';
 import { ISearchResult } from '../../shared/ISearchResult';
 import { InMemoryDB } from '../db/InMemoryDB';
 import { genLogger } from '../logger/LoggerFactory';
-import {
-  generateBlockTransaction,
-  generateContractDeployTransaction,
-  generateRandomRawBlock,
-  generateRawBlockWithTransaction,
-} from '../orbs-adapter/fake-blocks-generator';
+import { generateBlockResponseWithTransaction, generateBlockTransaction, generateContractDeployTransaction, generateRandomGetBlockRespose } from '../orbs-adapter/fake-blocks-generator';
 import { Storage } from '../storage/storage';
-import { rawBlockToBlock } from '../transformers/blockTransform';
-import { rawTxToShortTx, rawTxToTx } from '../transformers/txTransform';
+import { blockResponseToBlock, blockResponseTransactionAsTx, blockResponseTransactionsToTxs } from '../transformers/blockTransform';
+import { txToShortTx } from '../transformers/txTransform';
 
 describe('storage', () => {
   const logger: winston.Logger = genLogger(false, false, false);
@@ -29,11 +25,12 @@ describe('storage', () => {
     const db = new InMemoryDB();
     await db.init();
     const storage = new Storage(db);
-    const block = generateRandomRawBlock(1n);
+    const block = generateRandomGetBlockRespose(1n);
     await storage.handleNewBlock(block);
 
-    const expected = rawBlockToBlock(block);
-    const actual = await storage.getBlockByHash(block.blockHash);
+    const expected = blockResponseToBlock(block);
+    const blockHash = encodeHex(block.resultsBlockHash);
+    const actual = await storage.getBlockByHash(blockHash);
     expect(expected).toEqual(actual);
   });
 
@@ -41,9 +38,9 @@ describe('storage', () => {
     const db = new InMemoryDB();
     await db.init();
     const storage = new Storage(db);
-    const block = generateRandomRawBlock(1n);
+    const block = generateRandomGetBlockRespose(1n);
     await storage.handleNewBlock(block);
-    const txes = block.transactions.map(rawTxToTx);
+    const txes = blockResponseTransactionsToTxs(block);
 
     for (const tx of txes) {
       const actual = await storage.getTx(tx.txId);
@@ -56,13 +53,14 @@ describe('storage', () => {
       const db = new InMemoryDB();
       await db.init();
       const storage = new Storage(db);
-      const block1 = generateRandomRawBlock(1n);
-      const block2 = generateRandomRawBlock(2n);
+      const block1 = generateRandomGetBlockRespose(1n);
+      const block2 = generateRandomGetBlockRespose(2n);
       await storage.handleNewBlock(block1);
       await storage.handleNewBlock(block2);
 
-      const expected: ISearchResult = { type: 'block', block: rawBlockToBlock(block2) };
-      const actual = await storage.search(block2.blockHash);
+      const expected: ISearchResult = { type: 'block', block: blockResponseToBlock(block2) };
+      const blockHash = encodeHex(block2.resultsBlockHash);
+      const actual = await storage.search(blockHash);
       expect(expected).toEqual(actual);
     });
 
@@ -70,16 +68,18 @@ describe('storage', () => {
       const db = new InMemoryDB();
       await db.init();
       const storage = new Storage(db);
-      const block1 = generateRandomRawBlock(1n);
-      const block2 = generateRandomRawBlock(2n);
+      const block1 = generateRandomGetBlockRespose(1n);
+      const block2 = generateRandomGetBlockRespose(2n);
       await storage.handleNewBlock(block1);
       await storage.handleNewBlock(block2);
 
+      const block2Txes = blockResponseTransactionsToTxs(block2);
+
       const expected: ISearchResult = {
         type: 'tx',
-        tx: rawTxToTx(block2.transactions[0], 0),
+        tx: block2Txes[0],
       };
-      const actual = await storage.search(block2.transactions[0].txId);
+      const actual = await storage.search(block2Txes[0].txId);
       expect(expected).toEqual(actual);
     });
 
@@ -98,23 +98,23 @@ describe('storage', () => {
       const code1: string = 'This is the 1st Go code';
       const code2: string = 'This is the 2nd Go code';
       const deployTx: BlockTransaction = generateContractDeployTransaction(contractName, code1, code2);
-      const deployBlock = generateRawBlockWithTransaction(1n, deployTx);
+      const deployBlock = generateBlockResponseWithTransaction(1n, deployTx);
       const tx1 = generateBlockTransaction(contractName, 'some-method1');
       const tx2 = generateBlockTransaction(contractName, 'some-method2');
       const tx3 = generateBlockTransaction(contractName, 'some-method3');
-      const rawBlock2 = generateRawBlockWithTransaction(2n, [tx1, tx2]);
-      const rawBlock3 = generateRawBlockWithTransaction(3n, tx3);
+      const block2 = generateBlockResponseWithTransaction(2n, [tx1, tx2]);
+      const block3 = generateBlockResponseWithTransaction(3n, tx3);
 
       const db = new InMemoryDB();
       await db.init();
       const storage = new Storage(db);
       await storage.handleNewBlock(deployBlock);
-      await storage.handleNewBlock(rawBlock2);
-      await storage.handleNewBlock(rawBlock3);
+      await storage.handleNewBlock(block2);
+      await storage.handleNewBlock(block3);
 
-      const block2tx0: IShortTx = rawTxToShortTx(rawBlock2.transactions[0]);
-      const block2tx1: IShortTx = rawTxToShortTx(rawBlock2.transactions[1]);
-      const block3tx3: IShortTx = rawTxToShortTx(rawBlock3.transactions[0]);
+      const block2tx0: IShortTx = txToShortTx(blockResponseTransactionAsTx(block2, 0));
+      const block2tx1: IShortTx = txToShortTx(blockResponseTransactionAsTx(block2, 1));
+      const block3tx3: IShortTx = txToShortTx(blockResponseTransactionAsTx(block3, 0));
 
       const expected: IContractData = {
         code: [code1, code2],

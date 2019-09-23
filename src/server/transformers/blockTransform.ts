@@ -9,9 +9,9 @@
 import { calcClientAddressOfEd25519PublicKey, encodeHex } from 'orbs-client-sdk';
 import { Argument } from 'orbs-client-sdk/dist/codec/Arguments';
 import { Event } from 'orbs-client-sdk/dist/codec/Events';
-import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
+import { BlockTransaction, GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import { IBlock, IBlockSummary } from '../../shared/IBlock';
-import { IRawArgument, IRawBlock, IRawEvent } from '../../shared/IRawData';
+import { ITxArgument, ITxEvent, ITx } from '../../shared/ITx';
 
 export function blockToBlockSummary(block: IBlock): IBlockSummary {
   return {
@@ -22,50 +22,56 @@ export function blockToBlockSummary(block: IBlock): IBlockSummary {
   };
 }
 
-export function rawBlockToBlockSummary(rawBlock: IRawBlock): IBlockSummary {
+export function blockResponseToBlockSummary(getBlockResponse: GetBlockResponse): IBlockSummary {
+  const blockHash = encodeHex(getBlockResponse.resultsBlockHash);
+  const blockHeight = getBlockResponse.resultsBlockHeader.blockHeight.toString();
   return {
-    blockHash: rawBlock.blockHash,
-    blockHeight: rawBlock.blockHeight,
-    numTransactions: rawBlock.transactions.length,
-    blockTimestamp: rawBlock.timeStamp,
+    blockHash,
+    blockHeight,
+    numTransactions: getBlockResponse.transactions.length,
+    blockTimestamp: getBlockResponse.blockTimestamp.getTime(),
   };
 }
 
-export function rawBlockToBlock(block: IRawBlock): IBlock {
-  return {
-    blockHash: block.blockHash,
-    blockHeight: block.blockHeight,
-    blockTimestamp: block.timeStamp,
-    txIds: block.transactions.map(tx => tx.txId),
-  };
-}
-
-export function blockResponseToRawBlock(getBlockResponse: GetBlockResponse): IRawBlock {
+export function blockResponseToBlock(getBlockResponse: GetBlockResponse): IBlock {
   const blockHash = encodeHex(getBlockResponse.resultsBlockHash);
   const blockHeight = getBlockResponse.resultsBlockHeader.blockHeight.toString();
   return {
     blockHeight,
     blockHash,
-    timeStamp: getBlockResponse.blockTimestamp.getTime(),
-    transactions: getBlockResponse.transactions.map(tx => ({
-      txId: encodeHex(tx.txId),
-      blockHeight,
-      protocolVersion: tx.protocolVersion,
-      virtualChainId: tx.virtualChainId,
-      timestamp: tx.timestamp.getTime(),
-      signerPublicKey: encodeHex(tx.signerPublicKey),
-      signerAddress: encodeHex(calcClientAddressOfEd25519PublicKey(tx.signerPublicKey)),
-      contractName: tx.contractName,
-      methodName: tx.methodName,
-      inputArguments: tx.inputArguments.map(convertToRawArgument),
-      executionResult: tx.executionResult,
-      outputArguments: tx.outputArguments.map(convertToRawArgument),
-      outputEvents: tx.outputEvents.map(convertToRawEvent),
-    })),
+    blockTimestamp: getBlockResponse.blockTimestamp.getTime(),
+    txIds: getBlockResponse.transactions.map(tx => encodeHex(tx.txId)),
   };
 }
 
-function convertToRawArgument(argument: Argument): IRawArgument {
+export function blockResponseTransactionsToTxs(block: GetBlockResponse): ITx[] {
+  return block.transactions.map((tx, idx) => blockTransactionToTx(block.blockHeight.toString(), idx, tx));
+}
+
+export function blockResponseTransactionAsTx(block: GetBlockResponse, idx: number): ITx {
+  return blockTransactionToTx(block.blockHeight.toString(), idx, block.transactions[idx]);
+}
+
+export function blockTransactionToTx(blockHeight: string, idxInBlock: number, tx: BlockTransaction): ITx {
+  return {
+    idxInBlock,
+    txId: encodeHex(tx.txId),
+    blockHeight,
+    protocolVersion: tx.protocolVersion,
+    virtualChainId: tx.virtualChainId,
+    timestamp: tx.timestamp.getTime(),
+    signerPublicKey: encodeHex(tx.signerPublicKey),
+    signerAddress: encodeHex(calcClientAddressOfEd25519PublicKey(tx.signerPublicKey)),
+    contractName: tx.contractName,
+    methodName: tx.methodName,
+    inputArguments: tx.inputArguments.map(convertToRawArgument),
+    executionResult: tx.executionResult,
+    outputArguments: tx.outputArguments.map(convertToRawArgument),
+    outputEvents: tx.outputEvents.map(convertToRawEvent),
+  }
+}
+
+function convertToRawArgument(argument: Argument): ITxArgument {
   switch (argument.type) {
     case 'uint64':
     case 'uint32':
@@ -91,7 +97,7 @@ function convertToRawArgument(argument: Argument): IRawArgument {
   }
 }
 
-function convertToRawEvent(event: Event): IRawEvent {
+function convertToRawEvent(event: Event): ITxEvent {
   return {
     eventName: event.eventName,
     contractName: event.contractName,

@@ -11,12 +11,12 @@ import { MongoDB } from './MongoDB';
 import { genLogger } from '../logger/LoggerFactory';
 import { Storage } from '../storage/storage';
 import * as fs from 'fs';
-import { OrbsAdapter } from '../orbs-adapter/OrbsAdapter';
+import { IOrbsBlocksPolling, OrbsBlocksPolling } from 'orbs-blocks-polling-js';
 import { Client, NetworkType } from 'orbs-client-sdk';
 import * as childProcess from 'child_process';
 
-async function storeBlockAt(height: bigint, storage: Storage, orbsAdapter: OrbsAdapter): Promise<void> {
-  const block = await orbsAdapter.getBlockAt(height);
+async function storeBlockAt(height: bigint, storage: Storage, orbsBlocksPolling: IOrbsBlocksPolling): Promise<void> {
+  const block = await orbsBlocksPolling.getBlockAt(height);
   if (block) {
     // await storage.handleNewBlock(block);
   } else {
@@ -28,45 +28,45 @@ async function storeBlocksChunk(
   fromHeight: bigint,
   toHeight: bigint,
   storage: Storage,
-  orbsAdapter: OrbsAdapter,
+  orbsBlocksPolling: IOrbsBlocksPolling,
 ): Promise<void> {
   const promises: Array<Promise<void>> = [];
   for (let i = fromHeight; i <= toHeight; i++) {
-    promises.push(storeBlockAt(i, storage, orbsAdapter));
+    promises.push(storeBlockAt(i, storage, orbsBlocksPolling));
   }
   await Promise.all(promises);
   console.log(`blocks from ${fromHeight} to ${toHeight} stored`);
 }
 
 const CHUNK_SIZE = 10n;
-async function storeAllBlocks(toHeight: bigint, storage: Storage, orbsAdapter: OrbsAdapter): Promise<void> {
+async function storeAllBlocks(toHeight: bigint, storage: Storage, orbsBlocksPolling: IOrbsBlocksPolling): Promise<void> {
   for (let i = 1n; i < toHeight; i = i + CHUNK_SIZE) {
     const from = i;
     let to = i + CHUNK_SIZE - 1n;
     if (to > toHeight) {
       to = toHeight;
     }
-    await storeBlocksChunk(from, to, storage, orbsAdapter);
+    await storeBlocksChunk(from, to, storage, orbsBlocksPolling);
   }
   console.log(`done storing all block from 1 to ${toHeight}`);
   // mark the cache with the latest block
   await storage.setHeighestConsecutiveBlockHeight(toHeight);
 }
 
-function genOrbsAdapter(logger: winston.Logger, orbsEndpoint: string, vchainId: number): OrbsAdapter {
+function genOrbsBlocksPolling(logger: winston.Logger, orbsEndpoint: string, vchainId: number): IOrbsBlocksPolling {
   const orbsClient = new Client(orbsEndpoint, vchainId, 'TEST_NET' as NetworkType);
-  return new OrbsAdapter(logger, orbsClient);
+  return new OrbsBlocksPolling(logger, orbsClient);
 }
 
 function pauseFor(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function waitForHeighestBlockHeight(orbsAdapter: OrbsAdapter): Promise<bigint> {
+async function waitForHeighestBlockHeight(orbsBlocksPolling: IOrbsBlocksPolling): Promise<bigint> {
   let heighestBlockHeight = 0n;
   console.log('Waiting for Orbs Network to initialize');
   while (heighestBlockHeight === 0n || heighestBlockHeight === null) {
-    heighestBlockHeight = await orbsAdapter.getLatestKnownHeight();
+    heighestBlockHeight = await orbsBlocksPolling.getLatestKnownHeight();
     await pauseFor(1000);
   }
 
@@ -138,15 +138,15 @@ async function waitForHeighestBlockHeight(orbsAdapter: OrbsAdapter): Promise<big
         });
 
         // initialize the orbs adapter against the local orbs-network
-        const orbsAdapter = genOrbsAdapter(logger, 'http://localhost:8080', vchainId);
+        const orbsBlocksPolling = genOrbsBlocksPolling(logger, 'http://localhost:8080', vchainId);
 
-        const heighestBlockHeight = await waitForHeighestBlockHeight(orbsAdapter);
+        const heighestBlockHeight = await waitForHeighestBlockHeight(orbsBlocksPolling);
 
         // initialize the local db
         await localDb.init();
 
         // block by block call to Storage
-        await storeAllBlocks(heighestBlockHeight, storage, orbsAdapter);
+        await storeAllBlocks(heighestBlockHeight, storage, orbsBlocksPolling);
 
         // stop orbs-network
         orbsNetwork.kill();

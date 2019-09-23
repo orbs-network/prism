@@ -9,8 +9,8 @@
 import axios from 'axios';
 import { IBlock, IBlockSummary } from '../../shared/IBlock';
 import { IContractData } from '../../shared/IContractData';
-import { IRawTx } from '../../shared/IRawData';
 import { ISearchResult } from '../../shared/ISearchResult';
+import { ITx } from '../../shared/ITx';
 import { HistoryPaginator } from '../components/contract/HistoryTxPaginator';
 
 export async function getLatestBlocksSummary(numOfBlocks: number): Promise<IBlockSummary[]> {
@@ -31,9 +31,9 @@ export async function loadContractData(
   return res.data as IContractData;
 }
 
-export async function loadTx(txId: string): Promise<IRawTx> {
+export async function loadTx(txId: string): Promise<ITx> {
   const res = await axios.get(`/api/tx/${txId}`);
-  return res.data as IRawTx;
+  return res.data as ITx;
 }
 
 export async function search(term: string): Promise<ISearchResult> {

@@ -1,10 +1,10 @@
-import { IOrbsAdapter } from '../orbs-adapter/IOrbsAdapter';
+import { IOrbsBlocksPolling } from 'orbs-blocks-polling-js';
+import * as semver from 'semver';
 import { Storage } from '../storage/storage';
 import { IDB } from './IDB';
-import * as semver from 'semver';
 
 export class DBBuilder {
-  constructor(private db: IDB, private storage: Storage, private orbsAdapter: IOrbsAdapter) {}
+  constructor(private db: IDB, private storage: Storage, private orbsBlocksPolling: IOrbsBlocksPolling) {}
 
   public async init(prismVersion: string): Promise<void> {
     const hasBlocks = (await this.db.getLatestBlockHeight()) > 0n;
@@ -20,9 +20,9 @@ export class DBBuilder {
   }
 
   private async rebuildDb(): Promise<void> {
-    const latestHeight = await this.orbsAdapter.getLatestKnownHeight();
+    const latestHeight = await this.orbsBlocksPolling.getLatestKnownHeight();
     for (let h = 1n; h <= latestHeight; h++) {
-      const block = await this.orbsAdapter.getBlockAt(h);
+      const block = await this.orbsBlocksPolling.getBlockAt(h);
       await this.storage.handleNewBlock(block);
     }
   }

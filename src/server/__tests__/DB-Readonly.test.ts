@@ -6,14 +6,15 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { rawBlockToBlock } from '../transformers/blockTransform';
-import { generateRandomRawBlock } from '../orbs-adapter/fake-blocks-generator';
-import { InMemoryDB } from '../db/InMemoryDB';
-import { IDB } from '../db/IDB';
-import { MongoDB } from '../db/MongoDB';
-import { MONGODB_URI } from '../config';
+import { encodeHex } from 'orbs-client-sdk';
 import * as winston from 'winston';
+import { MONGODB_URI } from '../config';
+import { IDB } from '../db/IDB';
+import { InMemoryDB } from '../db/InMemoryDB';
+import { MongoDB } from '../db/MongoDB';
 import { genLogger } from '../logger/LoggerFactory';
+import { generateRandomGetBlockRespose } from '../orbs-adapter/fake-blocks-generator';
+import { blockResponseToBlock, blockResponseTransactionsToTxs } from '../transformers/blockTransform';
 
 const logger: winston.Logger = genLogger(false, false, false);
 
@@ -33,20 +34,22 @@ function testReadOnlyDb(db: IDB, dbName: string) {
     });
 
     it('should NOT store blocks by hash', async () => {
-      const rawBlock = generateRandomRawBlock(1n);
+      const block = generateRandomGetBlockRespose(1n);
 
-      await db.storeBlock(rawBlockToBlock(rawBlock));
+      await db.storeBlock(blockResponseToBlock(block));
+      const blockHash = encodeHex(block.resultsBlockHash);
 
-      const actual = await db.getBlockByHash(rawBlock.blockHash);
+      const actual = await db.getBlockByHash(blockHash);
       expect(actual).toBeNull();
     });
 
     it('should NOT store txs', async () => {
-      const rawBlock = generateRandomRawBlock(1n);
+      const block = generateRandomGetBlockRespose(1n);
 
-      await db.storeBlock(rawBlockToBlock(rawBlock));
+      await db.storeBlock(blockResponseToBlock(block));
+      const txes = blockResponseTransactionsToTxs(block);
 
-      for (const tx of rawBlock.transactions) {
+      for (const tx of txes) {
         const actual = await db.getTxById(tx.txId);
         expect(actual).toBeNull();
       }

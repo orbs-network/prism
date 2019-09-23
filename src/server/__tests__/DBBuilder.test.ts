@@ -6,40 +6,40 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { IRawBlock } from '../../shared/IRawData';
+import { OrbsBlocksPollingMock } from 'orbs-blocks-polling-js/dist/testkit';
+import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import { DBBuilder } from '../db/DBBuilder';
 import { IDB } from '../db/IDB';
 import { InMemoryDB } from '../db/InMemoryDB';
-import { generateRandomRawBlock } from '../orbs-adapter/fake-blocks-generator';
+import { generateRandomGetBlockRespose } from '../orbs-adapter/fake-blocks-generator';
 import { Storage } from '../storage/storage';
-import { rawBlockToBlock } from '../transformers/blockTransform';
-import { OrbsAdapterMock } from './mocks/OrbsAdapterMock';
+import { blockResponseToBlock } from '../transformers/blockTransform';
 
 describe(`DBBuilder`, async () => {
   let db: IDB;
   let storage: Storage;
-  let orbsAdapter: OrbsAdapterMock;
+  let orbsBlocksPolling: OrbsBlocksPollingMock;
   let dbBuilder: DBBuilder;
   let spyStorage: jest.SpyInstance;
   let spyDbStoreBlock: jest.SpyInstance;
   let spyDbStoreTxes: jest.SpyInstance;
   let spyDbClear: jest.SpyInstance;
 
-  const rawBlock1: IRawBlock = generateRandomRawBlock(1n);
-  const rawBlock2: IRawBlock = generateRandomRawBlock(2n);
-  const rawBlock3: IRawBlock = generateRandomRawBlock(3n);
-  const block1 = rawBlockToBlock(rawBlock1);
-  const block2 = rawBlockToBlock(rawBlock2);
-  const block3 = rawBlockToBlock(rawBlock3);
+  const blockResponse1: GetBlockResponse = generateRandomGetBlockRespose(1n);
+  const blockResponse2: GetBlockResponse = generateRandomGetBlockRespose(2n);
+  const blockResponse3: GetBlockResponse = generateRandomGetBlockRespose(3n);
+  const block1 = blockResponseToBlock(blockResponse1);
+  const block2 = blockResponseToBlock(blockResponse2);
+  const block3 = blockResponseToBlock(blockResponse3);
 
   beforeEach(async () => {
     db = new InMemoryDB();
     await db.init();
     await db.setVersion('1.0.0');
     storage = new Storage(db);
-    orbsAdapter = new OrbsAdapterMock();
-    orbsAdapter.setBlockChain([rawBlock1, rawBlock2, rawBlock3]);
-    dbBuilder = new DBBuilder(db, storage, orbsAdapter);
+    orbsBlocksPolling = new OrbsBlocksPollingMock();
+    orbsBlocksPolling.setBlockChain([blockResponse1, blockResponse2, blockResponse3]);
+    dbBuilder = new DBBuilder(db, storage, orbsBlocksPolling);
   });
 
   afterEach(async () => {

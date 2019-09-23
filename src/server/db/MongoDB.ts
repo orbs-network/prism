@@ -11,8 +11,8 @@ import * as mongooseLong from 'mongoose-long';
 import * as winston from 'winston';
 import { IBlock } from '../../shared/IBlock';
 import { IShortTx } from '../../shared/IContractData';
-import { IRawTx, ITx } from '../../shared/IRawData';
-import { rawTxToShortTx } from '../transformers/txTransform';
+import { ITx } from '../../shared/ITx';
+import { txToShortTx } from '../transformers/txTransform';
 import { IDB } from './IDB';
 
 mongooseLong(mongoose);
@@ -245,7 +245,7 @@ export class MongoDB implements IDB {
 
     if (rows) {
       this.logger.info(`found ${rows.length} txes for contract ${contractName} in [${Date.now() - startTime}ms.]`);
-      return rows.map(rawTxToShortTx);
+      return rows.map(txToShortTx);
     } else {
       this.logger.info(`no txes found for contract ${contractName} [${Date.now() - startTime}ms.]`);
       return null;
@@ -316,7 +316,7 @@ export class MongoDB implements IDB {
     return result ? blockHeightToString(result) : result;
   }
 
-  private async storeTx(tx: IRawTx): Promise<void> {
+  private async storeTx(tx: ITx): Promise<void> {
     const txInstance = new this.TxModel(blockHeighToBigInt(tx));
     await txInstance.save();
   }

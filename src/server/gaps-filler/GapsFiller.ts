@@ -8,7 +8,7 @@
 
 import * as winston from 'winston';
 import { IDB } from '../db/IDB';
-import { IOrbsAdapter } from '../orbs-adapter/IOrbsAdapter';
+import { IOrbsBlocksPolling } from 'orbs-blocks-polling-js';
 import { Storage } from '../storage/storage';
 import { cron } from './Cron';
 import { detectBlockChainGaps } from './GapsDetector';
@@ -19,12 +19,12 @@ export function fillGapsForever(
   logger: winston.Logger,
   storage: Storage,
   db: IDB,
-  orbsAdapter: IOrbsAdapter,
+  orbsBlocksPolling: IOrbsBlocksPolling,
   interval: number,
 ): void {
   cron(async () => {
     logger.info(`Cron Job started.`);
-    await fillGaps(logger, storage, orbsAdapter);
+    await fillGaps(logger, storage, orbsBlocksPolling);
   }, interval);
 }
 
@@ -32,10 +32,10 @@ async function storeBlockAt(
   height: bigint,
   logger: winston.Logger,
   storage: Storage,
-  orbsAdapter: IOrbsAdapter,
+  orbsBlocksPolling: IOrbsBlocksPolling,
 ): Promise<void> {
   const startTime = Date.now();
-  const block = await orbsAdapter.getBlockAt(height);
+  const block = await orbsBlocksPolling.getBlockAt(height);
   logger.info(`getBlockAt finished, on height ${height} [${Date.now() - startTime}ms.]`);
   if (block) {
     await storage.handleNewBlock(block);
@@ -48,18 +48,18 @@ async function storeBlocksChunk(
   chunk: Array<bigint>,
   logger: winston.Logger,
   storage: Storage,
-  orbsAdapter: IOrbsAdapter,
+  orbsBlocksPolling: IOrbsBlocksPolling,
 ): Promise<void> {
   const promises: Array<Promise<void>> = [];
   for (const height of chunk) {
-    promises.push(storeBlockAt(height, logger, storage, orbsAdapter));
+    promises.push(storeBlockAt(height, logger, storage, orbsBlocksPolling));
   }
   await Promise.all(promises);
   const heighestBlockHeight = chunk[chunk.length - 1];
   await storage.setHeighestConsecutiveBlockHeight(heighestBlockHeight);
 }
 
-export async function fillGaps(logger: winston.Logger, storage: Storage, orbsAdapter: IOrbsAdapter): Promise<void> {
+export async function fillGaps(logger: winston.Logger, storage: Storage, orbsBlocksPolling: IOrbsBlocksPolling): Promise<void> {
   const toHeight = await storage.getLatestBlockHeight();
   const fromHeight = (await storage.getHeighestConsecutiveBlockHeight()) + 1n;
   logger.info(`Searching for gaps from ${fromHeight} to ${toHeight}`, { func: 'fillGaps' });
@@ -69,7 +69,7 @@ export async function fillGaps(logger: winston.Logger, storage: Storage, orbsAda
   for (let i = 0; i < gaps.length; i += CHUCK_SIZE) {
     const chunk = gaps.slice(i, i + CHUCK_SIZE);
     const startTime = Date.now();
-    await storeBlocksChunk(chunk, logger, storage, orbsAdapter);
+    await storeBlocksChunk(chunk, logger, storage, orbsBlocksPolling);
     logger.info(
       `GapsFiller, blocks from ${chunk[0]} to ${chunk[chunk.length - 1]} stored [${Date.now() - startTime}ms.]`,
       { func: 'fillGaps' },

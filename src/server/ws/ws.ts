@@ -7,11 +7,11 @@
  */
 
 import { Server } from 'http';
+import { INewBlocksHandler } from 'orbs-blocks-polling-js';
+import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import * as socketIO from 'socket.io';
 import * as winston from 'winston';
-import { IRawBlock } from '../../shared/IRawData';
-import { rawBlockToBlockSummary } from '../transformers/blockTransform';
-import { INewBlocksHandler } from '../orbs-adapter/IOrbsAdapter';
+import { blockResponseToBlockSummary } from '../transformers/blockTransform';
 
 export class WS implements INewBlocksHandler {
   private sockets = {};
@@ -29,8 +29,8 @@ export class WS implements INewBlocksHandler {
     });
   }
 
-  public async handleNewBlock(rawBlock: IRawBlock): Promise<void> {
-    this.emit('new-block-summary', rawBlockToBlockSummary(rawBlock));
+  public async handleNewBlock(block: GetBlockResponse): Promise<void> {
+    this.emit('new-block-summary', blockResponseToBlockSummary(block));
   }
 
   private emit(name: string, data: any) {

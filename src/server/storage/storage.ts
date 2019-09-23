@@ -6,17 +6,18 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
+import { INewBlocksHandler } from 'orbs-blocks-polling-js';
 import { decodeHex } from 'orbs-client-sdk';
+import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import { CONTRACT_TXES_HISTORY_PAGE_SIZE } from '../../shared/Constants';
 import { IBlock, IBlockSummary } from '../../shared/IBlock';
 import { IContractBlockInfo, IContractData } from '../../shared/IContractData';
-import { IRawBlock, IRawTx } from '../../shared/IRawData';
+import { ITx } from '../../shared/ITx';
 import { ISearchResult } from '../../shared/ISearchResult';
 import { IDB } from '../db/IDB';
-import { blockToBlockSummary, rawBlockToBlock } from '../transformers/blockTransform';
-import { rawTxToTx } from '../transformers/txTransform';
+import { blockResponseToBlock, blockResponseTransactionsToTxs, blockToBlockSummary } from '../transformers/blockTransform';
 
-export class Storage {
+export class Storage implements INewBlocksHandler {
   constructor(private db: IDB) {}
 
   public getBlockByHash(blockHash: string): Promise<IBlock> {
@@ -44,7 +45,7 @@ export class Storage {
     return this.db.setHeighestConsecutiveBlockHeight(value);
   }
 
-  public getTx(txId: string): Promise<IRawTx> {
+  public getTx(txId: string): Promise<ITx> {
     return this.db.getTxById(txId);
   }
 
@@ -76,9 +77,10 @@ export class Storage {
     };
   }
 
-  public async handleNewBlock(rawBlock: IRawBlock): Promise<void> {
-    const txes = rawBlock.transactions.map((tx, idx) => rawTxToTx(tx, idx));
-    await Promise.all([this.db.storeBlock(rawBlockToBlock(rawBlock)), this.db.storeTxes(txes)]);
+  public async handleNewBlock(getBlockResponse: GetBlockResponse): Promise<void> {
+    const block = blockResponseToBlock(getBlockResponse);
+    const txes = blockResponseTransactionsToTxs(getBlockResponse);
+    await Promise.all([this.db.storeBlock(block), this.db.storeTxes(txes)]);
   }
 
   public async search(term: string): Promise<ISearchResult> {

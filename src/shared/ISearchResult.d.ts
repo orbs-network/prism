@@ -7,7 +7,7 @@
  */
 
 import { IBlock } from './IBlock';
-import { IRawTx } from './IRawData';
+import { ITx } from './ITx';
 
 export interface IBlockResult {
   block: IBlock;
@@ -15,7 +15,7 @@ export interface IBlockResult {
 }
 
 export interface ITxResult {
-  tx: IRawTx;
+  tx: ITx;
   type: 'tx';
 }
 

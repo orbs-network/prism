@@ -9,20 +9,15 @@
 import { BlockTransaction } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import * as winston from 'winston';
 import { IShortTx } from '../../shared/IContractData';
-import { ITx } from '../../shared/IRawData';
+import { ITx } from '../../shared/ITx';
 import { MONGODB_URI } from '../config';
 import { IDB } from '../db/IDB';
 import { InMemoryDB } from '../db/InMemoryDB';
 import { MongoDB } from '../db/MongoDB';
 import { genLogger } from '../logger/LoggerFactory';
-import {
-  generateBlockTransaction,
-  generateContractDeployTransaction,
-  generateRandomRawBlock,
-  generateRawBlockWithTransaction,
-} from '../orbs-adapter/fake-blocks-generator';
-import { rawBlockToBlock } from '../transformers/blockTransform';
-import { rawTxToShortTx, rawTxToTx } from '../transformers/txTransform';
+import { generateBlockResponseWithTransaction, generateBlockTransaction, generateContractDeployTransaction, generateRandomGetBlockRespose } from '../orbs-adapter/fake-blocks-generator';
+import { blockResponseToBlock, blockResponseTransactionAsTx, blockResponseTransactionsToTxs } from '../transformers/blockTransform';
+import { txToShortTx } from '../transformers/txTransform';
 
 const logger: winston.Logger = genLogger(false, false, false);
 
@@ -42,12 +37,12 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should store and retrive blocks by hash', async () => {
-      const rawBlock = generateRandomRawBlock(1n);
+      const block = blockResponseToBlock(generateRandomGetBlockRespose(1n));
 
-      await db.storeBlock(rawBlockToBlock(rawBlock));
+      await db.storeBlock(block);
 
-      const actual = await db.getBlockByHash(rawBlock.blockHash);
-      expect(rawBlockToBlock(rawBlock)).toEqual(actual);
+      const actual = await db.getBlockByHash(block.blockHash);
+      expect(block).toEqual(actual);
     });
 
     it('should return null if no block found when searching a block by hash', async () => {
@@ -61,7 +56,7 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should be able to retrive blocks by height', async () => {
-      const block = rawBlockToBlock(generateRandomRawBlock(1n));
+      const block = blockResponseToBlock(generateRandomGetBlockRespose(1n));
 
       await db.storeBlock(block);
 
@@ -70,11 +65,11 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should be able to retrive the latest blocks', async () => {
-      const block1 = rawBlockToBlock(generateRandomRawBlock(1n));
-      const block2 = rawBlockToBlock(generateRandomRawBlock(2n));
-      const block3 = rawBlockToBlock(generateRandomRawBlock(3n));
-      const block4 = rawBlockToBlock(generateRandomRawBlock(4n));
-      const block5 = rawBlockToBlock(generateRandomRawBlock(5n));
+      const block1 = blockResponseToBlock(generateRandomGetBlockRespose(1n));
+      const block2 = blockResponseToBlock(generateRandomGetBlockRespose(2n));
+      const block3 = blockResponseToBlock(generateRandomGetBlockRespose(3n));
+      const block4 = blockResponseToBlock(generateRandomGetBlockRespose(4n));
+      const block5 = blockResponseToBlock(generateRandomGetBlockRespose(5n));
       await db.storeBlock(block1);
       await db.storeBlock(block2);
       await db.storeBlock(block3);
@@ -86,9 +81,9 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should store and retrive txs', async () => {
-      const rawBlock = generateRandomRawBlock(1n);
+      const block = generateRandomGetBlockRespose(1n);
+      const txes = blockResponseTransactionsToTxs(block);
 
-      const txes = rawBlock.transactions.map(rawTxToTx);
       await db.storeTxes(txes);
 
       for (const tx of txes) {
@@ -98,12 +93,12 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should ignore case when retrive txs', async () => {
-      const rawBlock = generateRandomRawBlock(1n);
+      const block = generateRandomGetBlockRespose(1n);
+      const txes = blockResponseTransactionsToTxs(block);
 
       // conver all to upper case
-      rawBlock.transactions.forEach(tx => (tx.txId = tx.txId.toUpperCase()));
+      txes.forEach(tx => (tx.txId = tx.txId.toUpperCase()));
 
-      const txes = rawBlock.transactions.map(rawTxToTx);
       await db.storeTxes(txes);
 
       for (const tx of txes) {
@@ -113,9 +108,9 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should be able to retrive the last block height', async () => {
-      const block10 = rawBlockToBlock(generateRandomRawBlock(10n));
-      const block11 = rawBlockToBlock(generateRandomRawBlock(11n));
-      const block12 = rawBlockToBlock(generateRandomRawBlock(12n));
+      const block10 = blockResponseToBlock(generateRandomGetBlockRespose(10n));
+      const block11 = blockResponseToBlock(generateRandomGetBlockRespose(11n));
+      const block12 = blockResponseToBlock(generateRandomGetBlockRespose(12n));
 
       await db.storeBlock(block10);
       await db.storeBlock(block11);
@@ -176,9 +171,9 @@ function testDb(db: IDB, dbName: string) {
     it('should retrive contract by name', async () => {
       const code: string = 'this is go code';
       const btx: BlockTransaction = generateContractDeployTransaction('test-contract', code);
-      const rawBlock = generateRawBlockWithTransaction(1n, btx);
+      const block = generateBlockResponseWithTransaction(1n, btx);
 
-      const tx = rawTxToTx(rawBlock.transactions[0], 0);
+      const tx = blockResponseTransactionAsTx(block, 0);
       await db.storeTxes([tx]);
 
       const actual = await db.getDeployContractTx('test-contract', 1);
@@ -189,9 +184,9 @@ function testDb(db: IDB, dbName: string) {
       const code1: string = 'this is go code 1';
       const code2: string = 'this is go code 2';
       const btx: BlockTransaction = generateContractDeployTransaction('test-contract', code1, code2);
-      const rawBlock = generateRawBlockWithTransaction(1n, btx);
+      const block = generateBlockResponseWithTransaction(1n, btx);
 
-      const tx = rawTxToTx(rawBlock.transactions[0], 0);
+      const tx = blockResponseTransactionAsTx(block, 0);
       await db.storeTxes([tx]);
 
       const actual = await db.getDeployContractTx('test-contract', 1);
@@ -231,28 +226,28 @@ function testDb(db: IDB, dbName: string) {
         const tx6 = generateBlockTransaction('test-contract', 'some-method4');
         const tx7 = generateBlockTransaction('test-contract', 'some-method5');
         const tx8 = generateBlockTransaction('test-contract', 'some-method6');
-        const deployRawBlock = generateRawBlockWithTransaction(1n, deployTx);
-        const rawBlock2 = generateRawBlockWithTransaction(2n, [tx1, tx2]);
-        const rawBlock3 = generateRawBlockWithTransaction(3n, [tx3, tx4, tx5, tx6]);
-        const rawBlock4 = generateRawBlockWithTransaction(4n, [tx7, tx8]);
+        const deployBlock = generateBlockResponseWithTransaction(1n, deployTx);
+        const block2 = generateBlockResponseWithTransaction(2n, [tx1, tx2]);
+        const block3 = generateBlockResponseWithTransaction(3n, [tx3, tx4, tx5, tx6]);
+        const block4 = generateBlockResponseWithTransaction(4n, [tx7, tx8]);
 
-        await db.storeBlock(rawBlockToBlock(deployRawBlock));
-        await db.storeBlock(rawBlockToBlock(rawBlock2));
-        await db.storeBlock(rawBlockToBlock(rawBlock3));
-        await db.storeBlock(rawBlockToBlock(rawBlock4));
+        await db.storeBlock(blockResponseToBlock(deployBlock));
+        await db.storeBlock(blockResponseToBlock(block2));
+        await db.storeBlock(blockResponseToBlock(block3));
+        await db.storeBlock(blockResponseToBlock(block4));
 
-        block1DeployTx = rawTxToTx(deployRawBlock.transactions[0], 0);
+        block1DeployTx = blockResponseTransactionAsTx(deployBlock, 0);
 
-        block2Tx1 = rawTxToTx(rawBlock2.transactions[0], 0);
-        block2Tx2 = rawTxToTx(rawBlock2.transactions[1], 1); // execution order: 0
+        block2Tx1 = blockResponseTransactionAsTx(block2, 0);
+        block2Tx2 = blockResponseTransactionAsTx(block2, 1); // execution order: 0
 
-        block3Tx3 = rawTxToTx(rawBlock3.transactions[0], 0); // execution order: 1
-        block3Tx4 = rawTxToTx(rawBlock3.transactions[1], 1); // execution order: 2
-        block3Tx5 = rawTxToTx(rawBlock3.transactions[2], 2);
-        block3Tx6 = rawTxToTx(rawBlock3.transactions[3], 3); // execution order: 3
+        block3Tx3 = blockResponseTransactionAsTx(block3, 0); // execution order: 1
+        block3Tx4 = blockResponseTransactionAsTx(block3, 1); // execution order: 2
+        block3Tx5 = blockResponseTransactionAsTx(block3, 2);
+        block3Tx6 = blockResponseTransactionAsTx(block3, 3); // execution order: 3
 
-        block4Tx7 = rawTxToTx(rawBlock4.transactions[0], 0); // execution order: 4
-        block4Tx8 = rawTxToTx(rawBlock4.transactions[1], 1); // execution order: 5
+        block4Tx7 = blockResponseTransactionAsTx(block4, 0); // execution order: 4
+        block4Tx8 = blockResponseTransactionAsTx(block4, 1); // execution order: 5
 
         await db.storeTxes([block1DeployTx]);
         await db.storeTxes([block2Tx1, block2Tx2]);
@@ -263,37 +258,37 @@ function testDb(db: IDB, dbName: string) {
       it('Simple contract details extraction', async () => {
         const actual = await db.getContractTxes(contractName, 100);
         const txes: IShortTx[] = [
-          rawTxToShortTx(block4Tx8),
-          rawTxToShortTx(block4Tx7),
-          rawTxToShortTx(block3Tx6),
-          rawTxToShortTx(block3Tx4),
-          rawTxToShortTx(block3Tx3),
-          rawTxToShortTx(block2Tx2),
+          txToShortTx(block4Tx8),
+          txToShortTx(block4Tx7),
+          txToShortTx(block3Tx6),
+          txToShortTx(block3Tx4),
+          txToShortTx(block3Tx3),
+          txToShortTx(block2Tx2),
         ];
         expect(txes).toEqual(actual);
       });
 
       it('should return only the requested number of txes', async () => {
         const actual = await db.getContractTxes(contractName, 3);
-        const txes: IShortTx[] = [rawTxToShortTx(block4Tx8), rawTxToShortTx(block4Tx7), rawTxToShortTx(block3Tx6)];
+        const txes: IShortTx[] = [txToShortTx(block4Tx8), txToShortTx(block4Tx7), txToShortTx(block3Tx6)];
         expect(txes).toEqual(actual);
       });
 
       it('should return only the txes below the given executionIdx', async () => {
         const actual = await db.getContractTxes(contractName, 2, 4);
-        const txes: IShortTx[] = [rawTxToShortTx(block4Tx7), rawTxToShortTx(block3Tx6)];
+        const txes: IShortTx[] = [txToShortTx(block4Tx7), txToShortTx(block3Tx6)];
         expect(txes).toEqual(actual);
       });
 
       it('should ignore a too large executionIdx', async () => {
         const actual = await db.getContractTxes(contractName, 2, 400);
-        const txes: IShortTx[] = [rawTxToShortTx(block4Tx8), rawTxToShortTx(block4Tx7)];
+        const txes: IShortTx[] = [txToShortTx(block4Tx8), txToShortTx(block4Tx7)];
         expect(txes).toEqual(actual);
       });
 
       it('should ignore a too small executionIdx', async () => {
         const actual = await db.getContractTxes(contractName, 2, -400);
-        const txes: IShortTx[] = [rawTxToShortTx(block2Tx2)];
+        const txes: IShortTx[] = [txToShortTx(block2Tx2)];
         expect(txes).toEqual(actual);
       });
     });

@@ -8,11 +8,10 @@
 
 import { Client, NetworkType } from 'orbs-client-sdk';
 import * as winston from 'winston';
+import { IOrbsBlocksPolling, OrbsBlocksPolling } from 'orbs-blocks-polling-js';
 import { ORBS_ENDPOINT, ORBS_NETWORK_TYPE, ORBS_VIRTUAL_CHAIN_ID } from '../config';
-import { IOrbsAdapter } from './IOrbsAdapter';
-import { OrbsAdapter } from './OrbsAdapter';
 
-export function genOrbsAdapter(logger: winston.Logger): IOrbsAdapter {
+export function genOrbsBlocksPolling(logger: winston.Logger): IOrbsBlocksPolling {
   const orbsClient = new Client(ORBS_ENDPOINT, ORBS_VIRTUAL_CHAIN_ID, ORBS_NETWORK_TYPE as NetworkType);
-  return new OrbsAdapter(logger, orbsClient);
+  return new OrbsBlocksPolling(logger, orbsClient);
 }

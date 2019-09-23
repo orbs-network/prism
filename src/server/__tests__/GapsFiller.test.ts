@@ -8,44 +8,43 @@
 
 import { InMemoryDB } from '../db/InMemoryDB';
 import { fillGaps } from '../gaps-filler/GapsFiller';
-import { OrbsAdapter } from '../orbs-adapter/OrbsAdapter';
 import { MockOrbsClient } from '../orbs-client/MockOrbsClient';
 import { Storage } from '../storage/storage';
 import { waitUntil } from './TimeUtils';
 import { genLogger } from '../logger/LoggerFactory';
 import * as winston from 'winston';
-import { IOrbsAdapter } from '../orbs-adapter/IOrbsAdapter';
+import { IOrbsBlocksPolling, OrbsBlocksPolling } from 'orbs-blocks-polling-js';
 
 describe('Gaps Filler', () => {
   const logger: winston.Logger = genLogger(false, false, false);
   let db: InMemoryDB;
-  let orbsAdapter: IOrbsAdapter;
-  let orbsClient: MockOrbsClient;
+  let orbsBlocksPolling: IOrbsBlocksPolling;
+  let orbsClientMock: MockOrbsClient;
   let storage: Storage;
 
   beforeEach(async () => {
     db = new InMemoryDB();
     await db.init();
 
-    orbsClient = new MockOrbsClient();
-    orbsAdapter = new OrbsAdapter(logger, orbsClient);
+    orbsClientMock = new MockOrbsClient();
+    orbsBlocksPolling = new OrbsBlocksPolling(logger, orbsClientMock as any);
     storage = new Storage(db);
-    orbsAdapter.RegisterToNewBlocks(storage);
+    orbsBlocksPolling.RegisterToNewBlocks(storage);
   });
 
   afterEach(() => {
-    orbsAdapter.dispose();
+    orbsBlocksPolling.dispose();
   });
 
   it('should fill all the missing blocks', async () => {
     // append 10 blocks to orbs block chain (No one is listenning)
-    orbsClient.generateBlocks(10);
+    orbsClientMock.generateBlocks(10);
 
     // start orbs adapter scheduler (Will start from height 10 + 1)
-    await orbsAdapter.initPooling(25);
+    await orbsBlocksPolling.initPooling(25);
 
     // append 5 blocks to orbs block chain
-    orbsClient.generateBlocks(5);
+    orbsClientMock.generateBlocks(5);
 
     // let the scheduler catch up with the 5 new blocks
     await waitUntil(async () => (await storage.getLatestBlockHeight()) === 15n);
@@ -57,7 +56,7 @@ describe('Gaps Filler', () => {
     }
 
     // fill the gap from 1 to 10
-    await fillGaps(logger, storage, orbsAdapter);
+    await fillGaps(logger, storage, orbsBlocksPolling);
 
     // make sure that the storage holds the all 15 blocks
     for (let i = 1; i <= 15; i++) {
@@ -68,19 +67,19 @@ describe('Gaps Filler', () => {
 
   it('should update the heighest consecutive block height after filling the gap', async () => {
     // append 10 blocks to orbs block chain (No one is listenning)
-    orbsClient.generateBlocks(10);
+    orbsClientMock.generateBlocks(10);
 
     // start orbs adapter scheduler (Will start from height 10 + 1)
-    await orbsAdapter.initPooling(25);
+    await orbsBlocksPolling.initPooling(25);
 
     // append 5 blocks to orbs block chain
-    orbsClient.generateBlocks(5);
+    orbsClientMock.generateBlocks(5);
 
     // let the scheduler catch up with the 5 new blocks
     await waitUntil(async () => (await storage.getLatestBlockHeight()) === 15n);
 
     // fill the gap from 1 to 10
-    await fillGaps(logger, storage, orbsAdapter);
+    await fillGaps(logger, storage, orbsBlocksPolling);
 
     // make sure that the storage holds the all 15 blocks
     const actual = await storage.getHeighestConsecutiveBlockHeight();

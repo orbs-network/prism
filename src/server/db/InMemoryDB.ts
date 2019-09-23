@@ -8,8 +8,8 @@
 
 import { IBlock } from '../../shared/IBlock';
 import { IShortTx } from '../../shared/IContractData';
-import { ITx } from '../../shared/IRawData';
-import { rawTxToShortTx } from '../transformers/txTransform';
+import { ITx } from '../../shared/ITx';
+import { txToShortTx } from '../transformers/txTransform';
 import { IDB } from './IDB';
 
 export class InMemoryDB implements IDB {
@@ -141,7 +141,7 @@ export class InMemoryDB implements IDB {
       .map(mapItem => mapItem[1])
       .filter(tx => tx.contractName === contractName)
       .sort((a, b) => Number(BigInt(b.blockHeight) - BigInt(a.blockHeight)) || b.idxInBlock - a.idxInBlock)
-      .map(rawTxToShortTx);
+      .map(txToShortTx);
 
     if (executionIdx !== undefined && allTxes.length > 0) {
       const lastIdx = allTxes.length - 1;

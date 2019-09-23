@@ -8,7 +8,7 @@
 
 import { genDb } from './db/DBFactory';
 import { fillGapsForever } from './gaps-filler/GapsFiller';
-import { genOrbsAdapter } from './orbs-adapter/OrbsAdapterFactory';
+import { genOrbsBlocksPolling } from './orbs-adapter/OrbsBlocksPollingFactory';
 import { initServer } from './server';
 import { Storage } from './storage/storage';
 import { WS } from './ws/ws';
@@ -51,19 +51,19 @@ async function main() {
   const ws = new WS(logger, server);
 
   // link all the parts
-  const orbsAdapter = genOrbsAdapter(logger);
-  await orbsAdapter.init();
-  const dbBuilder = new DBBuilder(db, storage, orbsAdapter);
+  const orbsBlocksPolling = genOrbsBlocksPolling(logger);
+  await orbsBlocksPolling.init();
+  const dbBuilder = new DBBuilder(db, storage, orbsBlocksPolling);
   await dbBuilder.init(PRISM_VERSION);
 
-  orbsAdapter.RegisterToNewBlocks(ws);
-  orbsAdapter.RegisterToNewBlocks(storage);
-  await orbsAdapter.initPooling(POOLING_INTERVAL);
+  orbsBlocksPolling.RegisterToNewBlocks(ws);
+  orbsBlocksPolling.RegisterToNewBlocks(storage);
+  await orbsBlocksPolling.initPooling(POOLING_INTERVAL);
 
   if (GAP_FILLER_ACTIVE) {
     const GAP_FILLER_INITIAL_DELAY = 60 * 1000; // We wait a minute before we start the gap filler
     await sleep(GAP_FILLER_INITIAL_DELAY);
-    fillGapsForever(logger, storage, db, orbsAdapter, GAP_FILLER_INTERVAL);
+    fillGapsForever(logger, storage, db, orbsBlocksPolling, GAP_FILLER_INTERVAL);
   }
 }
 

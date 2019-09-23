@@ -8,9 +8,8 @@
 
 import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import { generateOverflowGetBlockRespose, generateRandomGetBlockRespose } from '../orbs-adapter/fake-blocks-generator';
-import { IOrbsClient } from './IOrbsClient';
 
-export class MockOrbsClient implements IOrbsClient {
+export class MockOrbsClient {
   private orbsBlockChain: Map<bigint, GetBlockResponse> = new Map();
 
   public async getBlock(blockHeight: bigint): Promise<GetBlockResponse> {
