@@ -113,7 +113,7 @@ export class InMemoryDB implements IDB {
     return this.txes.get(txId.toLowerCase()) || null;
   }
 
-  public async getDeployContractTx(contractName: string, lang: number): Promise<ITx> {
+  public async getDeployContractTx(contractName: string): Promise<ITx> {
     for (const tx of this.txes.values()) {
       if (tx.contractName === '_Deployments' && tx.methodName === 'deployService' && tx.executionResult === 'SUCCESS') {
         const { inputArguments: args } = tx;
@@ -121,8 +121,7 @@ export class InMemoryDB implements IDB {
           if (
             args[0].type === 'string' &&
             args[0].value === contractName &&
-            args[1].type === 'uint32' &&
-            args[1].value === lang.toString()
+            args[1].type === 'uint32'
           ) {
             return tx;
           }

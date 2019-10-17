@@ -176,7 +176,7 @@ function testDb(db: IDB, dbName: string) {
       const tx = blockResponseTransactionAsTx(block, 0);
       await db.storeTxes([tx]);
 
-      const actual = await db.getDeployContractTx('test-contract', 1);
+      const actual = await db.getDeployContractTx('test-contract');
       expect(tx).toEqual(actual);
     });
 
@@ -189,7 +189,7 @@ function testDb(db: IDB, dbName: string) {
       const tx = blockResponseTransactionAsTx(block, 0);
       await db.storeTxes([tx]);
 
-      const actual = await db.getDeployContractTx('test-contract', 1);
+      const actual = await db.getDeployContractTx('test-contract');
       expect(tx).toEqual(actual);
     });
 

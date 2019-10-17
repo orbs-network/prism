@@ -50,7 +50,7 @@ export class Storage implements INewBlocksHandler {
   }
 
   public async getContractData(contractName: string, executionIdx?: number): Promise<IContractData> {
-    const deployTx = await this.db.getDeployContractTx(contractName, 1);
+    const deployTx = await this.db.getDeployContractTx(contractName);
     let code: string[] = null;
     if (deployTx) {
       code = deployTx.inputArguments.splice(2).map(arg => Buffer.from(decodeHex(arg.value)).toString());
