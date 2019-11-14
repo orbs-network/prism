@@ -22,7 +22,7 @@ testReadOnlyDb(new InMemoryDB(true), 'InMemoryDB');
 testReadOnlyDb(new MongoDB(logger, MONGODB_URI, true), 'MongoDB');
 
 function testReadOnlyDb(db: IDB, dbName: string) {
-  describe(`${dbName} - Readonly`, async () => {
+  describe(`${dbName} - Readonly`, () => {
     beforeEach(async () => {
       await db.init();
       await db.clearAll();

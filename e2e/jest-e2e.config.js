@@ -12,7 +12,7 @@ module.exports = {
   },
   testRegex: '^.+\\.test\\.ts$',
   moduleFileExtensions: ['ts', 'js', 'json'],
-  setupTestFrameworkScriptFile: '<rootDir>/jestSetup.ts',
+  setupFilesAfterEnv: ['<rootDir>/jestSetup.ts'],
   globals: {
     'ts-jest': {
       tsConfig: '<rootDir>/tsconfig.json',

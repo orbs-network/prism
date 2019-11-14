@@ -12,7 +12,7 @@ module.exports = {
   },
   testRegex: '.*test.tsx?$',
   snapshotSerializers: ['enzyme-to-json/serializer'],
-  setupTestFrameworkScriptFile: '<rootDir>/setupEnzyme.ts',
+  setupFilesAfterEnv: ['<rootDir>/setupEnzyme.ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   globals: {
     'ts-jest': {

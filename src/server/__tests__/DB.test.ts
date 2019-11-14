@@ -25,7 +25,7 @@ testDb(new InMemoryDB(), 'InMemoryDB');
 testDb(new MongoDB(logger, MONGODB_URI), 'MongoDB');
 
 function testDb(db: IDB, dbName: string) {
-  describe(dbName, async () => {
+  describe(dbName, () => {
     beforeEach(async () => {
       await db.init();
       await db.clearAll();
@@ -193,7 +193,7 @@ function testDb(db: IDB, dbName: string) {
       expect(tx).toEqual(actual);
     });
 
-    describe('Retriving txes by contract name', async () => {
+    describe('Retriving txes by contract name', () => {
       const contractName = 'test-contract';
 
       let block1DeployTx: ITx;

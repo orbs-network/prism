@@ -15,7 +15,7 @@ import { generateRandomGetBlockRespose } from '../orbs-adapter/fake-blocks-gener
 import { Storage } from '../storage/storage';
 import { blockResponseToBlock } from '../transformers/blockTransform';
 
-describe(`DBBuilder`, async () => {
+describe(`DBBuilder`, () => {
   let db: IDB;
   let storage: Storage;
   let orbsBlocksPolling: OrbsBlocksPollingMock;
