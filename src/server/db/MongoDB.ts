@@ -194,7 +194,7 @@ export class MongoDB implements IDB {
     }
   }
 
-  public async getDeployContractTx(contractName: string, lang: number): Promise<ITx> {
+  public async getDeployContractTx(contractName: string): Promise<ITx> {
     const startTime = Date.now();
     this.logger.info(`Searching for deployment of contract: ${contractName}`);
     const result = await this.TxModel.findOne(
@@ -202,8 +202,7 @@ export class MongoDB implements IDB {
         contractName: '_Deployments',
         methodName: 'deployService',
         executionResult: 'SUCCESS',
-        'inputArguments.0.value': contractName,
-        'inputArguments.1.value': lang.toString(),
+        'inputArguments.0.value': contractName
       },
       { _id: false, __v: false },
     )
