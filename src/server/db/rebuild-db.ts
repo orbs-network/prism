@@ -12,8 +12,9 @@ import { genLogger } from '../logger/LoggerFactory';
 import { Storage } from '../storage/storage';
 import * as fs from 'fs';
 import { IOrbsBlocksPolling, OrbsBlocksPolling } from 'orbs-blocks-polling-js';
-import { Client, NetworkType } from 'orbs-client-sdk';
+import { Client, NetworkType, createAccount } from 'orbs-client-sdk';
 import * as childProcess from 'child_process';
+import { LocalSigner } from 'orbs-client-sdk/dist/crypto/Signer';
 
 async function storeBlockAt(height: bigint, storage: Storage, orbsBlocksPolling: IOrbsBlocksPolling): Promise<void> {
   const block = await orbsBlocksPolling.getBlockAt(height);
@@ -54,8 +55,10 @@ async function storeAllBlocks(toHeight: bigint, storage: Storage, orbsBlocksPoll
 }
 
 function genOrbsBlocksPolling(logger: winston.Logger, orbsEndpoint: string, vchainId: number): IOrbsBlocksPolling {
-  const orbsClient = new Client(orbsEndpoint, vchainId, 'TEST_NET' as NetworkType);
-  return new OrbsBlocksPolling(logger, orbsClient);
+  const { publicKey, privateKey } = createAccount();
+  const signer = new LocalSigner({ publicKey, privateKey });
+  const orbsClient = new Client(orbsEndpoint, vchainId, 'TEST_NET' as NetworkType, signer);
+  return new OrbsBlocksPolling(orbsClient, logger);
 }
 
 function pauseFor(ms: number): Promise<void> {

@@ -58,7 +58,7 @@ async function main() {
 
   orbsBlocksPolling.RegisterToNewBlocks(ws);
   orbsBlocksPolling.RegisterToNewBlocks(storage);
-  await orbsBlocksPolling.initPooling(POOLING_INTERVAL);
+  await orbsBlocksPolling.initPolling(POOLING_INTERVAL);
 
   if (GAP_FILLER_ACTIVE) {
     const GAP_FILLER_INITIAL_DELAY = 60 * 1000; // We wait a minute before we start the gap filler

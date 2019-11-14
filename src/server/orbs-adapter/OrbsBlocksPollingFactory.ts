@@ -6,12 +6,15 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { Client, NetworkType } from 'orbs-client-sdk';
+import { Client, NetworkType, createAccount } from 'orbs-client-sdk';
 import * as winston from 'winston';
 import { IOrbsBlocksPolling, OrbsBlocksPolling } from 'orbs-blocks-polling-js';
 import { ORBS_ENDPOINT, ORBS_NETWORK_TYPE, ORBS_VIRTUAL_CHAIN_ID } from '../config';
+import { LocalSigner } from 'orbs-client-sdk/dist/crypto/Signer';
 
 export function genOrbsBlocksPolling(logger: winston.Logger): IOrbsBlocksPolling {
-  const orbsClient = new Client(ORBS_ENDPOINT, ORBS_VIRTUAL_CHAIN_ID, ORBS_NETWORK_TYPE as NetworkType);
-  return new OrbsBlocksPolling(logger, orbsClient);
+  const { publicKey, privateKey } = createAccount();
+  const signer = new LocalSigner({ publicKey, privateKey });
+  const orbsClient: Client = new Client(ORBS_ENDPOINT, ORBS_VIRTUAL_CHAIN_ID, ORBS_NETWORK_TYPE as NetworkType, signer);
+  return new OrbsBlocksPolling(orbsClient, logger);
 }
