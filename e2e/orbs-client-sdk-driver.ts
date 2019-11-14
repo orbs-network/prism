@@ -6,18 +6,9 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { argAddress, argUint64, Client, createAccount, decodeHex, NetworkType } from 'orbs-client-sdk';
+import { argAddress, argUint64, Client, createAccount, LocalSigner, NetworkType } from 'orbs-client-sdk';
 import { Account } from 'orbs-client-sdk/dist/orbs/Account';
-import { ORBS_ENDPOINT, ORBS_VIRTUAL_CHAIN_ID, ORBS_NETWORK_TYPE } from '../src/server/config';
-
-// We use the same sender because he is the token holder (the first address that does a transaction of the token contract)
-const sender: Account = {
-  publicKey: decodeHex('0xb72c9fe0f78b5b27769a1007fb6b77fe6743beef92d1cb6e262163cbd13c0e11'),
-  privateKey: decodeHex(
-    '0x479cfc81fb55cf1ce75f66cd8549c4efef2ee585a4c19a34947c1e095d159aa5b72c9fe0f78b5b27769a1007fb6b77fe6743beef92d1cb6e262163cbd13c0e11',
-  ),
-  address: '0x960B27df51146BD3dE815EEa7B9464307AbEe433',
-};
+import { ORBS_ENDPOINT, ORBS_NETWORK_TYPE, ORBS_VIRTUAL_CHAIN_ID } from '../src/server/config';
 
 export class OrbsClientSdkDriver {
   private receiver: Account;
@@ -25,16 +16,15 @@ export class OrbsClientSdkDriver {
 
   constructor() {
     this.receiver = createAccount();
-    this.client = new Client(ORBS_ENDPOINT, ORBS_VIRTUAL_CHAIN_ID, ORBS_NETWORK_TYPE as NetworkType);
+    const signer = new LocalSigner(this.receiver);
+    this.client = new Client(ORBS_ENDPOINT, ORBS_VIRTUAL_CHAIN_ID, ORBS_NETWORK_TYPE as NetworkType, signer);
   }
 
   public async transferTokensTx(
     amount: number,
   ): Promise<{ txId: string; blockHeight: bigint; receiverAddress: string }> {
     const receiverAddress = this.receiver.address;
-    const [tx, txId] = this.client.createTransaction(
-      sender.publicKey,
-      sender.privateKey,
+    const [tx, txId] = await this.client.createTransaction(
       'BenchmarkToken',
       'transfer',
       [argUint64(amount), argAddress(receiverAddress)],
@@ -51,6 +41,7 @@ export class OrbsClientSdkDriver {
         )}`,
       );
     }
+
     if (transferResponse.executionResult !== 'SUCCESS') {
       delete transferResponse.blockHeight;
       throw new Error(
