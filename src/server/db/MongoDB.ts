@@ -134,7 +134,7 @@ export class MongoDB implements IDB {
     const startTime = Date.now();
     const blockInstance = new this.BlockModel(blockHeighToBigInt(block));
     await blockInstance.save();
-    this.logger.info(`block stored [${Date.now() - startTime}ms.]`);
+    this.logger.info(`block ${block.blockHeight} stored [${Date.now() - startTime}ms.]`);
   }
 
   public async storeTxes(txes: ITx[]): Promise<any> {

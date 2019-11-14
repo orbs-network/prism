@@ -10,7 +10,7 @@ import { Client, NetworkType, createAccount } from 'orbs-client-sdk';
 import * as winston from 'winston';
 import { IOrbsBlocksPolling, OrbsBlocksPolling } from 'orbs-blocks-polling-js';
 import { ORBS_ENDPOINT, ORBS_NETWORK_TYPE, ORBS_VIRTUAL_CHAIN_ID } from '../config';
-import { LocalSigner } from 'orbs-client-sdk/dist/crypto/Signer';
+import { LocalSigner } from 'orbs-client-sdk';
 
 export function genOrbsBlocksPolling(logger: winston.Logger): IOrbsBlocksPolling {
   const { publicKey, privateKey } = createAccount();

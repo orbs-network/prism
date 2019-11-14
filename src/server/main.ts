@@ -53,8 +53,8 @@ async function main() {
   // link all the parts
   const orbsBlocksPolling = genOrbsBlocksPolling(logger);
   await orbsBlocksPolling.init();
-  const dbBuilder = new DBBuilder(db, storage, orbsBlocksPolling);
-  await dbBuilder.init(PRISM_VERSION);
+  // const dbBuilder = new DBBuilder(db, storage, orbsBlocksPolling);
+  // await dbBuilder.init(PRISM_VERSION);
 
   orbsBlocksPolling.RegisterToNewBlocks(ws);
   orbsBlocksPolling.RegisterToNewBlocks(storage);
