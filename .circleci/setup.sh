@@ -8,7 +8,7 @@ export NVM_DIR="/opt/circleci/.nvm"
 echo "Running MongoDB server on port 27017"
 docker run --name mongo -d -p "27017:27017" mongo:3.3
 
-nvm install 11.2.0
+nvm install 10.17.0
 npm install
 
 npm run build
