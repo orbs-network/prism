@@ -27,7 +27,7 @@ describe('Gaps Filler', () => {
     await db.init();
 
     orbsClientMock = new MockOrbsClient();
-    orbsBlocksPolling = new OrbsBlocksPolling(logger, orbsClientMock as any);
+    orbsBlocksPolling = new OrbsBlocksPolling(orbsClientMock as any, logger);
     storage = new Storage(db);
     orbsBlocksPolling.RegisterToNewBlocks(storage);
   });
@@ -41,7 +41,7 @@ describe('Gaps Filler', () => {
     orbsClientMock.generateBlocks(10);
 
     // start orbs adapter scheduler (Will start from height 10 + 1)
-    await orbsBlocksPolling.initPooling(25);
+    await orbsBlocksPolling.initPolling(25);
 
     // append 5 blocks to orbs block chain
     orbsClientMock.generateBlocks(5);
@@ -70,7 +70,7 @@ describe('Gaps Filler', () => {
     orbsClientMock.generateBlocks(10);
 
     // start orbs adapter scheduler (Will start from height 10 + 1)
-    await orbsBlocksPolling.initPooling(25);
+    await orbsBlocksPolling.initPolling(25);
 
     // append 5 blocks to orbs block chain
     orbsClientMock.generateBlocks(5);
