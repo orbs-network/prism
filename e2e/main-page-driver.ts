@@ -9,7 +9,6 @@
 import { getElementText, waitUntil } from './puppeteer-helpers';
 import { Page } from 'puppeteer';
 import * as puppeteer from 'puppeteer';
-import { takeScreenshot } from "./screenshooter";
 
 export class MainPageDriver {
   private page: Page;
@@ -25,9 +24,6 @@ export class MainPageDriver {
       this.page = await browser.newPage();
       await this.page.setViewport({ width: 1600, height: 900 });
       await this.page.goto('http://localhost:3000');
-      await takeScreenshot('after_goto')
-      await this.page.waitFor(3000);
-      await takeScreenshot('after_goto_plus_3000ms')
     } catch (e) {
       console.log('unable to navigate to localhot:3000');
       throw e;
