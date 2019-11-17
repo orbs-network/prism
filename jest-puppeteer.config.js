@@ -16,6 +16,6 @@ module.exports = {
   server: {
     command: 'npm run start:prod',
     port: 3000,
-    debug,
+    debug: true,
   },
 };
