@@ -7,6 +7,10 @@
  */
 
 import { registerScreenshotReporter } from './screenshooter';
-registerScreenshotReporter();
+const debug = process.env.DEBUG_E2E === 'true';
+
+if (!debug) {
+	registerScreenshotReporter();
+}
 
 require('./matchers');

@@ -14,13 +14,11 @@ describe('Full cycle', () => {
   const mainPageDriver = new MainPageDriver();
 
   beforeAll(async () => {
-    await mainPageDriver.navigate();
     jest.setTimeout(20000);
+    await mainPageDriver.navigate();
   });
 
   it('should display the block that holds my transaction', async () => {
-    expect(true).toBe(true);
-    return;
     const amountToSend = 7;
     const { txId, blockHeight, receiverAddress } = await orbsClientSdkDriver.transferTokensTx(amountToSend);
     await mainPageDriver.waitForBlockHeight(blockHeight, true);

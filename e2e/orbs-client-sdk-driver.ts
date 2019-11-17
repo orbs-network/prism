@@ -9,6 +9,7 @@
 import { argAddress, argUint64, Client, createAccount, LocalSigner, NetworkType } from 'orbs-client-sdk';
 import { Account } from 'orbs-client-sdk/dist/orbs/Account';
 import { ORBS_ENDPOINT, ORBS_NETWORK_TYPE, ORBS_VIRTUAL_CHAIN_ID } from '../src/server/config';
+import { SendTransactionResponse } from 'orbs-client-sdk/dist/codec/OpSendTransaction';
 
 export class OrbsClientSdkDriver {
   private receiver: Account;
@@ -24,13 +25,30 @@ export class OrbsClientSdkDriver {
     amount: number,
   ): Promise<{ txId: string; blockHeight: bigint; receiverAddress: string }> {
     const receiverAddress = this.receiver.address;
-    const [tx, txId] = await this.client.createTransaction(
-      'BenchmarkToken',
-      'transfer',
-      [argUint64(amount), argAddress(receiverAddress)],
-    );
 
-    const transferResponse = await this.client.sendTransaction(tx);
+    let tx: Uint8Array;
+    let txId: string;
+    try {
+      const createTxResult = await this.client.createTransaction(
+        'BenchmarkToken',
+        'transfer',
+        [argUint64(amount), argAddress(receiverAddress)],
+      );
+      tx = createTxResult[0];
+      txId = createTxResult[1];
+    } catch (e) {
+      console.log('Failed to createTransaction', e);
+      throw(e);
+    }
+
+    let transferResponse: SendTransactionResponse;
+    try {
+      transferResponse = await this.client.sendTransaction(tx);
+    } catch (e) {
+      console.log('Failed to sendTransaction', e);
+      throw(e);
+    }
+
     if (transferResponse.requestStatus !== 'COMPLETED') {
       delete transferResponse.blockHeight;
       throw new Error(

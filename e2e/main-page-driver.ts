@@ -6,13 +6,17 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { waitUntil, getElementText } from './puppeteer-helpers';
-import { takeScreenshot } from './screenshooter';
+import { getElementText, waitUntil } from './puppeteer-helpers';
 
 export class MainPageDriver {
   public async navigate() {
-    await page.setViewport({ width: 1600, height: 900 });
-    await page.goto('http://localhost:3000');
+    try {
+      await page.setViewport({ width: 1600, height: 900 });
+      await page.goto('http://localhost:3000');
+    } catch (e) {
+      console.log('unable to navigate to localhot:3000');
+      throw e;
+    }
   }
 
   public async navigateToHome() {
@@ -24,6 +28,9 @@ export class MainPageDriver {
     const element = await page.waitForSelector(`#block-${blockHeight.toString()} [data-type="block-height"]`);
     if (navigateToBlock) {
       const link = await element.$('a');
+      console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&', blockHeight.toString());
+      console.log(link);
+      await page.waitFor(10000);
       await link.click();
     }
   }
