@@ -86,8 +86,8 @@ module.exports = {
     port: WEBPACK_PORT,
   },
   plugins,
-  externals: {
-    react: 'React',
-    'react-dom': 'ReactDOM',
-  },
+  // externals: {
+  //   react: 'React',
+  //   'react-dom': 'ReactDOM',
+  // },
 };
