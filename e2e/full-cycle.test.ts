@@ -11,32 +11,21 @@ import { OrbsClientSdkDriver } from './orbs-client-sdk-driver';
 
 describe('Full cycle', () => {
   const orbsClientSdkDriver = new OrbsClientSdkDriver();
-  let mainPageDriver: MainPageDriver;
+  const mainPageDriver = new MainPageDriver();
 
   beforeAll(async () => {
-    mainPageDriver = await MainPageDriver.CreateInstance();
     jest.setTimeout(20000);
     await mainPageDriver.navigate();
   });
 
-  afterAll(async () => {
-    await mainPageDriver.close();
-  })
   it('should display the block that holds my transaction', async () => {
     const amountToSend = 7;
-    console.log(' ******************** 1');
     const { txId, blockHeight, receiverAddress } = await orbsClientSdkDriver.transferTokensTx(amountToSend);
-    console.log(' ******************** 2');
     await mainPageDriver.waitForBlockHeight(blockHeight, true);
-    console.log(' ******************** 3');
     await mainPageDriver.waitForBlockDetailsPage();
-    console.log(' ******************** 4');
     await mainPageDriver.clickOnTx(txId);
-    console.log(' ******************** 5');
     const sentAmountArg = await mainPageDriver.getInputArg(0);
-    console.log(' ******************** 6');
     const targetAddressArg = await mainPageDriver.getInputArg(1);
-    console.log(' ******************** 7');
 
     expect(sentAmountArg).toEqual(amountToSend.toString());
     expect(targetAddressArg.toLowerCase()).toEqual(receiverAddress.toLowerCase());

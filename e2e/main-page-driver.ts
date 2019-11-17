@@ -11,36 +11,23 @@ import { Page } from 'puppeteer';
 import * as puppeteer from 'puppeteer';
 
 export class MainPageDriver {
-  private page: Page;
-  constructor(private browser: puppeteer.Browser) {}
-
-  static async CreateInstance() {
-    const browser = await puppeteer.launch();
-    return new MainPageDriver(browser);
-  }
-
   public async navigate() {
     try {
-      this.page = await browser.newPage();
-      await this.page.setViewport({ width: 1600, height: 900 });
-      await this.page.goto('http://localhost:3000');
+      await page.setViewport({ width: 1600, height: 900 });
+      await page.goto('http://localhost:3000');
     } catch (e) {
       console.log('unable to navigate to localhot:3000');
       throw e;
     }
   }
 
-  public async close() {
-    await this.browser.close();
-  }
-
   public async navigateToHome() {
-    const homeLink = await this.page.waitForSelector('#home');
+    const homeLink = await page.waitForSelector('#home');
     await homeLink.click();
   }
 
   public async waitForBlockHeight(blockHeight: bigint, navigateToBlock: boolean): Promise<void> {
-    const element = await this.page.waitForSelector(`#block-${blockHeight.toString()} [data-type="block-height"]`);
+    const element = await page.waitForSelector(`#block-${blockHeight.toString()} [data-type="block-height"]`);
     if (navigateToBlock) {
       const link = await element.$('a');
       await link.click();
@@ -48,18 +35,18 @@ export class MainPageDriver {
   }
 
   public async waitForBlockDetailsPage(): Promise<void> {
-    await this.page.waitForSelector('#block-details');
+    await page.waitForSelector('#block-details');
   }
 
   public async clickOnTx(txId: string): Promise<void> {
-    const element = await this.page.waitForSelector(`#tx-${txId.toLowerCase()}`);
+    const element = await page.waitForSelector(`#tx-${txId.toLowerCase()}`);
     const link = await element.$('a');
     await link.click();
-    await this.page.waitForSelector('#tx-details');
+    await page.waitForSelector('#tx-details');
   }
 
   public async getInputArg(idx: number): Promise<string> {
-    return await getElementText(`#arg_${idx}`, this.page);
+    return await getElementText(`#arg_${idx}`, page);
   }
 
   public async waitForBlocks(countOfBlocks: number): Promise<void> {
@@ -67,7 +54,7 @@ export class MainPageDriver {
   }
 
   public async getVisibleBlockItems() {
-    const blocksBox = await this.page.waitForSelector('#blocks-box');
+    const blocksBox = await page.waitForSelector('#blocks-box');
     const blockItems = await blocksBox.$$('[data-type=block-item]');
     return blockItems;
   }
