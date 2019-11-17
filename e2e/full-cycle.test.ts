@@ -11,13 +11,17 @@ import { OrbsClientSdkDriver } from './orbs-client-sdk-driver';
 
 describe('Full cycle', () => {
   const orbsClientSdkDriver = new OrbsClientSdkDriver();
-  const mainPageDriver = new MainPageDriver();
+  let mainPageDriver: MainPageDriver;
 
   beforeAll(async () => {
+    mainPageDriver = await MainPageDriver.CreateInstance();
     jest.setTimeout(20000);
     await mainPageDriver.navigate();
   });
 
+  afterAll(async () => {
+    await mainPageDriver.close();
+  })
   it('should display the block that holds my transaction', async () => {
     const amountToSend = 7;
     const { txId, blockHeight, receiverAddress } = await orbsClientSdkDriver.transferTokensTx(amountToSend);

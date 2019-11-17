@@ -9,7 +9,7 @@
 import { Evalable } from 'puppeteer';
 
 export const pauseFor = (timeout: number): Promise<void> => new Promise(resolve => setTimeout(resolve, timeout));
-export const getElementText = async (selector: string, parent: Evalable = page) =>
+export const getElementText = async (selector: string, parent: Evalable) =>
   await parent.$eval(`${selector}`, (el: HTMLElement) => el.innerText);
 
 export async function waitUntil(
