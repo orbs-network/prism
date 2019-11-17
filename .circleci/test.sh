@@ -19,7 +19,7 @@ echo "Running gamma-server on port 8080"
 docker run --name gamma -d -p "8080:8080" orbsnetwork/gamma:experimental
 
 echo "sleeping before running the e2e tests"
-sleep 5
+sleep 15
 
 echo "running E2E tests"
 npm run test-e2e
