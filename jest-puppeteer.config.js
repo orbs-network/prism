@@ -11,6 +11,7 @@ const debug = process.env.DEBUG_E2E === 'true';
 module.exports = {
   launch: {
     headless: !debug,
+    args: ['--no-sandbox', '--disable-setuid-sandbox' ]
   },
   server: {
     command: 'npm run start:prod',
