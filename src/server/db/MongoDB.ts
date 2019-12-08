@@ -32,13 +32,13 @@ const cacheSchema = new mongoose.Schema({
 
 const blockSchema = new mongoose.Schema({
   blockHash: String,
-  blockHeight: (mongoose.Schema.Types as any).Long,
+  blockHeight: { type: (mongoose.Schema.Types as any).Long, index: { unique: true }},
   blockTimestamp: Number,
   txIds: [String],
 });
 
 const txSchema = new mongoose.Schema({
-  txId: String,
+  txId: { type: String, index: { unique: true }},
   idxInBlock: Number,
   blockHeight: (mongoose.Schema.Types as any).Long,
   protocolVersion: Number,
