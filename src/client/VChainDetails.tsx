@@ -14,8 +14,8 @@ import * as React from 'react';
 const styles = (theme: Theme) =>
   createStyles({
     vchainId: {
-      marginTop: theme.spacing.unit * 3,
-      marginBottom: theme.spacing.unit * 3,
+      marginTop: theme.spacing(3),
+      marginBottom: theme.spacing(3),
     },
     vchainHelpIcon: {
       color: theme.palette.secondary.main,
@@ -30,7 +30,7 @@ const styles = (theme: Theme) =>
       borderWidth: 1,
       borderStyle: 'solid',
       borderColor: theme.palette.secondary.main,
-      padding: theme.spacing.unit,
+      padding: theme.spacing(),
       maxWidth: 500,
     },
     tooltipPopper: {

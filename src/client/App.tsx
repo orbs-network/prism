@@ -34,6 +34,7 @@ interface IProps extends WithStyles<typeof styles> {
 const AppImpl = ({ classes, location }: IProps) => {
   return (
     <Transition
+      items={null}
       config={config.slow}
       initial={null}
       immediate={DISABLE_ANIMATIONS}

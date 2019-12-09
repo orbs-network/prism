@@ -18,18 +18,18 @@ import { TimeStampField } from './TimeStampField';
 const styles = (theme: Theme) =>
   createStyles({
     paper: {
-      paddingLeft: theme.spacing.unit * 2,
-      paddingRight: theme.spacing.unit * 2,
-      paddingTop: theme.spacing.unit,
-      paddingBottom: theme.spacing.unit,
-      marginTop: theme.spacing.unit,
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(2),
+      paddingTop: theme.spacing(),
+      paddingBottom: theme.spacing(),
+      marginTop: theme.spacing(),
     },
     line: {
       display: 'flex',
-      marginBottom: theme.spacing.unit / 4,
+      marginBottom: theme.spacing(0.25),
     },
     label: {
-      paddingRight: theme.spacing.unit,
+      paddingRight: theme.spacing(),
       minWidth: 150,
       fontWeight: 700,
     },

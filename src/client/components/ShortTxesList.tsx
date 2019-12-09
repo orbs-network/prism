@@ -20,20 +20,20 @@ import green from '@material-ui/core/colors/green';
 const styles = (theme: Theme) =>
   createStyles({
     signerAddress: {
-      marginRight: theme.spacing.unit,
+      marginRight: theme.spacing(),
     },
     executionIdx: {
-      marginRight: theme.spacing.unit,
+      marginRight: theme.spacing(),
     },
     errorIcon: {
-      marginLeft: theme.spacing.unit,
+      marginLeft: theme.spacing(),
       color: red[500],
       width: 16,
       position: 'relative',
       top: 6,
     },
     successIcon: {
-      marginLeft: theme.spacing.unit,
+      marginLeft: theme.spacing(),
       color: green[500],
       width: 16,
       position: 'relative',

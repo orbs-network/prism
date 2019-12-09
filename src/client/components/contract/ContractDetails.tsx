@@ -62,7 +62,7 @@ const ContractDetailsImpl = withStyles(styles)(
 
       const { code, contractName, blockInfo } = this.props.contractData;
       return (
-        <Grid container spacing={24}>
+        <Grid container spacing={3}>
           <Grid item xs={12}>
             <ContractCode code={code} contractName={contractName} />
           </Grid>
