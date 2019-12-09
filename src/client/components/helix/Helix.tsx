@@ -10,18 +10,7 @@ import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
 import { BloomEffect, EffectComposer, EffectPass, RenderPass } from 'postprocessing';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import {
-  AmbientLight,
-  DirectionalLight,
-  Object3D,
-  PerspectiveCamera,
-  Projector,
-  Raycaster,
-  Scene,
-  Vector2,
-  WebGLRenderer,
-  Clock,
-} from 'three';
+import { AmbientLight, Clock, DirectionalLight, Object3D, PerspectiveCamera, Raycaster, Scene, Vector2, WebGLRenderer } from 'three';
 import { IBlockSummary } from '../../../shared/IBlock';
 import { getRecentBlocksSummary } from '../../reducers/recentBlocksReducer';
 import { IRootState } from '../../reducers/rootReducer';

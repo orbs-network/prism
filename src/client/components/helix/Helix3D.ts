@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { Expo, TimelineLite, TweenLite, Power0, Power2, Power4, Power1 } from 'gsap';
+import { TweenLite } from 'gsap';
 import { CylinderGeometry, Mesh, MeshLambertMaterial, Object3D, SphereGeometry } from 'three';
 
 export class Helix3D {
