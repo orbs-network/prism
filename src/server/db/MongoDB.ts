@@ -13,7 +13,7 @@ import { IBlock } from '../../shared/IBlock';
 import { IShortTx, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 import { txToShortTx } from '../transformers/txTransform';
-import {IDB, TDBFillingMethod} from './IDB';
+import {IDB, TDBBuildingStatus, TDBFillingMethod} from './IDB';
 
 mongooseLong(mongoose);
 mongoose.set('useFindAndModify', false);
@@ -27,6 +27,7 @@ interface ICacheDocument extends mongoose.Document {
 interface IDBConstructionStateDocument extends mongoose.Document {
   _id: number;
   dbFillingMethod: TDBFillingMethod;
+  dbBuildingStatus: TDBBuildingStatus;
 }
 
 const cacheSchema = new mongoose.Schema({
@@ -38,6 +39,7 @@ const cacheSchema = new mongoose.Schema({
 const dbConstructionStateSchema = new mongoose.Schema({
   _id: Number,
   dbFillingMethod: { type: String, default: 'None'},
+  dbBuildingStatus: { type: String, default: 'None'},
 });
 
 const blockSchema = new mongoose.Schema({
@@ -143,6 +145,23 @@ export class MongoDB implements IDB {
       return;
     }
     await this.dbConstructionStateModel.updateOne({ _id: 1 }, { $set: { dbFillingMethod } }, { upsert: true });
+  }
+
+  public async getDBBuildingStatus(): Promise<TDBBuildingStatus> {
+    const result = await this.dbConstructionStateModel.findOne({ _id: 1 });
+
+    if (result && result.dbBuildingStatus !== undefined) {
+      return result.dbBuildingStatus;
+    }
+
+    return 'None';
+  }
+
+  public async setDBBuildingStatus(dbBuildingStatus: TDBBuildingStatus): Promise<void> {
+    if (this.readOnlyMode) {
+      return;
+    }
+    await this.dbConstructionStateModel.updateOne({ _id: 1 }, { $set: { dbBuildingStatus } }, { upsert: true });
   }
 
   public async clearAll(): Promise<void> {

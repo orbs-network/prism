@@ -10,14 +10,24 @@ import { IBlock } from '../../shared/IBlock';
 import { IShortTx, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 import { txToShortTx } from '../transformers/txTransform';
-import {IDB, TDBFillingMethod} from './IDB';
+import {IDB, TDBBuildingStatus, TDBFillingMethod} from './IDB';
+
+interface IDBConstructionStateInMemory {
+  dbFillingMethod: TDBFillingMethod;
+  dbBuildingStatus: TDBBuildingStatus;
+}
+
+const defaultDbConstructionState: IDBConstructionStateInMemory = Object.freeze({
+  dbBuildingStatus: 'None',
+  dbFillingMethod: 'None',
+});
 
 export class InMemoryDB implements IDB {
   private blocks: Map<string, IBlock>;
   private txes: Map<string, ITx>;
   private heighestConsecutiveBlockHeight: bigint = 0n;
   private dbVersion: string = '0.0.0';
-  private dbFillingMethod: TDBFillingMethod = 'None';
+  private dbConstructionState: IDBConstructionStateInMemory = Object.assign({}, defaultDbConstructionState);
 
   constructor(private readOnlyMode: boolean = false) {}
 
@@ -42,7 +52,7 @@ export class InMemoryDB implements IDB {
   }
 
   public async getDBFillingMethod(): Promise<TDBFillingMethod> {
-    return this.dbFillingMethod;
+    return this.dbConstructionState.dbFillingMethod;
   }
 
   public async setDBFillingMethod(dbFillingMethod: TDBFillingMethod): Promise<void> {
@@ -50,7 +60,19 @@ export class InMemoryDB implements IDB {
       return ;
     }
 
-    this.dbFillingMethod = dbFillingMethod;
+    this.dbConstructionState.dbFillingMethod = dbFillingMethod;
+  }
+
+  public async getDBBuildingStatus(): Promise<TDBBuildingStatus> {
+    return this.dbConstructionState.dbBuildingStatus;
+  }
+
+  public async setDBBuildingStatus(dbBuildingStatus: TDBBuildingStatus): Promise<void> {
+    if (this.readOnlyMode) {
+      return ;
+    }
+
+    this.dbConstructionState.dbBuildingStatus = dbBuildingStatus;
   }
 
   public async clearAll(): Promise<void> {
@@ -60,7 +82,7 @@ export class InMemoryDB implements IDB {
     this.blocks = new Map();
     this.txes = new Map();
     this.heighestConsecutiveBlockHeight = 0n;
-    this.dbFillingMethod = 'None';
+    this.dbConstructionState = Object.assign({}, defaultDbConstructionState);
   }
 
   public async storeBlock(block: IBlock): Promise<void> {

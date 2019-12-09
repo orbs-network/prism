@@ -11,7 +11,7 @@ import * as winston from 'winston';
 import { IShortTx, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 import { MONGODB_URI } from '../config';
-import { IDB } from '../db/IDB';
+import {IDB, TDBBuildingStatus, TDBFillingMethod} from '../db/IDB';
 import { InMemoryDB } from '../db/InMemoryDB';
 import { MongoDB } from '../db/MongoDB';
 import { genLogger } from '../logger/LoggerFactory';
@@ -30,8 +30,10 @@ import { txToShortTx } from '../transformers/txTransform';
 
 const logger: winston.Logger = genLogger(false, false, false);
 
-testDb(new InMemoryDB(), 'InMemoryDB');
-testDb(new MongoDB(logger, MONGODB_URI), 'MongoDB');
+describe('DB Tests', () => {
+  testDb(new InMemoryDB(), 'InMemoryDB');
+  testDb(new MongoDB(logger, MONGODB_URI), 'MongoDB');
+});
 
 function testDb(db: IDB, dbName: string) {
   describe(dbName, () => {
@@ -185,14 +187,39 @@ function testDb(db: IDB, dbName: string) {
 
     it('Should be able to store, retrieve and update the "DB Filling Method"', async () => {
       const initial = await db.getDBFillingMethod();
+      const firstValue: TDBFillingMethod = 'DBBuilder';
+      const secondValue: TDBFillingMethod = 'GapsFiller';
 
-      await db.setDBFillingMethod('DBBuilder');
+      await db.setDBFillingMethod(firstValue);
       const actualFirst = await db.getDBFillingMethod();
-      expect(actualFirst).toEqual('DBBuilder');
+      expect(actualFirst).toEqual(firstValue);
 
-      await db.setDBFillingMethod('GapsFiller');
+      await db.setDBFillingMethod(secondValue);
       const actualSecond = await db.getDBFillingMethod();
-      expect(actualSecond).toEqual('GapsFiller');
+      expect(actualSecond).toEqual(secondValue);
+
+      expect(actualFirst).not.toEqual(initial);
+      expect(actualSecond).not.toEqual(initial);
+    });
+
+    it('Should have "None" as default "DB Building status"', async () => {
+      const defaultValue = await db.getDBBuildingStatus();
+
+      expect(defaultValue).toEqual('None');
+    });
+
+    it('Should be able to store, retrieve and update the "DB Building status"', async () => {
+      const initial = await db.getDBBuildingStatus();
+      const firstValue: TDBBuildingStatus = 'InWork';
+      const secondValue: TDBBuildingStatus = 'Done';
+
+      await db.setDBBuildingStatus(firstValue);
+      const actualFirst = await db.getDBBuildingStatus();
+      expect(actualFirst).toEqual(firstValue);
+
+      await db.setDBBuildingStatus(secondValue);
+      const actualSecond = await db.getDBBuildingStatus();
+      expect(actualSecond).toEqual(secondValue);
 
       expect(actualFirst).not.toEqual(initial);
       expect(actualSecond).not.toEqual(initial);

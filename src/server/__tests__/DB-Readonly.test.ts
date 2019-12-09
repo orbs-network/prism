@@ -72,5 +72,11 @@ function testReadOnlyDb(db: IDB, dbName: string) {
       const actual = await db.getDBFillingMethod();
       expect(actual).toEqual('None');
     });
+
+    it('should NOT store the DB building status', async () => {
+      await db.setDBBuildingStatus('InWork');
+      const actual = await db.getDBBuildingStatus();
+      expect(actual).toEqual('None');
+    });
   });
 }
