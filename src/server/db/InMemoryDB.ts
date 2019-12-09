@@ -10,13 +10,14 @@ import { IBlock } from '../../shared/IBlock';
 import { IShortTx, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 import { txToShortTx } from '../transformers/txTransform';
-import { IDB } from './IDB';
+import {IDB, TDBFillingMethod} from './IDB';
 
 export class InMemoryDB implements IDB {
   private blocks: Map<string, IBlock>;
   private txes: Map<string, ITx>;
   private heighestConsecutiveBlockHeight: bigint = 0n;
   private dbVersion: string = '0.0.0';
+  private dbFillingMethod: TDBFillingMethod = 'None';
 
   constructor(private readOnlyMode: boolean = false) {}
 
@@ -40,6 +41,18 @@ export class InMemoryDB implements IDB {
     this.dbVersion = version;
   }
 
+  public async getDBFillingMethod(): Promise<TDBFillingMethod> {
+    return this.dbFillingMethod;
+  }
+
+  public async setDBFillingMethod(dbFillingMethod: TDBFillingMethod): Promise<void> {
+    if (this.readOnlyMode) {
+      return ;
+    }
+
+    this.dbFillingMethod = dbFillingMethod;
+  }
+
   public async clearAll(): Promise<void> {
     if (this.readOnlyMode) {
       return;
@@ -47,6 +60,7 @@ export class InMemoryDB implements IDB {
     this.blocks = new Map();
     this.txes = new Map();
     this.heighestConsecutiveBlockHeight = 0n;
+    this.dbFillingMethod = 'None';
   }
 
   public async storeBlock(block: IBlock): Promise<void> {

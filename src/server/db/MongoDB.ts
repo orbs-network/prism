@@ -13,7 +13,7 @@ import { IBlock } from '../../shared/IBlock';
 import { IShortTx, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 import { txToShortTx } from '../transformers/txTransform';
-import { IDB } from './IDB';
+import {IDB, TDBFillingMethod} from './IDB';
 
 mongooseLong(mongoose);
 mongoose.set('useFindAndModify', false);
@@ -24,10 +24,20 @@ interface ICacheDocument extends mongoose.Document {
   dbVersion: string;
 }
 
+interface IDBConstructionStateDocument extends mongoose.Document {
+  _id: number;
+  dbFillingMethod: TDBFillingMethod;
+}
+
 const cacheSchema = new mongoose.Schema({
   _id: Number,
   heighestConsecutiveBlockHeight: (mongoose.Schema.Types as any).Long,
   dbVersion: String,
+});
+
+const dbConstructionStateSchema = new mongoose.Schema({
+  _id: Number,
+  dbFillingMethod: { type: String, default: 'None'},
 });
 
 const blockSchema = new mongoose.Schema({
@@ -68,6 +78,7 @@ export class MongoDB implements IDB {
   private BlockModel: mongoose.Model<mongoose.Document>;
   private TxModel: mongoose.Model<mongoose.Document>;
   private CacheModel: mongoose.Model<ICacheDocument>;
+  private dbConstructionStateModel: mongoose.Model<IDBConstructionStateDocument>;
 
   constructor(private logger: winston.Logger, private connectionUrl: string, private readOnlyMode: boolean = false) {}
 
@@ -88,6 +99,7 @@ export class MongoDB implements IDB {
           this.BlockModel = mongoose.model('Block', blockSchema);
           this.TxModel = mongoose.model('Tx', txSchema);
           this.CacheModel = mongoose.model('Cache', cacheSchema);
+          this.dbConstructionStateModel = mongoose.model('DbConstructionState', dbConstructionStateSchema);
           resolve();
         });
     });
@@ -116,13 +128,32 @@ export class MongoDB implements IDB {
     await this.CacheModel.updateOne({ _id: 1 }, { $set: { dbVersion } }, { upsert: true });
   }
 
+  public async getDBFillingMethod(): Promise<TDBFillingMethod> {
+    const result = await this.dbConstructionStateModel.findOne({ _id: 1 });
+
+    if (result && result.dbFillingMethod !== undefined) {
+      return result.dbFillingMethod;
+    }
+
+    return 'None';
+  }
+
+  public async setDBFillingMethod(dbFillingMethod: TDBFillingMethod): Promise<void> {
+    if (this.readOnlyMode) {
+      return;
+    }
+    await this.dbConstructionStateModel.updateOne({ _id: 1 }, { $set: { dbFillingMethod } }, { upsert: true });
+  }
+
   public async clearAll(): Promise<void> {
     if (this.readOnlyMode) {
       return;
     }
+
     await this.BlockModel.deleteMany({});
     await this.TxModel.deleteMany({});
     await this.CacheModel.deleteMany({});
+    await this.dbConstructionStateModel.deleteMany({});
   }
 
   public async storeBlock(block: IBlock): Promise<void> {

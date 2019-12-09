@@ -66,5 +66,11 @@ function testReadOnlyDb(db: IDB, dbName: string) {
       const actual = await db.getVersion();
       expect(actual).toEqual('0.0.0');
     });
+
+    it('should NOT store the DB filling method', async () => {
+      await db.setDBFillingMethod('DBBuilder');
+      const actual = await db.getDBFillingMethod();
+      expect(actual).toEqual('None');
+    });
   });
 }

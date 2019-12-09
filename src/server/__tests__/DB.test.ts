@@ -177,6 +177,27 @@ function testDb(db: IDB, dbName: string) {
       expect(actual).not.toEqual(initial);
     });
 
+    it('Should have "None" as default "DB Filling Method"', async () => {
+      const defaultValue = await db.getDBFillingMethod();
+
+      expect(defaultValue).toEqual('None');
+    });
+
+    it('Should be able to store, retrieve and update the "DB Filling Method"', async () => {
+      const initial = await db.getDBFillingMethod();
+
+      await db.setDBFillingMethod('DBBuilder');
+      const actualFirst = await db.getDBFillingMethod();
+      expect(actualFirst).toEqual('DBBuilder');
+
+      await db.setDBFillingMethod('GapsFiller');
+      const actualSecond = await db.getDBFillingMethod();
+      expect(actualSecond).toEqual('GapsFiller');
+
+      expect(actualFirst).not.toEqual(initial);
+      expect(actualSecond).not.toEqual(initial);
+    });
+
     it('should retrive contract by name', async () => {
       const code: string = 'this is go code';
       const btx: BlockTransaction = generateContractDeployTransaction('test-contract', code);
