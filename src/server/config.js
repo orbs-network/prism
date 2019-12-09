@@ -17,7 +17,7 @@ if (IS_DEV) {
 const { version } = require(findUp.sync('package.json'));
 
 ////////////// CONFIG VARIABLES ///////////////
-const PRISM_VERSION = `v${version}`;
+const PRISM_VERSION = `${version}`;
 
 // debug
 const MINIFYED_REACT_JS = process.env.MINIFYED_REACT_JS !== 'false'; // default: true
