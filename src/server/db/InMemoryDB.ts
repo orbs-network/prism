@@ -126,13 +126,19 @@ export class InMemoryDB implements IDB {
     return result;
   }
 
-  public async getDeployContractTx(contractName: string): Promise<ITx> {
+  public async getDeployContractTx(contractName: string, ignoreCase?: boolean): Promise<ITx> {
+    if (ignoreCase === true) {
+      contractName = contractName.toLowerCase();
+    }
     for (const tx of this.txes.values()) {
       if (tx.contractName === '_Deployments' && tx.methodName === 'deployService' && tx.executionResult === 'SUCCESS') {
         const { inputArguments: args } = tx;
         if (args.length >= 3) {
-          if (args[0].type === 'string' && args[0].value === contractName && args[1].type === 'uint32') {
-            return tx;
+          if (args[0].type === 'string' && args[1].type === 'uint32') {
+            const argContractName = ignoreCase ? args[0].value.toLowerCase() : args[0].value;
+            if (argContractName === contractName) {
+              return tx;
+            }
           }
         }
       }

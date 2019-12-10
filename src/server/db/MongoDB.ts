@@ -203,7 +203,7 @@ export class MongoDB implements IDB {
         methodName: 'deployService',
         executionResult: 'SUCCESS',
       },
-      { _id: false, 'inputArguments': true },
+      { _id: false, inputArguments: true },
     )
       .lean()
       .exec();
@@ -217,15 +217,18 @@ export class MongoDB implements IDB {
     }
   }
 
-  public async getDeployContractTx(contractName: string): Promise<ITx> {
+  public async getDeployContractTx(contractName: string, ignoreCase?: boolean): Promise<ITx> {
     const startTime = Date.now();
     this.logger.info(`Searching for deployment of contract: ${contractName}`);
+
+    const searchQuery: string | RegExp =
+      ignoreCase === true ? new RegExp(`^${contractName}$`, 'i') : contractName;
     const result = await this.TxModel.findOne(
       {
         contractName: '_Deployments',
         methodName: 'deployService',
         executionResult: 'SUCCESS',
-        'inputArguments.0.value': contractName
+        'inputArguments.0.value': searchQuery,
       },
       { _id: false, __v: false },
     )
@@ -241,7 +244,11 @@ export class MongoDB implements IDB {
     }
   }
 
-  public async getContractTxes(contractName: string, limit: number, startFromExecutionIdx?: number): Promise<IShortTx[]> {
+  public async getContractTxes(
+    contractName: string,
+    limit: number,
+    startFromExecutionIdx?: number,
+  ): Promise<IShortTx[]> {
     const startTime = Date.now();
     this.logger.info(`Searching for all txes for contract: ${contractName}`);
 

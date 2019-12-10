@@ -25,7 +25,7 @@ export interface IDB {
   getHeighestConsecutiveBlockHeight(): Promise<bigint>;
   setHeighestConsecutiveBlockHeight(value: bigint): Promise<void>;
   getTxById(txId: string): Promise<ITx>;
-  getDeployContractTx(contractName: string): Promise<ITx>;
+  getDeployContractTx(contractName: string, ignoreCase?: boolean): Promise<ITx>;
   getDeployedContracts(): Promise<string[]>;
   getBlockTxes(blockHeight: bigint): Promise<ITx[]>;
   getContractTxes(contractName: string, limit: number, executionIdx?: number): Promise<IShortTx[]>;
