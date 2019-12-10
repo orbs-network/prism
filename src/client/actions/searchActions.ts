@@ -18,10 +18,21 @@ export const searchAction = (term: string, history): ThunkAction<void, {}, {}, A
     try {
       const searchResult: ISearchResult = await search(term); // Call the server api
       dispatch(searchCompletedAction(searchResult));
-      if (searchResult.type === 'block') {
-        history.push(`/block/${searchResult.block.blockHeight}`);
-      } else {
-        history.push(`/tx/${searchResult.tx.txId}`);
+      switch (searchResult.type) {
+        case 'block':
+          history.push(`/block/${searchResult.block.blockHeight}`);          
+          break;
+      
+        case 'tx':
+          history.push(`/tx/${searchResult.tx.txId}`);
+          break;
+      
+        case 'contract':
+          history.push(`/contract/${searchResult.contractName}`);
+          break;
+      
+        default:
+          break;
       }
       // navigate to the result
     } catch (e) {

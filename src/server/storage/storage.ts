@@ -108,6 +108,14 @@ export class Storage implements INewBlocksHandler {
       };
     }
 
+    const deployTx = await this.db.getDeployContractTx(term, true);
+    if (deployTx) {
+      return {
+        contractName: deployTx.inputArguments[0].value,
+        type: 'contract',
+      };
+    }
+
     return null;
   }
 }

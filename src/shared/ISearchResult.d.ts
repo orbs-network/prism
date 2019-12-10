@@ -19,4 +19,9 @@ export interface ITxResult {
   type: 'tx';
 }
 
-export type ISearchResult = IBlockResult | ITxResult;
+export interface IContractResult {
+  contractName: string;
+  type: 'contract';
+}
+
+export type ISearchResult = IBlockResult | ITxResult | IContractResult;
