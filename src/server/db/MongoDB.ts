@@ -28,6 +28,7 @@ interface IDBConstructionStateDocument extends mongoose.Document {
   _id: number;
   dbFillingMethod: TDBFillingMethod;
   dbBuildingStatus: TDBBuildingStatus;
+  lastBuiltBlockHeight: number;
 }
 
 const cacheSchema = new mongoose.Schema({
@@ -40,6 +41,7 @@ const dbConstructionStateSchema = new mongoose.Schema({
   _id: Number,
   dbFillingMethod: { type: String, default: 'None'},
   dbBuildingStatus: { type: String, default: 'None'},
+  lastBuiltBlockHeight: { type: Number, default: 0},
 });
 
 const blockSchema = new mongoose.Schema({
@@ -162,6 +164,23 @@ export class MongoDB implements IDB {
       return;
     }
     await this.dbConstructionStateModel.updateOne({ _id: 1 }, { $set: { dbBuildingStatus } }, { upsert: true });
+  }
+
+  public async getLastBuiltBlockHeight(): Promise<number> {
+    const result = await this.dbConstructionStateModel.findOne({ _id: 1 });
+
+    if (result && result.lastBuiltBlockHeight !== undefined) {
+      return result.lastBuiltBlockHeight;
+    }
+
+    return 0;
+  }
+
+  public async setLastBuiltBlockHeight(lastBuiltBlockHeight: number): Promise<void> {
+    if (this.readOnlyMode) {
+      return;
+    }
+    await this.dbConstructionStateModel.updateOne({ _id: 1 }, { $set: { lastBuiltBlockHeight } }, { upsert: true });
   }
 
   public async clearAll(): Promise<void> {

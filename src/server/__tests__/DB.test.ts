@@ -225,6 +225,29 @@ function testDb(db: IDB, dbName: string) {
       expect(actualSecond).not.toEqual(initial);
     });
 
+    it('Should have 0 as default "Latest Built block height"', async () => {
+      const defaultValue = await db.getLastBuiltBlockHeight();
+
+      expect(defaultValue).toEqual(0);
+    });
+
+    it('Should be able to store, retrieve and update the "Latest built block height"', async () => {
+      const initial = await db.getLastBuiltBlockHeight();
+      const firstValue: number = 100;
+      const secondValue: number = 200;
+
+      await db.setLastBuiltBlockHeight(firstValue);
+      const actualFirst = await db.getLastBuiltBlockHeight();
+      expect(actualFirst).toEqual(firstValue);
+
+      await db.setLastBuiltBlockHeight(secondValue);
+      const actualSecond = await db.getLastBuiltBlockHeight();
+      expect(actualSecond).toEqual(secondValue);
+
+      expect(actualFirst).not.toEqual(initial);
+      expect(actualSecond).not.toEqual(initial);
+    });
+
     it('should retrive contract by name', async () => {
       const code: string = 'this is go code';
       const btx: BlockTransaction = generateContractDeployTransaction('test-contract', code);

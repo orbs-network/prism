@@ -21,6 +21,8 @@ export interface IDB {
   setDBFillingMethod(dbFillingMethod: TDBFillingMethod): Promise<void>;
   getDBBuildingStatus(): Promise<TDBBuildingStatus>;
   setDBBuildingStatus(dbBuildingStatus: TDBBuildingStatus): Promise<void>;
+  getLastBuiltBlockHeight(): Promise<number>;
+  setLastBuiltBlockHeight(lastBuiltBlockHeight: number): Promise<void>;
 
   destroy(): Promise<void>;
   clearAll(): Promise<void>;
