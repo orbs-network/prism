@@ -143,10 +143,7 @@ export class MongoDB implements IDB {
   }
 
   public async setDBFillingMethod(dbFillingMethod: TDBFillingMethod): Promise<void> {
-    if (this.readOnlyMode) {
-      return;
-    }
-    await this.dbConstructionStateModel.updateOne({ _id: 1 }, { $set: { dbFillingMethod } }, { upsert: true });
+    await this.upsertToDbConstructionStateModel({ dbFillingMethod });
   }
 
   public async getDBBuildingStatus(): Promise<TDBBuildingStatus> {
@@ -160,10 +157,7 @@ export class MongoDB implements IDB {
   }
 
   public async setDBBuildingStatus(dbBuildingStatus: TDBBuildingStatus): Promise<void> {
-    if (this.readOnlyMode) {
-      return;
-    }
-    await this.dbConstructionStateModel.updateOne({ _id: 1 }, { $set: { dbBuildingStatus } }, { upsert: true });
+    await this.upsertToDbConstructionStateModel({ dbBuildingStatus });
   }
 
   public async getLastBuiltBlockHeight(): Promise<number> {
@@ -177,10 +171,7 @@ export class MongoDB implements IDB {
   }
 
   public async setLastBuiltBlockHeight(lastBuiltBlockHeight: number): Promise<void> {
-    if (this.readOnlyMode) {
-      return;
-    }
-    await this.dbConstructionStateModel.updateOne({ _id: 1 }, { $set: { lastBuiltBlockHeight } }, { upsert: true });
+    await this.upsertToDbConstructionStateModel({ lastBuiltBlockHeight });
   }
 
   public async clearAll(): Promise<void> {
@@ -429,5 +420,13 @@ export class MongoDB implements IDB {
   private async storeTx(tx: ITx): Promise<void> {
     const txInstance = new this.TxModel(blockHeighToBigInt(tx));
     await txInstance.save();
+  }
+
+  private async upsertToDbConstructionStateModel(doc: Partial<IDBConstructionStateDocument>) {
+    if (this.readOnlyMode) {
+      return;
+    }
+
+    await this.dbConstructionStateModel.updateOne({ _id: 1 }, { $set: doc }, { upsert: true });
   }
 }
