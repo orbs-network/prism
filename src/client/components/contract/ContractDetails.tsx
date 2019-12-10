@@ -60,14 +60,14 @@ const ContractDetailsImpl = withStyles(styles)(
         return <Typography variant='h4'>{this.props.error}</Typography>;
       }
 
-      const { code, contractName, blockInfo } = this.props.contractData;
+      const { code, contractName, blocksInfo } = this.props.contractData;
       return (
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <ContractCode code={code} contractName={contractName} />
           </Grid>
           <Grid item xs={12}>
-            <ContractHistory blockInfo={blockInfo} contractName={contractName} />
+            <ContractHistory blocksInfo={blocksInfo} contractName={contractName} />
           </Grid>
         </Grid>
       );

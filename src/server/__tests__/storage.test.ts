@@ -119,7 +119,7 @@ describe('storage', () => {
       const expected: IContractData = {
         code: [code1, code2],
         contractName,
-        blockInfo: {
+        blocksInfo: {
           2: {
             stateDiff: null,
             txes: [block2tx1, block2tx0],

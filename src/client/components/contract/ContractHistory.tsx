@@ -23,7 +23,7 @@ import {
 import * as React from 'react';
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
 import goLang from 'react-syntax-highlighter/dist/esm/languages/hljs/go';
-import { IContractBlockInfo } from '../../../shared/IContractData';
+import { IContractBlocksInfo } from '../../../shared/IContractData';
 import { subtract, calcPrevBlock } from '../../utils/blockHeightUtils';
 import { ConsoleText } from '../ConsoleText';
 import { PrismLink } from '../PrismLink';
@@ -46,24 +46,24 @@ const styles = (theme: Theme) =>
   });
 
 interface IProps extends WithStyles<typeof styles> {
-  blockInfo: IContractBlockInfo;
+  blocksInfo: IContractBlocksInfo;
   contractName: string;
 }
 
-export const ContractHistory = withStyles(styles)(({ blockInfo, contractName, classes }: IProps) => {
-  const blockHeights = Object.keys(blockInfo).sort((a, b) => subtract(b, a));
+export const ContractHistory = withStyles(styles)(({ blocksInfo, contractName, classes }: IProps) => {
+  const blockHeights = Object.keys(blocksInfo).sort((a, b) => subtract(b, a));
   let prevPage: HistoryPaginator;
   let nextPage: HistoryPaginator;
   if (blockHeights.length > 0) {
     const lastBlockHeight = blockHeights[blockHeights.length - 1];
-    const { txes } = blockInfo[lastBlockHeight];
+    const { txes } = blocksInfo[lastBlockHeight];
     const lastTx = txes[txes.length - 1];
     if (lastTx.executionIdx > 1) {
       prevPage = new HistoryPaginator(lastTx.executionIdx - 1);
     }
 
     const firstBlockHeight = blockHeights[0];
-    const firstTx = blockInfo[firstBlockHeight].txes[0];
+    const firstTx = blocksInfo[firstBlockHeight].txes[0];
     nextPage = new HistoryPaginator(firstTx.executionIdx + CONTRACT_TXES_HISTORY_PAGE_SIZE);
   }
   return (
@@ -97,7 +97,7 @@ export const ContractHistory = withStyles(styles)(({ blockInfo, contractName, cl
                     </ConsoleText>
                   </TableCell>
                   <TableCell>
-                    <ShortTxesList txes={blockInfo[blockHeight].txes} />
+                    <ShortTxesList txes={blocksInfo[blockHeight].txes} />
                   </TableCell>
                 </TableRow>
               );

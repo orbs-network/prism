@@ -11,7 +11,7 @@ import { decodeHex } from 'orbs-client-sdk';
 import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import { CONTRACT_TXES_HISTORY_PAGE_SIZE } from '../../shared/Constants';
 import { IBlock, IBlockSummary } from '../../shared/IBlock';
-import { IContractBlockInfo, IContractData } from '../../shared/IContractData';
+import { IContractBlocksInfo, IContractData } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 import { ISearchResult } from '../../shared/ISearchResult';
 import { IDB } from '../db/IDB';
@@ -56,7 +56,7 @@ export class Storage implements INewBlocksHandler {
       code = deployTx.inputArguments.splice(2).map(arg => Buffer.from(decodeHex(arg.value)).toString());
     }
     const txes = await this.db.getContractTxes(contractName, CONTRACT_TXES_HISTORY_PAGE_SIZE, executionIdx);
-    const blockInfo: IContractBlockInfo = txes.reduce(
+    const blocksInfo: IContractBlocksInfo = txes.reduce(
       (prev, tx) => {
         if (prev[tx.blockHeight]) {
           prev[tx.blockHeight].txes.push(tx);
@@ -68,12 +68,12 @@ export class Storage implements INewBlocksHandler {
         }
         return prev;
       },
-      {} as IContractBlockInfo,
+      {} as IContractBlocksInfo,
     );
     return {
       contractName,
       code,
-      blockInfo,
+      blocksInfo,
     };
   }
 

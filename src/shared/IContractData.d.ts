@@ -6,7 +6,7 @@ export interface IShortTx {
   successful: boolean;
 }
 
-export interface IContractBlockInfo {
+export interface IContractBlocksInfo {
   [blockHeight: string]: {
     stateDiff: any;
     txes: IShortTx[];
@@ -15,5 +15,5 @@ export interface IContractBlockInfo {
 export interface IContractData {
   contractName: string;
   code: string[];
-  blockInfo: IContractBlockInfo;
+  blocksInfo: IContractBlocksInfo;
 }
