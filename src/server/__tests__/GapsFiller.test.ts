@@ -82,7 +82,7 @@ describe('Gaps Filler', () => {
     await fillGaps(logger, storage, orbsBlocksPolling);
 
     // make sure that the storage holds the all 15 blocks
-    const actual = await storage.getHeighestConsecutiveBlockHeight();
+    const actual = await storage.getHighestConsecutiveBlockHeight();
     expect(actual).toBe(15n);
   });
 });
