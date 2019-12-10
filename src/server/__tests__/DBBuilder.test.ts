@@ -17,6 +17,8 @@ import { blockResponseToBlock } from '../transformers/blockTransform';
 import 'jest-expect-message';
 
 describe(`DBBuilder`, () => {
+  const PRISM_VERSION = '1.0.0';
+
   let db: IDB;
   let storage: Storage;
   let orbsBlocksPolling: OrbsBlocksPollingMock;
@@ -40,7 +42,7 @@ describe(`DBBuilder`, () => {
   beforeEach(async () => {
     db = new InMemoryDB();
     await db.init();
-    await db.setVersion('1.0.0');
+    await db.setVersion(PRISM_VERSION);
     storage = new Storage(db);
 
     orbsBlocksPolling = new OrbsBlocksPollingMock();
@@ -147,44 +149,129 @@ describe(`DBBuilder`, () => {
     expect(updatedLastBuiltBlockHeight).toEqual(availableBlocks - 1);
   }
 
-  it('should rebuild the db when the db is empty', async () => {
-    expect(await db.getLatestBlockHeight()).toBe(0n);
-    expect(await db.getBlockByHeight('1')).toBeNull();
-    expect(await db.getBlockByHeight('2')).toBeNull();
-    expect(await db.getBlockByHeight('3')).toBeNull();
-
-    initSpies();
-    await dbBuilder.init('1.0.0');
-
-    expectDbToNotBeCleared();
-
-    expect(await db.getLatestBlockHeight()).toBe(3n);
-    expect(await db.getBlockByHeight('1')).toEqual(block1);
-    expect(await db.getBlockByHeight('2')).toEqual(block2);
-    expect(await db.getBlockByHeight('3')).toEqual(block3);
-  });
-
-  it('should not rebuild the db when the db has blocks', async () => {
-    await fillDbWithBlocks();
-    initSpies();
-    await dbBuilder.init('1.0.0');
+  function expectNothingToHappen() {
     expectDbToNotBeCleared();
     expectDbToNotRebuild();
+  }
+
+  describe('DB is Empty', () => {
+    it('Should rebuild the DB when the DB is empty', async () => {
+      initSpies();
+      await dbBuilder.init(PRISM_VERSION);
+
+      // Ensure empty db
+      expect(await db.getLatestBlockHeight()).toBe(0n);
+
+      const existingBlocksInChain = 100;
+      const blocks = [...Array(existingBlocksInChain).keys()].map(h => generateRandomGetBlockRespose(BigInt(h)));
+
+      orbsBlocksPolling.setBlockChain(blocks);
+
+      await expectFullDBBuildFromZero(existingBlocksInChain, blocks);
+    });
   });
 
-  it('should clear & rebuild the db + set new version when the db version is older', async () => {
-    await fillDbWithBlocks();
-    initSpies();
-    await dbBuilder.init('2.0.0');
-    expectDbToBeCleared();
-    expectDbToRebuild();
+  describe('DB has some blocks', () => {
+    it('Should do nothing when DB-Version > Prism-Version', async () => {
+      initSpies();
+      await dbBuilder.init('2.0.0');
+
+      expectNothingToHappen();
+    });
+
+    it('Should clear the DB and rebuild from zero when the DB-Version < Prism-Version', async () => {
+      const existingBlocksInChain = 100;
+      const blocks = [...Array(existingBlocksInChain).keys()].map(h => generateRandomGetBlockRespose(BigInt(h)));
+
+      orbsBlocksPolling.setBlockChain(blocks);
+
+      initSpies();
+      await dbBuilder.init('0.5.5');
+
+      expectDbToBeCleared();
+      expectFullDBBuildFromZero(existingBlocksInChain, blocks);
+    });
+
+    it ('Should do nothing when DB-Version == Prism-version AND "Db Building status" == "Done"', async () => {
+      await db.setDBBuildingStatus('Done');
+
+      initSpies();
+      await dbBuilder.init(PRISM_VERSION);
+
+      expectNothingToHappen();
+    });
+
+    it ('Should rebuild from zero when DB-Version == Prism-version AND "Db Building status" == "None"', async () => {
+      await db.setDBBuildingStatus('None');
+
+      const existingBlocksInChain = 100;
+      const blocks = [...Array(existingBlocksInChain).keys()].map(h => generateRandomGetBlockRespose(BigInt(h)));
+
+      orbsBlocksPolling.setBlockChain(blocks);
+
+      initSpies();
+      await dbBuilder.init(PRISM_VERSION);
+
+      expectFullDBBuildFromZero(existingBlocksInChain, blocks);
+    });
+
+    it ('Should rebuild from last built block when DB-Version == Prism-version AND "Db Building status" == "In Work"', async () => {
+      await db.setDBBuildingStatus('InWork');
+
+      const existingBlocksInChain = 300;
+      const lastBuiltBlock = 120;
+      const blocks = [...Array(existingBlocksInChain).keys()].map(h => generateRandomGetBlockRespose(BigInt(h)));
+
+      orbsBlocksPolling.setBlockChain(blocks);
+      await db.setLastBuiltBlockHeight(lastBuiltBlock);
+
+      initSpies();
+      await dbBuilder.init(PRISM_VERSION);
+
+      expectFullDBBuildFromPreviousPoint(existingBlocksInChain, lastBuiltBlock, blocks);
+    });
   });
 
-  it('should not rebuild the db when the db version is newer', async () => {
-    await fillDbWithBlocks();
-    initSpies();
-    await dbBuilder.init('0.0.4');
-    expectDbToNotBeCleared();
-    expectDbToNotRebuild();
+  describe('Older tests', () => {
+    it('should rebuild the db when the db is empty', async () => {
+      expect(await db.getLatestBlockHeight()).toBe(0n);
+      expect(await db.getBlockByHeight('1')).toBeNull();
+      expect(await db.getBlockByHeight('2')).toBeNull();
+      expect(await db.getBlockByHeight('3')).toBeNull();
+
+      initSpies();
+      await dbBuilder.init(PRISM_VERSION);
+
+      expectDbToNotBeCleared();
+
+      expect(await db.getLatestBlockHeight()).toBe(3n);
+      expect(await db.getBlockByHeight('1')).toEqual(block1);
+      expect(await db.getBlockByHeight('2')).toEqual(block2);
+      expect(await db.getBlockByHeight('3')).toEqual(block3);
+    });
+
+    it('should not rebuild the db when the db has blocks', async () => {
+      await fillDbWithBlocks();
+      initSpies();
+      await dbBuilder.init(PRISM_VERSION);
+      expectDbToNotBeCleared();
+      expectDbToNotRebuild();
+    });
+
+    it('should clear & rebuild the db + set new version when the db version is older', async () => {
+      await fillDbWithBlocks();
+      initSpies();
+      await dbBuilder.init('2.0.0');
+      expectDbToBeCleared();
+      expectDbToRebuild();
+    });
+
+    it('should not rebuild the db when the db version is newer', async () => {
+      await fillDbWithBlocks();
+      initSpies();
+      await dbBuilder.init('0.0.4');
+      expectDbToNotBeCleared();
+      expectDbToNotRebuild();
+    });
   });
 });
