@@ -48,8 +48,8 @@ export function blockResponseTransactionsToTxs(block: GetBlockResponse): ITx[] {
   return block.transactions.map((tx, idx) => blockTransactionToTx(block.blockHeight.toString(), idx, tx));
 }
 
-export function blockResponseTransactionAsTx(block: GetBlockResponse, idx: number): ITx {
-  return blockTransactionToTx(block.blockHeight.toString(), idx, block.transactions[idx]);
+export function blockResponseTransactionAsTx(block: GetBlockResponse, idxInBlock: number): ITx {
+  return blockTransactionToTx(block.blockHeight.toString(), idxInBlock, block.transactions[idxInBlock]);
 }
 
 export function blockTransactionToTx(blockHeight: string, idxInBlock: number, tx: BlockTransaction): ITx {

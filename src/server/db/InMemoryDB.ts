@@ -118,11 +118,7 @@ export class InMemoryDB implements IDB {
       if (tx.contractName === '_Deployments' && tx.methodName === 'deployService' && tx.executionResult === 'SUCCESS') {
         const { inputArguments: args } = tx;
         if (args.length >= 3) {
-          if (
-            args[0].type === 'string' &&
-            args[0].value === contractName &&
-            args[1].type === 'uint32'
-          ) {
+          if (args[0].type === 'string' && args[0].value === contractName && args[1].type === 'uint32') {
             return tx;
           }
         }
@@ -135,20 +131,21 @@ export class InMemoryDB implements IDB {
     return txArr.map(item => item[1]).filter(tx => tx.blockHeight === blockHeight.toString());
   }
 
-  public async getContractTxes(contractName: string, limit: number, executionIdx?: number): Promise<IShortTx[]> {
+  public async getContractTxes(contractName: string, limit: number, startFromExecutionIdx?: number): Promise<IShortTx[]> {
     let allTxes = Array.from(this.txes)
       .map(mapItem => mapItem[1])
       .filter(tx => tx.contractName === contractName)
-      .sort((a, b) => Number(BigInt(b.blockHeight) - BigInt(a.blockHeight)) || b.idxInBlock - a.idxInBlock)
-      .map(txToShortTx);
+      .sort((a, b) => Number(BigInt(b.blockHeight) - BigInt(a.blockHeight)) || b.idxInBlock - a.idxInBlock);
 
-    if (executionIdx !== undefined && allTxes.length > 0) {
-      const lastIdx = allTxes.length - 1;
-      executionIdx = Math.max(0, Math.min(executionIdx, lastIdx));
-      allTxes = allTxes.slice(lastIdx - executionIdx);
+    const lastExecutionIdx = allTxes.length - 1;
+    if (startFromExecutionIdx === undefined) {
+      startFromExecutionIdx = lastExecutionIdx;
+    } else {
+      startFromExecutionIdx = Math.max(0, Math.min(startFromExecutionIdx, lastExecutionIdx));
+      allTxes = allTxes.slice(lastExecutionIdx - startFromExecutionIdx);
     }
 
-    return allTxes.splice(0, limit);
+    return allTxes.splice(0, limit).map((tx, idx) => txToShortTx(tx, startFromExecutionIdx - idx + 1));
   }
 
   private capTxes(): void {

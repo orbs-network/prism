@@ -50,6 +50,7 @@ export const ShortTxesList = withStyles(styles)(({ classes, txes }: IProps) => (
     {txes.length > 0 ? (
       txes.map(tx => (
         <div key={tx.txId}>
+          <ConsoleText className={classes.executionIdx}>{tx.executionIdx}</ConsoleText>
           <ConsoleText className={classes.signerAddress}>{tx.signerAddress}</ConsoleText>
           <ConsoleText id={`tx-${tx.txId.toLowerCase()}`}>
             <PrismLink to={`/tx/${tx.txId}`}>{tx.method}</PrismLink>

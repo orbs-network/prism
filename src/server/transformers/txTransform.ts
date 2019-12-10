@@ -11,9 +11,10 @@ import { ITx } from '../../shared/ITx';
 
 // tx: Pick<ITx, 'blockHeight' | 'methodName' | 'txId' | 'signerAddress' | 'executionResult'>,
 
-export function txToShortTx(tx: ITx): IShortTx {
+export function txToShortTx(tx: ITx, executionIdx: number): IShortTx {
   return {
     blockHeight: tx.blockHeight.toString(),
+    executionIdx,
     method: tx.methodName,
     txId: tx.txId,
     signerAddress: tx.signerAddress,

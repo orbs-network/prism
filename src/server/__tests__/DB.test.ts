@@ -15,8 +15,17 @@ import { IDB } from '../db/IDB';
 import { InMemoryDB } from '../db/InMemoryDB';
 import { MongoDB } from '../db/MongoDB';
 import { genLogger } from '../logger/LoggerFactory';
-import { generateBlockResponseWithTransaction, generateBlockTransaction, generateContractDeployTransaction, generateRandomGetBlockRespose } from '../orbs-adapter/fake-blocks-generator';
-import { blockResponseToBlock, blockResponseTransactionAsTx, blockResponseTransactionsToTxs } from '../transformers/blockTransform';
+import {
+  generateBlockResponseWithTransaction,
+  generateBlockTransaction,
+  generateContractDeployTransaction,
+  generateRandomGetBlockRespose,
+} from '../orbs-adapter/fake-blocks-generator';
+import {
+  blockResponseToBlock,
+  blockResponseTransactionAsTx,
+  blockResponseTransactionsToTxs,
+} from '../transformers/blockTransform';
 import { txToShortTx } from '../transformers/txTransform';
 
 const logger: winston.Logger = genLogger(false, false, false);
@@ -206,6 +215,13 @@ function testDb(db: IDB, dbName: string) {
       let block4Tx7: ITx;
       let block4Tx8: ITx;
 
+      let shortTx5: IShortTx;
+      let shortTx4: IShortTx;
+      let shortTx3: IShortTx;
+      let shortTx2: IShortTx;
+      let shortTx1: IShortTx;
+      let shortTx0: IShortTx;
+
       beforeEach(async () => {
         //
         // ------------       ------------      ----------------------      ------------
@@ -239,56 +255,56 @@ function testDb(db: IDB, dbName: string) {
         block1DeployTx = blockResponseTransactionAsTx(deployBlock, 0);
 
         block2Tx1 = blockResponseTransactionAsTx(block2, 0);
-        block2Tx2 = blockResponseTransactionAsTx(block2, 1); // execution order: 0
+        block2Tx2 = blockResponseTransactionAsTx(block2, 1); // execution order: 1
 
-        block3Tx3 = blockResponseTransactionAsTx(block3, 0); // execution order: 1
-        block3Tx4 = blockResponseTransactionAsTx(block3, 1); // execution order: 2
+        block3Tx3 = blockResponseTransactionAsTx(block3, 0); // execution order: 2
+        block3Tx4 = blockResponseTransactionAsTx(block3, 1); // execution order: 3
         block3Tx5 = blockResponseTransactionAsTx(block3, 2);
-        block3Tx6 = blockResponseTransactionAsTx(block3, 3); // execution order: 3
+        block3Tx6 = blockResponseTransactionAsTx(block3, 3); // execution order: 4
 
-        block4Tx7 = blockResponseTransactionAsTx(block4, 0); // execution order: 4
-        block4Tx8 = blockResponseTransactionAsTx(block4, 1); // execution order: 5
+        block4Tx7 = blockResponseTransactionAsTx(block4, 0); // execution order: 5
+        block4Tx8 = blockResponseTransactionAsTx(block4, 1); // execution order: 6
 
         await db.storeTxes([block1DeployTx]);
         await db.storeTxes([block2Tx1, block2Tx2]);
         await db.storeTxes([block3Tx3, block3Tx4, block3Tx5, block3Tx6]);
         await db.storeTxes([block4Tx7, block4Tx8]);
+
+        shortTx5 = txToShortTx(block4Tx8, 6);
+        shortTx4 = txToShortTx(block4Tx7, 5);
+        shortTx3 = txToShortTx(block3Tx6, 4);
+        shortTx2 = txToShortTx(block3Tx4, 3);
+        shortTx1 = txToShortTx(block3Tx3, 2);
+        shortTx0 = txToShortTx(block2Tx2, 1);
       });
 
       it('Simple contract details extraction', async () => {
         const actual = await db.getContractTxes(contractName, 100);
-        const txes: IShortTx[] = [
-          txToShortTx(block4Tx8),
-          txToShortTx(block4Tx7),
-          txToShortTx(block3Tx6),
-          txToShortTx(block3Tx4),
-          txToShortTx(block3Tx3),
-          txToShortTx(block2Tx2),
-        ];
+        const txes: IShortTx[] = [shortTx5, shortTx4, shortTx3, shortTx2, shortTx1, shortTx0];
         expect(txes).toEqual(actual);
       });
 
       it('should return only the requested number of txes', async () => {
         const actual = await db.getContractTxes(contractName, 3);
-        const txes: IShortTx[] = [txToShortTx(block4Tx8), txToShortTx(block4Tx7), txToShortTx(block3Tx6)];
+        const txes: IShortTx[] = [shortTx5, shortTx4, shortTx3];
         expect(txes).toEqual(actual);
       });
 
       it('should return only the txes below the given executionIdx', async () => {
         const actual = await db.getContractTxes(contractName, 2, 4);
-        const txes: IShortTx[] = [txToShortTx(block4Tx7), txToShortTx(block3Tx6)];
+        const txes: IShortTx[] = [shortTx4, shortTx3];
         expect(txes).toEqual(actual);
       });
 
       it('should ignore a too large executionIdx', async () => {
         const actual = await db.getContractTxes(contractName, 2, 400);
-        const txes: IShortTx[] = [txToShortTx(block4Tx8), txToShortTx(block4Tx7)];
+        const txes: IShortTx[] = [shortTx5, shortTx4];
         expect(txes).toEqual(actual);
       });
 
       it('should ignore a too small executionIdx', async () => {
         const actual = await db.getContractTxes(contractName, 2, -400);
-        const txes: IShortTx[] = [txToShortTx(block2Tx2)];
+        const txes: IShortTx[] = [shortTx0];
         expect(txes).toEqual(actual);
       });
     });

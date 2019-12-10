@@ -3,7 +3,8 @@ export interface IShortTx {
   method: string;
   txId: string;
   signerAddress: string;
-  successful: boolean;
+  successful: boolean
+  executionIdx: number;
 }
 
 export interface IContractBlocksInfo {

@@ -17,9 +17,10 @@ describe('txTransform', () => {
 
     const failingTx = blockResponseTransactionAsTx(block, 0);
     failingTx.executionResult = 'ERROR';
-    const actualFailing = txToShortTx(failingTx);
+    const actualFailing = txToShortTx(failingTx, 10);
     const expectedFailing: IShortTx = {
       blockHeight: '1',
+      executionIdx: 10,
       method: failingTx.methodName,
       txId: failingTx.txId,
       signerAddress: failingTx.signerAddress,
@@ -30,9 +31,10 @@ describe('txTransform', () => {
     const successTx = blockResponseTransactionAsTx(block, 1);
     successTx.executionResult = 'SUCCESS';
 
-    const actualSuccess = txToShortTx(successTx);
+    const actualSuccess = txToShortTx(successTx, 12);
     const expectedSuccess: IShortTx = {
       blockHeight: '1',
+      executionIdx: 12,
       method: successTx.methodName,
       txId: successTx.txId,
       signerAddress: successTx.signerAddress,

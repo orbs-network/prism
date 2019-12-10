@@ -112,9 +112,9 @@ describe('storage', () => {
       await storage.handleNewBlock(block2);
       await storage.handleNewBlock(block3);
 
-      const block2tx0: IShortTx = txToShortTx(blockResponseTransactionAsTx(block2, 0));
-      const block2tx1: IShortTx = txToShortTx(blockResponseTransactionAsTx(block2, 1));
-      const block3tx3: IShortTx = txToShortTx(blockResponseTransactionAsTx(block3, 0));
+      const block2tx0: IShortTx = txToShortTx(blockResponseTransactionAsTx(block2, 0), 1);
+      const block2tx1: IShortTx = txToShortTx(blockResponseTransactionAsTx(block2, 1), 2);
+      const block3tx3: IShortTx = txToShortTx(blockResponseTransactionAsTx(block3, 0), 3);
 
       const expected: IContractData = {
         code: [code1, code2],
