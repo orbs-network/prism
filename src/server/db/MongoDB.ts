@@ -194,6 +194,29 @@ export class MongoDB implements IDB {
     }
   }
 
+  public async getDeployedContracts(): Promise<string[]> {
+    const startTime = Date.now();
+    this.logger.info(`Searching for all deployed contracts`);
+    const result = await this.TxModel.find(
+      {
+        contractName: '_Deployments',
+        methodName: 'deployService',
+        executionResult: 'SUCCESS',
+      },
+      { _id: false, 'inputArguments': true },
+    )
+      .lean()
+      .exec();
+
+    if (result) {
+      this.logger.info(`${result.length} contracts found [${Date.now() - startTime}ms.]`);
+      return result.map(row => row.inputArguments[0].value);
+    } else {
+      this.logger.info(`No deployed contracts found`);
+      return [];
+    }
+  }
+
   public async getDeployContractTx(contractName: string): Promise<ITx> {
     const startTime = Date.now();
     this.logger.info(`Searching for deployment of contract: ${contractName}`);

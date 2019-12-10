@@ -113,6 +113,19 @@ export class InMemoryDB implements IDB {
     return this.txes.get(txId.toLowerCase()) || null;
   }
 
+  public async getDeployedContracts(): Promise<string[]> {
+    const result = [];
+    for (const tx of this.txes.values()) {
+      if (tx.contractName === '_Deployments' && tx.methodName === 'deployService' && tx.executionResult === 'SUCCESS') {
+        const { inputArguments: args } = tx;
+        if (args.length >= 3 && args[0].type === 'string' && args[1].type === 'uint32') {
+          result.push(args[0].value);
+        }
+      }
+    }
+    return result;
+  }
+
   public async getDeployContractTx(contractName: string): Promise<ITx> {
     for (const tx of this.txes.values()) {
       if (tx.contractName === '_Deployments' && tx.methodName === 'deployService' && tx.executionResult === 'SUCCESS') {
@@ -131,7 +144,11 @@ export class InMemoryDB implements IDB {
     return txArr.map(item => item[1]).filter(tx => tx.blockHeight === blockHeight.toString());
   }
 
-  public async getContractTxes(contractName: string, limit: number, startFromExecutionIdx?: number): Promise<IShortTx[]> {
+  public async getContractTxes(
+    contractName: string,
+    limit: number,
+    startFromExecutionIdx?: number,
+  ): Promise<IShortTx[]> {
     let allTxes = Array.from(this.txes)
       .map(mapItem => mapItem[1])
       .filter(tx => tx.contractName === contractName)

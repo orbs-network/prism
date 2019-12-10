@@ -202,6 +202,26 @@ function testDb(db: IDB, dbName: string) {
       expect(tx).toEqual(actual);
     });
 
+    it('should retrive all contract names', async () => {
+      const code1: string = 'this is go code 1';
+      const code2: string = 'this is go code 2';
+      const btx1: BlockTransaction = generateContractDeployTransaction('test-contract1', code1);
+      const block1 = generateBlockResponseWithTransaction(1n, btx1);
+      const btx2: BlockTransaction = generateContractDeployTransaction('test-contract2', code2);
+      const block2 = generateBlockResponseWithTransaction(2n, btx2);
+
+      const tx1 = blockResponseTransactionAsTx(block1, 0);
+      const tx2 = blockResponseTransactionAsTx(block2, 0);
+
+      const actualBefore = await db.getDeployedContracts();
+      expect([]).toEqual(actualBefore);
+
+      await db.storeTxes([tx1, tx2]);
+
+      const actualAfter = await db.getDeployedContracts();
+      expect(['test-contract1', 'test-contract2']).toEqual(actualAfter);
+    });
+
     describe('Retriving txes by contract name', () => {
       const contractName = 'test-contract';
 
