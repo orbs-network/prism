@@ -53,7 +53,12 @@ async function main() {
   // link all the parts
   const orbsBlocksPolling = genOrbsBlocksPolling(logger);
   await orbsBlocksPolling.init();
-  // const dbBuilder = new DBBuilder(db, storage, orbsBlocksPolling);
+
+  // TODO : ORL : add flags to signal that we want to build the db, and afterwards initialize the gaps filler.
+  // const dbBuilder = new DBBuilder(db, storage, orbsBlocksPolling, {
+  //   blocksBatchSize: 1000,
+  //   blocksChunkSize: 100,
+  // });
   // await dbBuilder.init(PRISM_VERSION);
 
   orbsBlocksPolling.RegisterToNewBlocks(ws);
