@@ -90,11 +90,11 @@ describe(`DBBuilder`, () => {
   }
 
   function expectDbToBeCleared(): void {
-    expect(spyDbClear).toHaveBeenCalled();
+    expect(spyDbClear, 'Function clearDB should get called').toHaveBeenCalled();
   }
 
   function expectDbToNotBeCleared(): void {
-    expect(spyDbClear).not.toHaveBeenCalled();
+    expect(spyDbClear, 'Function clearDB should NOT get called').not.toHaveBeenCalled();
   }
 
   function expectFullDBBuildFromZero(availableBlocks: number, mockedBlocks: GetBlockResponse[]): void {
@@ -172,9 +172,17 @@ describe(`DBBuilder`, () => {
   });
 
   describe('DB has some blocks', () => {
+    /**
+     * Signals that there are blocks in the db.
+     */
+    beforeEach(async () => {
+      await fillDbWithBlocks();
+    });
+
+
     it('Should do nothing when DB-Version > Prism-Version', async () => {
       initSpies();
-      await dbBuilder.init('2.0.0');
+      await dbBuilder.init('0.5.5');
 
       expectNothingToHappen();
     });
@@ -186,7 +194,7 @@ describe(`DBBuilder`, () => {
       orbsBlocksPolling.setBlockChain(blocks);
 
       initSpies();
-      await dbBuilder.init('0.5.5');
+      await dbBuilder.init('2.0.0');
 
       expectDbToBeCleared();
       expectFullDBBuildFromZero(existingBlocksInChain, blocks);
@@ -229,6 +237,19 @@ describe(`DBBuilder`, () => {
       await dbBuilder.init(PRISM_VERSION);
 
       expectFullDBBuildFromPreviousPoint(existingBlocksInChain, lastBuiltBlock, blocks);
+    });
+  });
+
+  describe('Validity checks', () => {
+    it ('Should throw an error when there are block AND DB-Version == Prism-version AND "Db Building status" == Unknown value', async () => {
+
+      // Signal that there are some blocks in the DB
+      await fillDbWithBlocks();
+
+      // @ts-ignore (Intentionally for the test's sake)
+      await db.setDBBuildingStatus('NonExistingValue');
+
+      await expect(dbBuilder.init(PRISM_VERSION)).rejects.toThrow();
     });
   });
 

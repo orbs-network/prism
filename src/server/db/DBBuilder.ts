@@ -22,8 +22,10 @@ export class DBBuilder {
     } else {
       const dbVersion = await this.db.getVersion();
 
-      // A new version means that we want to rebuild the entire DB
-      if (semver.gt(prismVersion, dbVersion)) {
+      // In the rare case that Prism has a lower version than the DB, do nothing.
+      if (semver.lt(prismVersion, dbVersion)) {
+        return;
+      } else if (semver.gt(prismVersion, dbVersion)) { // A new version means that we want to rebuild the entire DB
         await this.db.clearAll();
 
         await this.setFreshDbStats(prismVersion);
