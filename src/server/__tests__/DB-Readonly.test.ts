@@ -56,8 +56,8 @@ function testReadOnlyDb(db: IDB, dbName: string) {
     });
 
     it('should NOT store the heighest consecutive block height', async () => {
-      await db.setHeighestConsecutiveBlockHeight(123n);
-      const actual = await db.getHeighestConsecutiveBlockHeight();
+      await db.setHighestConsecutiveBlockHeight(123n);
+      const actual = await db.getHighestConsecutiveBlockHeight();
       expect(actual).toEqual(0n);
     });
 

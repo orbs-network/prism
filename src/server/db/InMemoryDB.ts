@@ -132,11 +132,11 @@ export class InMemoryDB implements IDB {
     return null;
   }
 
-  public async getHeighestConsecutiveBlockHeight(): Promise<bigint> {
+  public async getHighestConsecutiveBlockHeight(): Promise<bigint> {
     return this.heighestConsecutiveBlockHeight;
   }
 
-  public async setHeighestConsecutiveBlockHeight(value: bigint): Promise<void> {
+  public async setHighestConsecutiveBlockHeight(value: bigint): Promise<void> {
     if (this.readOnlyMode) {
       return;
     }

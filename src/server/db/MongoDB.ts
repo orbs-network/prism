@@ -349,7 +349,7 @@ export class MongoDB implements IDB {
     }
   }
 
-  public async getHeighestConsecutiveBlockHeight(): Promise<bigint> {
+  public async getHighestConsecutiveBlockHeight(): Promise<bigint> {
     const result = await this.CacheModel.findOne({ _id: 1 });
     if (result && result.heighestConsecutiveBlockHeight !== undefined) {
       return BigInt(result.heighestConsecutiveBlockHeight);
@@ -358,7 +358,7 @@ export class MongoDB implements IDB {
     return 0n;
   }
 
-  public async setHeighestConsecutiveBlockHeight(value: bigint): Promise<void> {
+  public async setHighestConsecutiveBlockHeight(value: bigint): Promise<void> {
     if (this.readOnlyMode) {
       return;
     }

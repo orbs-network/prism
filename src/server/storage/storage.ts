@@ -38,11 +38,11 @@ export class Storage implements INewBlocksHandler {
   }
 
   public getHeighestConsecutiveBlockHeight(): Promise<bigint> {
-    return this.db.getHeighestConsecutiveBlockHeight();
+    return this.db.getHighestConsecutiveBlockHeight();
   }
 
   public setHeighestConsecutiveBlockHeight(value: bigint): Promise<void> {
-    return this.db.setHeighestConsecutiveBlockHeight(value);
+    return this.db.setHighestConsecutiveBlockHeight(value);
   }
 
   public getTx(txId: string): Promise<ITx> {
