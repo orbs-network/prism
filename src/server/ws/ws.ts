@@ -9,8 +9,8 @@
 import { Server } from 'http';
 import { INewBlocksHandler } from 'orbs-blocks-polling-js';
 import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
-import * as socketIO from 'socket.io';
-import * as winston from 'winston';
+import socketIO from 'socket.io';
+import winston from 'winston';
 import { blockResponseToBlockSummary } from '../transformers/blockTransform';
 
 export class WS implements INewBlocksHandler {

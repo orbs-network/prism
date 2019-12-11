@@ -6,9 +6,9 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import * as mongoose from 'mongoose';
-import * as mongooseLong from 'mongoose-long';
-import * as winston from 'winston';
+import mongoose from 'mongoose';
+import mongooseLong from 'mongoose-long';
+import winston from 'winston';
 import { IBlock } from '../../shared/IBlock';
 import { IShortTx, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
