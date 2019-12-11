@@ -1,14 +1,16 @@
 import { IOrbsBlocksPolling } from 'orbs-blocks-polling-js';
-import * as semver from 'semver';
-import { Storage } from '../storage/storage';
+import semver from 'semver';
+import { chunk } from 'lodash';
+import fill from 'fill-range';
 import { IDB } from './IDB';
+import { Storage } from '../storage/storage';
 
 export interface IDBBuilderConfigurations {
   blocksBatchSize: number;
   /**
-   * Dividing each 'batch' to chunks by this size.
+   * Dividing each 'batch' to chunks of concurrent promises by this size.
    */
-  blocksChunkSize: number;
+  maxParallelPromises: number;
 }
 
 export class DBBuilder {
@@ -18,7 +20,7 @@ export class DBBuilder {
     const hasBlocks = (await this.db.getLatestBlockHeight()) > 0n;
 
     if (!hasBlocks) {
-      await this.rebuildFromZero();
+      await this.rebuildFromScratch();
     } else {
       const dbVersion = await this.db.getVersion();
 
@@ -30,7 +32,7 @@ export class DBBuilder {
 
         await this.setFreshDbStats(prismVersion);
 
-        await this.rebuildFromZero();
+        await this.rebuildFromScratch();
       } else {
         const dbBuildingStatus = await this.db.getDBBuildingStatus();
 
@@ -40,13 +42,12 @@ export class DBBuilder {
             return;
           case 'InWork':
             // Continue from the last saved block
-            const lastBuiltBlockHeight: number = 0;
-            await this.rebuildFromBlockHeight(lastBuiltBlockHeight);
+            const lastBuiltBlockHeight = (await this.db.getLastBuiltBlockHeight());
+            await this.buildFromBlockHeightWithStateSignaling(Number(lastBuiltBlockHeight) + 1);
             break;
           case 'None':
-            // Update to star work and start from zero
-            await this.db.setDBBuildingStatus('InWork');
-            await this.rebuildFromZero();
+            // Start building from scratch
+            await this.rebuildFromScratch();
             break;
           default:
             throw new Error(`Unknown 'DB Building status of ${dbBuildingStatus}`);
@@ -56,20 +57,67 @@ export class DBBuilder {
 
   }
 
-  private async rebuildFromZero() {
-    return this.rebuildFromBlockHeight(0);
+  private async rebuildFromScratch() {
+    return this.buildFromBlockHeightWithStateSignaling(1);
   }
 
-  private async rebuildFromBlockHeight(startingBlockHeight: number) {
+  private async buildFromBlockHeightWithStateSignaling(startingBlockHeight: number) {
+    await this.db.setDBFillingMethod('DBBuilder');
+    await this.db.setDBBuildingStatus('InWork');
 
+    await this.buildFromBlockHeight(startingBlockHeight);
+
+    await this.db.setDBFillingMethod('None');
+    await this.db.setDBBuildingStatus('Done');
   }
 
-  private async rebuildDb(): Promise<void> {
+  private async buildFromBlockHeight(startingBlockHeight: number) {
     const latestHeight = await this.orbsBlocksPolling.getLatestKnownHeight();
 
-    for (let h = 1n; h <= latestHeight; h++) {
-      await this.getAndStoreBlock(h);
+    const blockHeightsGroups = this.getAllRequiredBlockHeightsInGroups(startingBlockHeight, Number(latestHeight));
+
+    for (const blockHeightsGroup of blockHeightsGroups) {
+      try {
+        await this.fetchAndStoreBlocks(blockHeightsGroup);
+
+        // Save the latest built block
+        await this.db.setLastBuiltBlockHeight(blockHeightsGroup[blockHeightsGroup.length - 1]);
+      } catch (e) {
+        console.error(`Exception while working on block group ${blockHeightsGroup[0]}-${blockHeightsGroup[blockHeightsGroup.length - 1]}`);
+        console.error(e);
+      }
     }
+  }
+
+  private getAllRequiredBlockHeightsInGroups(startBlock: number, endBlock: number): number[][] {
+    const requiredBlocksHeights = fill(startBlock, endBlock) as number[];
+    // Divide to groups
+    const groups = chunk(requiredBlocksHeights, this.dbBuilderConfigs.blocksBatchSize);
+
+    return groups;
+  }
+
+  private async fetchAndStoreBlocks(blockHeights: number[]) {
+    const blocksRange = `${blockHeights[0]}-${blockHeights[blockHeights.length - 1]}`;
+    console.info(`Fetching and storing blocks for the range ${blocksRange}`);
+
+    const chunks = chunk(blockHeights, this.dbBuilderConfigs.maxParallelPromises);
+
+    let errorCount = 0;
+    let successCount = 0;
+
+    for (const blocksChunk of chunks) {
+      const promises = blocksChunk.map(blockHeight => this.getAndStoreBlock(BigInt(blockHeight))
+          .then(() => successCount++ )
+          .catch(e => {
+            errorCount++;
+            return e;
+          }));
+
+      await Promise.all(promises);
+    }
+
+    console.log(`Finished fetching and storing for range ${blocksRange} with ${successCount} success and ${errorCount} errors`);
   }
 
   private async getAndStoreBlock(blockHeight: bigint): Promise<void> {
