@@ -34,6 +34,7 @@ describe(`DBBuilder`, () => {
   let spyDbSetDbFillingMethod: jest.SpyInstance;
   let spyDbSetDbBuildingStatus: jest.SpyInstance;
   let spyBlocksPollingGetBlock: jest.SpyInstance;
+  let spySetDbVersion: jest.SpyInstance;
 
   const blockResponse1: GetBlockResponse = generateRandomGetBlockRespose(1n);
   const blockResponse2: GetBlockResponse = generateRandomGetBlockRespose(2n);
@@ -71,6 +72,7 @@ describe(`DBBuilder`, () => {
     spyDbClear = jest.spyOn(db, 'clearAll');
     spyDbSetDbFillingMethod = jest.spyOn(db, 'setDBFillingMethod');
     spyDbSetDbBuildingStatus = jest.spyOn(db, 'setDBBuildingStatus');
+    spySetDbVersion = jest.spyOn(db, 'setVersion');
     spyBlocksPollingGetBlock = jest.spyOn(orbsBlocksPolling, 'getBlockAt');
   }
 
@@ -160,6 +162,14 @@ describe(`DBBuilder`, () => {
     expectDbToNotRebuild();
   }
 
+  async function expectDbVersionToBeSet(expectedDbVersion: string) {
+    const dbVersion = await db.getVersion();
+
+    expect(spySetDbVersion, 'Should call "Set Db Version" exactly once').toBeCalledTimes(1);
+    expect(spySetDbVersion, 'Should call "Set Db Version" with the right version').toBeCalledWith(expectedDbVersion);
+    expect(dbVersion, 'Should have set the given Prism version as the current DB version').toBe(expectedDbVersion);
+  }
+
   describe('DB is Empty', () => {
     it('Should rebuild the DB when the DB is empty', async () => {
       initSpies();
@@ -173,6 +183,7 @@ describe(`DBBuilder`, () => {
 
       await dbBuilder.init(PRISM_VERSION);
 
+      await expectDbVersionToBeSet(PRISM_VERSION);
       await expectFullDBBuildFromZero(BLOCKCHAIN_LENGTH, blocks);
     });
   });
@@ -185,7 +196,6 @@ describe(`DBBuilder`, () => {
       await fillDbWithBlocks();
     });
 
-
     it('Should do nothing when DB-Version > Prism-Version', async () => {
       initSpies();
       await dbBuilder.init('0.5.5');
@@ -193,15 +203,18 @@ describe(`DBBuilder`, () => {
       expectNothingToHappen();
     });
 
-    it('Should clear the DB and rebuild from zero when the DB-Version < Prism-Version', async () => {
+    it('Should clear the DB and rebuild from zero when the DB-Version < Prism-Version + update Db-version', async () => {
+      const DB_VERSION_FOR_TEST = '2.0.0';
+
       const blocks = generateAllBlockHeightsForChainLength(BLOCKCHAIN_LENGTH).map(h => generateRandomGetBlockRespose(BigInt(h)));
 
       orbsBlocksPolling.setBlockChain(blocks);
 
       initSpies();
-      await dbBuilder.init('2.0.0');
+      await dbBuilder.init(DB_VERSION_FOR_TEST);
 
       expectDbToBeCleared();
+      await expectDbVersionToBeSet(DB_VERSION_FOR_TEST);
       await expectFullDBBuildFromZero(BLOCKCHAIN_LENGTH, blocks);
     });
 

@@ -20,6 +20,7 @@ export class DBBuilder {
     const hasBlocks = (await this.db.getLatestBlockHeight()) > 0n;
 
     if (!hasBlocks) {
+      await this.setFreshDbStats(prismVersion);
       await this.rebuildFromScratch();
     } else {
       const dbVersion = await this.db.getVersion();
@@ -106,6 +107,7 @@ export class DBBuilder {
     let errorCount = 0;
     let successCount = 0;
 
+    const hrStart = process.hrtime();
     for (const blocksChunk of chunks) {
       const promises = blocksChunk.map(blockHeight => this.getAndStoreBlock(BigInt(blockHeight))
           .then(() => successCount++ )
@@ -117,7 +119,8 @@ export class DBBuilder {
       await Promise.all(promises);
     }
 
-    console.log(`Finished fetching and storing for range ${blocksRange} with ${successCount} success and ${errorCount} errors`);
+    const hrEnd = process.hrtime(hrStart);
+    console.log(`Finished fetching and storing for range ${blocksRange} with ${successCount} success and ${errorCount} errors. ${hrEnd[0]} seconds, ${(hrEnd[1] / 1_000_000).toFixed(3)} ms`);
   }
 
   private async getAndStoreBlock(blockHeight: bigint): Promise<void> {
