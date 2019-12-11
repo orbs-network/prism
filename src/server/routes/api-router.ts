@@ -53,6 +53,11 @@ export function apiRouter(storage: Storage) {
     res.json(contractData);
   });
 
+  router.get('/api/contracts', async (req, res) => {
+    const contracts: string[] = await storage.getAllContractsNames();
+    res.json(contracts);
+  });
+
   router.get('/api/search/:term', async (req, res) => {
     const term: string = req.params.term;
     const searchResult = await storage.search(term);

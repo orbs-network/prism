@@ -12,6 +12,7 @@ import { blocksSummaryByHeight, IBlockSummaryByHeight } from './blocksSummaryRed
 import { txsById, ITxsById } from './txsReducer';
 import { focusedContract, IFocusedContract } from './focusedContractReducer';
 import { RecentBlocksHeights, recentBlocksHeights } from './recentBlocksReducer';
+import { IContractsNames, contractsNames } from './contractsNamesReducer';
 
 export interface IRootState {
   txsById: ITxsById;
@@ -19,6 +20,7 @@ export interface IRootState {
   blocksSummaryByHeight: IBlockSummaryByHeight;
   recentBlocksHeights: RecentBlocksHeights;
   focusedContract: IFocusedContract;
+  contractsNames: IContractsNames;
 }
 
 export const rootReducer: Reducer<IRootState> = combineReducers<IRootState>({
@@ -26,5 +28,6 @@ export const rootReducer: Reducer<IRootState> = combineReducers<IRootState>({
   blocksByHeight,
   blocksSummaryByHeight,
   recentBlocksHeights,
-  focusedContract
+  focusedContract,
+  contractsNames
 });

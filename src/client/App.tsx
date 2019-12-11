@@ -14,6 +14,7 @@ import { Route, Switch } from 'react-router-dom';
 import { config, Transition } from 'react-spring/renderprops';
 import { BlockDetails } from './components/BlockDetails/BlockDetails';
 import { ContractDetails } from './components/contract/ContractDetails';
+import { ContractsList } from './components/ContractsList';
 import { Home } from './components/Home';
 import { TermNotFound } from './components/TermNotFound';
 import { TxDetails } from './components/TxDetails';
@@ -81,6 +82,15 @@ const AppImpl = ({ classes, location }: IProps) => {
                 </div>
               );
             }}
+          />
+          <Route
+            exact
+            path='/contracts'
+            render={() => (
+              <div style={props} className={classes.swipeContainer}>
+                <ContractsList />
+              </div>
+            )}
           />
           <Route
             path='/not-found/:term'

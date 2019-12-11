@@ -8,8 +8,15 @@
 
 import { BlocksSummaryActions } from './blocksSummaryActions';
 import { BlocksActions } from './blockActions';
+import { ContractsActions } from './contractsActions';
 import { TxActions } from './txActions';
 import { SearchActions } from './searchActions';
 import { FocusedContractActions } from './focusedContractActions';
 
-export type RootAction = BlocksSummaryActions | BlocksActions | TxActions | FocusedContractActions | SearchActions;
+export type RootAction =
+  | BlocksSummaryActions
+  | BlocksActions
+  | ContractsActions
+  | TxActions
+  | FocusedContractActions
+  | SearchActions;

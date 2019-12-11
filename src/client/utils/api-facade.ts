@@ -31,6 +31,12 @@ export async function loadContractData(
   return res.data as IContractData;
 }
 
+export async function loadAllContractsNames(
+): Promise<string[]> {
+  const res = await axios.get(`/api/contracts`);
+  return res.data as string[];
+}
+
 export async function loadTx(txId: string): Promise<ITx> {
   const res = await axios.get(`/api/tx/${txId}`);
   return res.data as ITx;

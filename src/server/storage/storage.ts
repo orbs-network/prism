@@ -49,7 +49,7 @@ export class Storage implements INewBlocksHandler {
     return this.db.getTxById(txId);
   }
 
-  public async getAllContracts(): Promise<string[]> {
+  public async getAllContractsNames(): Promise<string[]> {
     return await this.db.getDeployedContracts();
   }
 
