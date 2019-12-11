@@ -93,6 +93,27 @@ describe('storage', () => {
       expect(expected).toEqual(actual);
     });
 
+    it('should return All deployed contracts', async () => {
+      const db = new InMemoryDB();
+      await db.init();
+      const storage = new Storage(db);
+
+      const contract1Name: string = 'test-contract-1';
+      const contract2Name: string = 'test-contract-2';
+      const contract3Name: string = 'test-contract-3';
+      const deploy1Tx: BlockTransaction = generateContractDeployTransaction(contract1Name, 'Dummy-code');
+      const deploy2Tx: BlockTransaction = generateContractDeployTransaction(contract2Name, 'Dummy-code');
+      const deploy3Tx: BlockTransaction = generateContractDeployTransaction(contract3Name, 'Dummy-code');
+
+      await storage.handleNewBlock(generateBlockResponseWithTransaction(1n, deploy1Tx));
+      await storage.handleNewBlock(generateBlockResponseWithTransaction(2n, deploy2Tx));
+      await storage.handleNewBlock(generateBlockResponseWithTransaction(3n, deploy3Tx));
+
+      const actual = await storage.getAllContracts();
+      expect(['test-contract-1', 'test-contract-2', 'test-contract-3']).toEqual(actual);
+
+    });
+
     it('should return contract data by contract name', async () => {
       const contractName: string = 'test-contract';
       const code1: string = 'This is the 1st Go code';

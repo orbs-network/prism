@@ -49,6 +49,10 @@ export class Storage implements INewBlocksHandler {
     return this.db.getTxById(txId);
   }
 
+  public async getAllContracts(): Promise<string[]> {
+    return await this.db.getDeployedContracts();
+  }
+
   public async getContractData(contractName: string, executionIdx?: number): Promise<IContractData> {
     const deployTx = await this.db.getDeployContractTx(contractName);
     let code: string[] = null;
