@@ -12,6 +12,7 @@ import { IBlock, IBlockSummary } from '../../shared/IBlock';
 import { IContractData, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 import { Storage } from '../storage/storage';
+import httpStatusCodes from 'http-status-codes';
 
 export function apiRouter(storage: Storage) {
   const router = Router();
@@ -65,6 +66,15 @@ export function apiRouter(storage: Storage) {
       res.json(searchResult);
     } else {
       res.send(404);
+    }
+  });
+
+  router.get('/api/health/diagnostics', async (req, res) => {
+    try {
+      const diagnostics = await storage.getDiagnostics();
+      res.send(diagnostics);
+    } catch (e) {
+      res.send(httpStatusCodes.INTERNAL_SERVER_ERROR);
     }
   });
 
