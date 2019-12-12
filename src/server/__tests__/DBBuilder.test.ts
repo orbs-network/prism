@@ -82,6 +82,13 @@ describe(`DBBuilder`, () => {
     await db.storeBlock(block3);
   }
 
+    /**
+     * As Jest do not have BigInt support yet. this will convert all BigInt calls to numbers.
+     */
+  function DEV_TO_REMOVE_convertMockBigIntToNumber() {
+        spyBlocksPollingGetBlock.mock.calls = spyBlocksPollingGetBlock.mock.calls.map(call => call.map(v => Number(v)));
+  }
+
   function expectDbToRebuild(): void {
     expect(spyStorageHandleNewBlock, '"Handle new block" to be called').toHaveBeenCalled();
     expect(spyDbStoreBlock, '"Store Block" to be called').toHaveBeenCalled();
@@ -103,17 +110,22 @@ describe(`DBBuilder`, () => {
   }
 
   async function expectFullDBBuildFromZero(highestExistingBlock: number, mockedBlocks: GetBlockResponse[]): Promise<void> {
-    const expectedBlockHeights = generateAllBlockHeightsForChainLength(BLOCKCHAIN_LENGTH);
+    const expectedBlockHeights = generateAllBlockHeightsForChainLength(highestExistingBlock);
+
+    DEV_TO_REMOVE_convertMockBigIntToNumber();
 
     // Reading of blocks
     expect(spyBlocksPollingGetBlock, 'Should call "getBlockAt" number-of-blocks times').toBeCalledTimes(highestExistingBlock);
+
     for (const height of expectedBlockHeights) {
-      // expect(spyBlocksPollingGetBlock, `Should call "getBlockAt" for each block - ${height}`).toBeCalledWith(height);
+      expect(spyBlocksPollingGetBlock, `Should call "getBlockAt" for each block - ${height}`).toBeCalledWith(height);
     }
 
     // Handling of blocks
     expect(spyStorageHandleNewBlock, 'Should call "handleNewBlock" number-of-blocks times').toBeCalledTimes(highestExistingBlock);
-    // expect(spyStorageHandleNewBlock, 'Should call "handleNewBlock" with all of the mocked blocks').toBeCalledWith(mockedBlocks);
+    for (const mockedBlock of mockedBlocks) {
+        expect(spyStorageHandleNewBlock, `Should call "handleNewBlock" with all of the mocked blocks - ${mockedBlock}`).toBeCalledWith(mockedBlock);
+    }
 
     // Signal transition of 'Db filling method'
     expect(spyDbSetDbFillingMethod, 'Should set "DB filling method" to "DbBuilder" and then "None" ').toHaveBeenNthCalledWith(1, 'DBBuilder');
@@ -131,16 +143,23 @@ describe(`DBBuilder`, () => {
   }
 
   async function expectFullDBBuildFromPreviousPoint(highestExistingBlock: number, lastBuiltBlockHeight: number, mockedBlocks: GetBlockResponse[]): Promise<void> {
-    const expectedBlockHeights = generateAllBlockHeightsForChainLength(BLOCKCHAIN_LENGTH).slice(lastBuiltBlockHeight + 1);
+    const expectedBlockHeights = generateAllBlockHeightsForChainLength(highestExistingBlock).slice(lastBuiltBlockHeight);
+    const expectedBlocks = mockedBlocks.filter(b => expectedBlockHeights.includes(Number(b.blockHeight)));
     const totalBlocksToRead = highestExistingBlock - lastBuiltBlockHeight;
+
+    DEV_TO_REMOVE_convertMockBigIntToNumber();
 
     // Reading of blocks
     expect(spyBlocksPollingGetBlock, 'Should call "getBlockAt" number-of-blocks times').toBeCalledTimes(totalBlocksToRead);
-    // expect(spyBlocksPollingGetBlock, 'Should call "getBlockAt" for each block').toBeCalledWith(expectedBlockHeights);
+    for (const height of expectedBlockHeights) {
+        expect(spyBlocksPollingGetBlock, `Should call "getBlockAt" for each block - ${height}`).toBeCalledWith(height);
+    }
 
     // Handling of blocks
     expect(spyStorageHandleNewBlock, 'Should call "handleNewBlock" number-of-blocks times').toBeCalledTimes(totalBlocksToRead);
-    // expect(spyStorageHandleNewBlock, 'Should call "handleNewBlock" with all of the mocked blocks').toBeCalledWith(mockedBlocks);
+    for (const mockedBlock of expectedBlocks) {
+        expect(spyStorageHandleNewBlock, `Should call "handleNewBlock" with all of the mocked blocks - ${mockedBlock}`).toBeCalledWith(mockedBlock);
+    }
 
     // Signal transition of 'Db filling method'
     expect(spyDbSetDbFillingMethod, 'Should set "DB filling method" to "DbBuilder" and then "None" ').toHaveBeenNthCalledWith(1, 'DBBuilder');
@@ -170,16 +189,13 @@ describe(`DBBuilder`, () => {
     expect(dbVersion, 'Should have set the given Prism version as the current DB version').toBe(expectedDbVersion);
   }
 
-  describe('DB is Empty', () => {
+  describe('When DB is Empty', () => {
     it('Should rebuild the DB when the DB is empty', async () => {
       initSpies();
 
       const blocks = generateAllBlockHeightsForChainLength(BLOCKCHAIN_LENGTH).map(h => generateRandomGetBlockRespose(BigInt(h)));
 
       orbsBlocksPolling.setBlockChain(blocks);
-
-      // Ensure empty db
-      // expect(await db.getLatestBlockHeight()).toBe(BigInt(0));
 
       await dbBuilder.init(PRISM_VERSION);
 
@@ -188,7 +204,7 @@ describe(`DBBuilder`, () => {
     });
   });
 
-  describe('DB has some blocks', () => {
+  describe('When DB has some blocks', () => {
     /**
      * Signals that there are blocks in the db.
      */
@@ -196,64 +212,69 @@ describe(`DBBuilder`, () => {
       await fillDbWithBlocks();
     });
 
-    it('Should do nothing when DB-Version > Prism-Version', async () => {
-      initSpies();
-      await dbBuilder.init('0.5.5');
+    describe('When DB-Version !== Prism-Version', () => {
+      it('Should do nothing when DB-Version > Prism-Version', async () => {
+        initSpies();
+        await dbBuilder.init('0.5.5');
 
-      expectNothingToHappen();
+        // TODO : E2E : expect DB to be empty.
+        expectNothingToHappen();
+      });
+
+      it('Should clear the DB and rebuild from zero when the DB-Version < Prism-Version + update Db-version', async () => {
+        const DB_VERSION_FOR_TEST = '2.0.0';
+
+        const blocks = generateAllBlockHeightsForChainLength(BLOCKCHAIN_LENGTH).map(h => generateRandomGetBlockRespose(BigInt(h)));
+
+        orbsBlocksPolling.setBlockChain(blocks);
+
+        initSpies();
+        await dbBuilder.init(DB_VERSION_FOR_TEST);
+
+        expectDbToBeCleared();
+        await expectDbVersionToBeSet(DB_VERSION_FOR_TEST);
+        await expectFullDBBuildFromZero(BLOCKCHAIN_LENGTH, blocks);
+      });
     });
 
-    it('Should clear the DB and rebuild from zero when the DB-Version < Prism-Version + update Db-version', async () => {
-      const DB_VERSION_FOR_TEST = '2.0.0';
+    describe('When DB-Version === Prism-Version', () => {
+      it ('Should do nothing when "Db Building status" == "Done"', async () => {
+        await db.setDBBuildingStatus('Done');
 
-      const blocks = generateAllBlockHeightsForChainLength(BLOCKCHAIN_LENGTH).map(h => generateRandomGetBlockRespose(BigInt(h)));
+        initSpies();
+        await dbBuilder.init(PRISM_VERSION);
 
-      orbsBlocksPolling.setBlockChain(blocks);
+        expectNothingToHappen();
+      });
 
-      initSpies();
-      await dbBuilder.init(DB_VERSION_FOR_TEST);
+      it ('Should build from zero when "Db Building status" == "None"', async () => {
+        await db.setDBBuildingStatus('None');
 
-      expectDbToBeCleared();
-      await expectDbVersionToBeSet(DB_VERSION_FOR_TEST);
-      await expectFullDBBuildFromZero(BLOCKCHAIN_LENGTH, blocks);
-    });
+        const blocks = generateAllBlockHeightsForChainLength(BLOCKCHAIN_LENGTH).map(h => generateRandomGetBlockRespose(BigInt(h)));
 
-    it ('Should do nothing when DB-Version == Prism-version AND "Db Building status" == "Done"', async () => {
-      await db.setDBBuildingStatus('Done');
+        orbsBlocksPolling.setBlockChain(blocks);
 
-      initSpies();
-      await dbBuilder.init(PRISM_VERSION);
+        initSpies();
+        await dbBuilder.init(PRISM_VERSION);
 
-      expectNothingToHappen();
-    });
+        await expectFullDBBuildFromZero(BLOCKCHAIN_LENGTH, blocks);
+      });
 
-    it ('Should rebuild from zero when DB-Version == Prism-version AND "Db Building status" == "None"', async () => {
-      await db.setDBBuildingStatus('None');
+      it ('Should build from last built block when "Db Building status" == "In Work"', async () => {
+        await db.setDBBuildingStatus('InWork');
 
-      const blocks = generateAllBlockHeightsForChainLength(BLOCKCHAIN_LENGTH).map(h => generateRandomGetBlockRespose(BigInt(h)));
+        const existingBlocksInChain = 300;
+        const lastBuiltBlock = 120;
+        const blocks = generateAllBlockHeightsForChainLength(existingBlocksInChain).map(h => generateRandomGetBlockRespose(BigInt(h)));
 
-      orbsBlocksPolling.setBlockChain(blocks);
+        orbsBlocksPolling.setBlockChain(blocks);
+        await db.setLastBuiltBlockHeight(lastBuiltBlock);
 
-      initSpies();
-      await dbBuilder.init(PRISM_VERSION);
+        initSpies();
+        await dbBuilder.init(PRISM_VERSION);
 
-      await expectFullDBBuildFromZero(BLOCKCHAIN_LENGTH, blocks);
-    });
-
-    it ('Should rebuild from last built block when DB-Version == Prism-version AND "Db Building status" == "In Work"', async () => {
-      await db.setDBBuildingStatus('InWork');
-
-      const existingBlocksInChain = 300;
-      const lastBuiltBlock = 120;
-      const blocks = generateAllBlockHeightsForChainLength(existingBlocksInChain).map(h => generateRandomGetBlockRespose(BigInt(h)));
-
-      orbsBlocksPolling.setBlockChain(blocks);
-      await db.setLastBuiltBlockHeight(lastBuiltBlock);
-
-      initSpies();
-      await dbBuilder.init(PRISM_VERSION);
-
-      await expectFullDBBuildFromPreviousPoint(existingBlocksInChain, lastBuiltBlock, blocks);
+        await expectFullDBBuildFromPreviousPoint(existingBlocksInChain, lastBuiltBlock, blocks);
+      });
     });
   });
 
@@ -313,7 +334,6 @@ describe(`DBBuilder`, () => {
     });
   });
 });
-
 
 function generateAllBlockHeightsForChainLength(chainLength: number) {
   return [...Array(chainLength).keys()].map(h => h + 1); // Blocks start from 1
