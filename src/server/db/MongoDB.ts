@@ -179,9 +179,13 @@ export class MongoDB implements IDB {
   }
 
   public async getBlockByHeight(blockHeight: string): Promise<IBlock> {
+    const blockHeightAsNumber = parseInt(blockHeight);
+    if (Number.isNaN(blockHeightAsNumber)) {
+      return null;
+    }
     const startTime = Date.now();
-    this.logger.info(`Searching for block by height: ${blockHeight}`);
-    const result = await this.BlockModel.findOne({ blockHeight }, { _id: false, __v: false })
+    this.logger.info(`Searching for block by height: ${blockHeightAsNumber}`);
+    const result = await this.BlockModel.findOne({ blockHeightAsNumber }, { _id: false, __v: false })
       .lean()
       .exec();
 
@@ -346,9 +350,13 @@ export class MongoDB implements IDB {
       .lean()
       .exec();
 
-    this.logger.info(`tx found [${Date.now() - startTime}ms.]`);
-
-    return result ? blockHeightToString(result) : result;
+    if (result) {
+      this.logger.info(`tx found [${Date.now() - startTime}ms.]`);
+      return blockHeightToString(result);
+    } else {
+      this.logger.info(`tx not found [${Date.now() - startTime}ms.]`);
+      return null;
+    }
   }
 
   private async storeTx(tx: ITx): Promise<void> {
