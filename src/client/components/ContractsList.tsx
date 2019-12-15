@@ -12,11 +12,12 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { loadDeployedContractsAction } from '../actions/contractsActions';
 import { IRootState } from '../reducers/rootReducer';
+import { IContractGist } from '../../shared/IContractData';
 
 const styles = (theme: Theme) => createStyles({});
 
 interface IProps extends WithStyles<typeof styles> {
-  deployedContracts: string[];
+  deployedContracts: IContractGist[];
   isLoading: boolean;
   error: string;
   loadDeployedContracts: () => void;
@@ -50,7 +51,7 @@ const ContractsListImpl = withStyles(styles)(
         <Grid container spacing={3}>
           <Grid item xs={12}>
             {deployedContracts.map(c => (
-              <Typography key={c}>{c}</Typography>
+              <Typography key={c.contractName}>{c.contractName}</Typography>
             ))}
           </Grid>
         </Grid>

@@ -10,7 +10,7 @@ import * as mongoose from 'mongoose';
 import * as mongooseLong from 'mongoose-long';
 import * as winston from 'winston';
 import { IBlock } from '../../shared/IBlock';
-import { IShortTx } from '../../shared/IContractData';
+import { IShortTx, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 import { txToShortTx } from '../transformers/txTransform';
 import { IDB } from './IDB';
@@ -194,7 +194,7 @@ export class MongoDB implements IDB {
     }
   }
 
-  public async getDeployedContracts(): Promise<string[]> {
+  public async getDeployedContracts(): Promise<IContractGist[]> {
     const startTime = Date.now();
     this.logger.info(`Searching for all deployed contracts`);
     const result = await this.TxModel.find(
@@ -210,7 +210,7 @@ export class MongoDB implements IDB {
 
     if (result) {
       this.logger.info(`${result.length} contracts found [${Date.now() - startTime}ms.]`);
-      return result.map(row => row.inputArguments[0].value);
+      return result.map(row => ({ contractName: row.inputArguments[0].value }));
     } else {
       this.logger.info(`No deployed contracts found`);
       return [];
@@ -221,8 +221,7 @@ export class MongoDB implements IDB {
     const startTime = Date.now();
     this.logger.info(`Searching for deployment of contract: ${contractName}`);
 
-    const searchQuery: string | RegExp =
-      ignoreCase === true ? new RegExp(`^${contractName}$`, 'i') : contractName;
+    const searchQuery: string | RegExp = ignoreCase === true ? new RegExp(`^${contractName}$`, 'i') : contractName;
     const result = await this.TxModel.findOne(
       {
         contractName: '_Deployments',

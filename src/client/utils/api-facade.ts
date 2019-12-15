@@ -8,7 +8,7 @@
 
 import axios from 'axios';
 import { IBlock, IBlockSummary } from '../../shared/IBlock';
-import { IContractData } from '../../shared/IContractData';
+import { IContractData, IContractGist } from '../../shared/IContractData';
 import { ISearchResult } from '../../shared/ISearchResult';
 import { ITx } from '../../shared/ITx';
 import { HistoryPaginator } from '../components/contract/HistoryTxPaginator';
@@ -32,9 +32,9 @@ export async function loadContractData(
 }
 
 export async function loadAllDeployedContracts(
-): Promise<string[]> {
+): Promise<IContractGist[]> {
   const res = await axios.get(`/api/contracts`);
-  return res.data as string[];
+  return res.data as IContractGist[];
 }
 
 export async function loadTx(txId: string): Promise<ITx> {

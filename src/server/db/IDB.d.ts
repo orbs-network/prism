@@ -7,7 +7,7 @@
  */
 
 import { IBlock } from '../../shared/IBlock';
-import { IShortTx } from '../../shared/IContractData';
+import { IShortTx, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 
 export interface IDB {
@@ -26,7 +26,7 @@ export interface IDB {
   setHeighestConsecutiveBlockHeight(value: bigint): Promise<void>;
   getTxById(txId: string): Promise<ITx>;
   getDeployContractTx(contractName: string, ignoreCase?: boolean): Promise<ITx>;
-  getDeployedContracts(): Promise<string[]>;
+  getDeployedContracts(): Promise<IContractGist[]>;
   getBlockTxes(blockHeight: bigint): Promise<ITx[]>;
   getContractTxes(contractName: string, limit: number, executionIdx?: number): Promise<IShortTx[]>;
 }

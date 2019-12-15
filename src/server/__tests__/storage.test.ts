@@ -9,7 +9,7 @@
 import { encodeHex } from 'orbs-client-sdk';
 import { BlockTransaction } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import * as winston from 'winston';
-import { IContractData, IShortTx } from '../../shared/IContractData';
+import { IContractData, IShortTx, IContractGist } from '../../shared/IContractData';
 import { ISearchResult } from '../../shared/ISearchResult';
 import { InMemoryDB } from '../db/InMemoryDB';
 import { genLogger } from '../logger/LoggerFactory';
@@ -110,7 +110,12 @@ describe('storage', () => {
       await storage.handleNewBlock(generateBlockResponseWithTransaction(3n, deploy3Tx));
 
       const actual = await storage.getAllDeployedContracts();
-      expect(['test-contract-1', 'test-contract-2', 'test-contract-3']).toEqual(actual);
+      const expected: IContractGist[] = [
+        {contractName: 'test-contract-1'},
+        {contractName: 'test-contract-2'},
+        {contractName: 'test-contract-3'},
+      ]
+      expect(expected).toEqual(actual);
 
     });
 

@@ -7,7 +7,7 @@
  */
 
 import { IBlock } from '../../shared/IBlock';
-import { IShortTx } from '../../shared/IContractData';
+import { IShortTx, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 import { txToShortTx } from '../transformers/txTransform';
 import { IDB } from './IDB';
@@ -113,13 +113,13 @@ export class InMemoryDB implements IDB {
     return this.txes.get(txId.toLowerCase()) || null;
   }
 
-  public async getDeployedContracts(): Promise<string[]> {
-    const result = [];
+  public async getDeployedContracts(): Promise<IContractGist[]> {
+    const result: IContractGist[] = [];
     for (const tx of this.txes.values()) {
       if (tx.contractName === '_Deployments' && tx.methodName === 'deployService' && tx.executionResult === 'SUCCESS') {
         const { inputArguments: args } = tx;
         if (args.length >= 3 && args[0].type === 'string' && args[1].type === 'uint32') {
-          result.push(args[0].value);
+          result.push({ contractName: args[0].value });
         }
       }
     }

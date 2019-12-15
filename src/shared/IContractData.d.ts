@@ -18,3 +18,7 @@ export interface IContractData {
   code: string[];
   blocksInfo: IContractBlocksInfo;
 }
+
+export interface IContractGist {
+  contractName: string;
+}

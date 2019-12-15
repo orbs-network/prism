@@ -8,7 +8,7 @@
 
 import { BlockTransaction } from 'orbs-client-sdk/dist/codec/OpGetBlock';
 import * as winston from 'winston';
-import { IShortTx } from '../../shared/IContractData';
+import { IShortTx, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 import { MONGODB_URI } from '../config';
 import { IDB } from '../db/IDB';
@@ -231,7 +231,8 @@ function testDb(db: IDB, dbName: string) {
       await db.storeTxes([tx1, tx2]);
 
       const actualAfter = await db.getDeployedContracts();
-      expect(['test-contract1', 'test-contract2']).toEqual(actualAfter);
+      const expected: IContractGist[] = [{ contractName: 'test-contract1' }, { contractName: 'test-contract2' }];
+      expect(expected).toEqual(actualAfter);
     });
 
     describe('Retriving txes by contract name', () => {

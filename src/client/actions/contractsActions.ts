@@ -9,13 +9,14 @@
 import { AnyAction } from 'redux';
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import { loadAllDeployedContracts } from '../utils/api-facade';
+import { IContractGist } from '../../shared/IContractData';
 
 // Action Creators
 export const loadDeployedContractsAction = (): ThunkAction<void, {}, {}, AnyAction> => {
   return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
     dispatch(loadDeployedContractsStartedAction());
     try {
-      const deployedContracts: string[] = await loadAllDeployedContracts(); // Call the server api
+      const deployedContracts: IContractGist[] = await loadAllDeployedContracts(); // Call the server api
       dispatch(loadDeployedContractsGistCompletedAction(deployedContracts));
     } catch (e) {
       dispatch(loadDeployedContractsGistErrorAction('Unable to load deployed contracts'));
@@ -33,10 +34,10 @@ export const loadDeployedContractsStartedAction = (): ILoadingDeployedContractsS
 
 export interface ILoadingDeployedContractsGistCompletedAction {
   type: 'LOAD_DEPLOYED_CONTRACTS_COMPLETED';
-  deployedContracts: string[];
+  deployedContracts: IContractGist[];
 }
 
-export const loadDeployedContractsGistCompletedAction = (deployedContracts: string[]): ILoadingDeployedContractsGistCompletedAction => ({
+export const loadDeployedContractsGistCompletedAction = (deployedContracts: IContractGist[]): ILoadingDeployedContractsGistCompletedAction => ({
   type: 'LOAD_DEPLOYED_CONTRACTS_COMPLETED',
   deployedContracts,
 });

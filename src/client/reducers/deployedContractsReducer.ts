@@ -7,11 +7,12 @@
  */
 
 import { RootAction } from '../actions/rootAction';
+import { IContractGist } from '../../shared/IContractData';
 
 export interface IDeployedContracts {
   isLoading: boolean;
   error: string;
-  deployedContracts: string[];
+  deployedContracts: IContractGist[];
 }
 
 const INITIAL_STATE: IDeployedContracts = {
