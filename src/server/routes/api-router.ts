@@ -6,13 +6,14 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import * as bodyParser from 'body-parser';
+import bodyParser from 'body-parser';
 import { Router } from 'express';
 import { IBlock, IBlockSummary } from '../../shared/IBlock';
 import { IContractData, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 import { Storage } from '../storage/storage';
 import httpStatusCodes from 'http-status-codes';
+import client from 'prom-client';
 
 export function apiRouter(storage: Storage) {
   const router = Router();
@@ -69,6 +70,7 @@ export function apiRouter(storage: Storage) {
     }
   });
 
+  // Manual diagnostics
   router.get('/api/health/diagnostics', async (req, res) => {
     try {
       const diagnostics = await storage.getDiagnostics();
@@ -76,6 +78,15 @@ export function apiRouter(storage: Storage) {
     } catch (e) {
       res.send(httpStatusCodes.INTERNAL_SERVER_ERROR);
     }
+  });
+
+  // Prometheus
+  const collectDefaultMetrics = client.collectDefaultMetrics;
+  collectDefaultMetrics({ timeout: 5000 });
+
+  router.get('/metrics', (req, res) => {
+    res.set('Content-Type', client.register.contentType);
+    res.end(client.register.metrics());
   });
 
   return router;

@@ -17,6 +17,8 @@ import config from './config';
 import winston from 'winston';
 import { genLogger } from './logger/LoggerFactory';
 import { DBBuilder } from './db/DBBuilder';
+import {increasePulledBlocksCounter} from './metrics/prometheusMetrics';
+import {GetBlockResponse} from 'orbs-client-sdk/dist/codec/OpGetBlock';
 
 async function main() {
   console.log(`*******************************************`);
@@ -77,6 +79,9 @@ async function main() {
         }
       });
 
+  orbsBlocksPolling.RegisterToNewBlocks({
+    handleNewBlock: async (block: GetBlockResponse) => increasePulledBlocksCounter()
+  });
   orbsBlocksPolling.RegisterToNewBlocks(ws);
   orbsBlocksPolling.RegisterToNewBlocks(storage);
   await orbsBlocksPolling.initPolling(POOLING_INTERVAL);
