@@ -185,7 +185,7 @@ export class MongoDB implements IDB {
     }
     const startTime = Date.now();
     this.logger.info(`Searching for block by height: ${blockHeightAsNumber}`);
-    const result = await this.BlockModel.findOne({ blockHeightAsNumber }, { _id: false, __v: false })
+    const result = await this.BlockModel.findOne({ blockHeight: blockHeightAsNumber }, { _id: false, __v: false })
       .lean()
       .exec();
 
