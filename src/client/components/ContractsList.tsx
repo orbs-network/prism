@@ -51,7 +51,7 @@ const ContractsListImpl = withStyles(styles)(
       }
 
       if (this.props.deployedContracts.length === 0) {
-        return <Typography>Empty...</Typography>;
+        return <Typography>No deployed contacts...</Typography>;
       }
 
       if (this.props.error) {
