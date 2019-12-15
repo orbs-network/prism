@@ -24,6 +24,9 @@ const defaultDbConstructionState: IDBConstructionStateInMemory = Object.freeze({
   lastBuiltBlockHeight: 0,
 });
 
+const BLOCKS_IN_MEMORY_CAP = 10_000;
+const TRANSACTION_IN_MEMORY_CAP = 10_000;
+
 export class InMemoryDB implements IDB {
   private blocks: Map<string, IBlock>;
   private txes: Map<string, ITx>;
@@ -227,25 +230,25 @@ export class InMemoryDB implements IDB {
   }
 
   private capTxes(): void {
-    if (this.txes.size > 1100) {
+    if (this.txes.size > (1.1 * TRANSACTION_IN_MEMORY_CAP)) {
       const txArr = Array.from(this.txes);
       this.txes.clear();
       txArr
         .map(item => item[1])
         .sort((a, b) => a.timestamp - b.timestamp)
-        .filter((_, idx) => idx < 1000)
+        .filter((_, idx) => idx < TRANSACTION_IN_MEMORY_CAP)
         .forEach(tx => this.txes.set(tx.txId.toLowerCase(), tx));
     }
   }
 
   private capBlocks(): void {
-    if (this.blocks.size > 1100) {
+    if (this.blocks.size > (1.1 * BLOCKS_IN_MEMORY_CAP)) {
       const blocksArr = Array.from(this.blocks);
       this.blocks.clear();
       blocksArr
         .map(item => item[1])
         .sort((a, b) => a.blockTimestamp - b.blockTimestamp)
-        .filter((_, idx) => idx < 1000)
+        .filter((_, idx) => idx < BLOCKS_IN_MEMORY_CAP)
         .forEach(block => this.blocks.set(block.blockHash, block));
     }
   }
