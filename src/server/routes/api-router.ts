@@ -9,7 +9,7 @@
 import * as bodyParser from 'body-parser';
 import { Router } from 'express';
 import { IBlock, IBlockSummary } from '../../shared/IBlock';
-import { IContractData } from '../../shared/IContractData';
+import { IContractData, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 import { Storage } from '../storage/storage';
 
@@ -54,7 +54,7 @@ export function apiRouter(storage: Storage) {
   });
 
   router.get('/api/contracts', async (req, res) => {
-    const contracts: string[] = await storage.getAllDeployedContracts();
+    const contracts: IContractGist[] = await storage.getAllDeployedContracts();
     res.json(contracts);
   });
 
