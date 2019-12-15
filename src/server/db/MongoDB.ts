@@ -73,16 +73,12 @@ export class MongoDB implements IDB {
 
   public init(): Promise<void> {
     return new Promise((resolve, reject) => {
-      mongoose.connection.once('connecting', () => this.logger.info('mongoose connecting'));
-      mongoose.connection.once('connected', () => this.logger.info('mongoose conncted'));
-      mongoose.connection.once('disconnecting', () => this.logger.info('mongoose disconnecting'));
-      mongoose.connection.once('disconnected', () => this.logger.info('mongoose disconnected'));
-
       mongoose.connection.once('error', reject);
 
       mongoose
         .connect(this.connectionUrl, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
         .then(db => {
+          mongoose.connection.removeListener('error', reject);
           this.db = db;
 
           txSchema.index({ txId: 'text' });
