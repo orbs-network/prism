@@ -128,12 +128,18 @@ export class Storage implements INewBlocksHandler {
     const dbFillingMethod = await this.db.getDBFillingMethod();
     const dbBuildingStatus = await this.db.getDBBuildingStatus();
     const lastBuiltBlock = await this.db.getLastBuiltBlockHeight();
+    const latestBlockHeight = Number(await this.db.getLatestBlockHeight());
 
     return {
-      dbVersion,
-      dbFillingMethod,
-      dbBuildingStatus,
-      lastBuiltBlock,
+      DB: {
+        dbVersion,
+        dbFillingMethod,
+        dbBuildingStatus,
+        lastBuiltBlock,
+      },
+      ORBS_SYNC: {
+        latestBlockHeight,
+      },
     };
   }
 }
