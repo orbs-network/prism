@@ -8,48 +8,48 @@
 
 import { AnyAction } from 'redux';
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
-import { loadAllContractsNames } from '../utils/api-facade';
+import { loadAllDeployedContracts } from '../utils/api-facade';
 
 // Action Creators
-export const loadContractsNamesAction = (): ThunkAction<void, {}, {}, AnyAction> => {
+export const loadDeployedContractsAction = (): ThunkAction<void, {}, {}, AnyAction> => {
   return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
-    dispatch(loadContractsNamesStartedAction());
+    dispatch(loadDeployedContractsStartedAction());
     try {
-      const contractsNames: string[] = await loadAllContractsNames(); // Call the server api
-      dispatch(loadContractsNamesCompletedAction(contractsNames));
+      const deployedContracts: string[] = await loadAllDeployedContracts(); // Call the server api
+      dispatch(loadDeployedContractsGistCompletedAction(deployedContracts));
     } catch (e) {
-      dispatch(loadContractsNamesErrorAction('Unable to load contracts names'));
+      dispatch(loadDeployedContractsGistErrorAction('Unable to load deployed contracts'));
     }
   };
 };
 
-export interface ILoadingContractsNamesStartedAction {
-  type: 'LOAD_CONTRACTS_NAMES_STARTED';
+export interface ILoadingDeployedContractsStartedAction {
+  type: 'LOAD_DEPLOYED_CONTRACTS_STARTED';
 }
 
-export const loadContractsNamesStartedAction = (): ILoadingContractsNamesStartedAction => ({
-  type: 'LOAD_CONTRACTS_NAMES_STARTED'
+export const loadDeployedContractsStartedAction = (): ILoadingDeployedContractsStartedAction => ({
+  type: 'LOAD_DEPLOYED_CONTRACTS_STARTED'
 });
 
-export interface ILoadingContractsNamesCompletedAction {
-  type: 'LOAD_CONTRACTS_NAMES_COMPLETED';
-  contractsNames: string[];
+export interface ILoadingDeployedContractsGistCompletedAction {
+  type: 'LOAD_DEPLOYED_CONTRACTS_COMPLETED';
+  deployedContracts: string[];
 }
 
-export const loadContractsNamesCompletedAction = (contractsNames: string[]): ILoadingContractsNamesCompletedAction => ({
-  type: 'LOAD_CONTRACTS_NAMES_COMPLETED',
-  contractsNames,
+export const loadDeployedContractsGistCompletedAction = (deployedContracts: string[]): ILoadingDeployedContractsGistCompletedAction => ({
+  type: 'LOAD_DEPLOYED_CONTRACTS_COMPLETED',
+  deployedContracts,
 });
 
-export interface ILoadingContractsNamesErrorAction {
-  type: 'LOAD_CONTRACTS_NAMES_ERROR';
+export interface ILoadingDeployedContractsGistErrorAction {
+  type: 'LOAD_DEPLOYED_CONTRACTS_ERROR';
   error: string;
 }
 
-export const loadContractsNamesErrorAction = (error: string): ILoadingContractsNamesErrorAction => ({
-  type: 'LOAD_CONTRACTS_NAMES_ERROR',
+export const loadDeployedContractsGistErrorAction = (error: string): ILoadingDeployedContractsGistErrorAction => ({
+  type: 'LOAD_DEPLOYED_CONTRACTS_ERROR',
   error,
 });
 
 // All Actions
-export type ContractsActions = ILoadingContractsNamesStartedAction | ILoadingContractsNamesCompletedAction | ILoadingContractsNamesErrorAction;
+export type DeployedContractsActions = ILoadingDeployedContractsStartedAction | ILoadingDeployedContractsGistCompletedAction | ILoadingDeployedContractsGistErrorAction;

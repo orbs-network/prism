@@ -31,7 +31,7 @@ export async function loadContractData(
   return res.data as IContractData;
 }
 
-export async function loadAllContractsNames(
+export async function loadAllDeployedContracts(
 ): Promise<string[]> {
   const res = await axios.get(`/api/contracts`);
   return res.data as string[];

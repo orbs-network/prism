@@ -54,7 +54,7 @@ export function apiRouter(storage: Storage) {
   });
 
   router.get('/api/contracts', async (req, res) => {
-    const contracts: string[] = await storage.getAllContractsNames();
+    const contracts: string[] = await storage.getAllDeployedContracts();
     res.json(contracts);
   });
 

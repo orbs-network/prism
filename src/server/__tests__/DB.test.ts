@@ -214,7 +214,7 @@ function testDb(db: IDB, dbName: string) {
       expect(tx).toEqual(actual);
     });
 
-    it('should retrive all contract names', async () => {
+    it('should retrive all deployed contract', async () => {
       const code1: string = 'this is go code 1';
       const code2: string = 'this is go code 2';
       const btx1: BlockTransaction = generateContractDeployTransaction('test-contract1', code1);

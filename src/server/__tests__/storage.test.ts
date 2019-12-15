@@ -109,7 +109,7 @@ describe('storage', () => {
       await storage.handleNewBlock(generateBlockResponseWithTransaction(2n, deploy2Tx));
       await storage.handleNewBlock(generateBlockResponseWithTransaction(3n, deploy3Tx));
 
-      const actual = await storage.getAllContractsNames();
+      const actual = await storage.getAllDeployedContracts();
       expect(['test-contract-1', 'test-contract-2', 'test-contract-3']).toEqual(actual);
 
     });

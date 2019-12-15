@@ -10,16 +10,16 @@ import { createStyles, Grid, Theme, withStyles, WithStyles } from '@material-ui/
 import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { loadContractsNamesAction } from '../actions/contractsActions';
+import { loadDeployedContractsAction } from '../actions/contractsActions';
 import { IRootState } from '../reducers/rootReducer';
 
 const styles = (theme: Theme) => createStyles({});
 
 interface IProps extends WithStyles<typeof styles> {
-  contractsNames: string[];
+  deployedContracts: string[];
   isLoading: boolean;
   error: string;
-  loadContractsNames: () => void;
+  loadDeployedContracts: () => void;
 }
 
 const ContractsListImpl = withStyles(styles)(
@@ -37,7 +37,7 @@ const ContractsListImpl = withStyles(styles)(
         return <Typography>Loading...</Typography>;
       }
 
-      if (this.props.contractsNames.length === 0) {
+      if (this.props.deployedContracts.length === 0) {
         return <Typography>Empty...</Typography>;
       }
 
@@ -45,11 +45,11 @@ const ContractsListImpl = withStyles(styles)(
         return <Typography variant='h4'>{this.props.error}</Typography>;
       }
 
-      const { contractsNames } = this.props;
+      const { deployedContracts } = this.props;
       return (
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            {contractsNames.map(c => (
+            {deployedContracts.map(c => (
               <Typography key={c}>{c}</Typography>
             ))}
           </Grid>
@@ -58,19 +58,19 @@ const ContractsListImpl = withStyles(styles)(
     }
 
     private fetchData() {
-      this.props.loadContractsNames();
+      this.props.loadDeployedContracts();
     }
   },
 );
 
 const mapStateToProps = (state: IRootState) => ({
-  contractsNames: state.contractsNames.contractsNames,
-  isLoading: state.contractsNames.isLoading,
-  error: state.contractsNames.error,
+  deployedContracts: state.deployedContracts.deployedContracts,
+  isLoading: state.deployedContracts.isLoading,
+  error: state.deployedContracts.error,
 });
 
 const dispatchProps = {
-  loadContractsNames: loadContractsNamesAction,
+  loadDeployedContracts: loadDeployedContractsAction,
 };
 
 export const ContractsList = connect(mapStateToProps, dispatchProps)(ContractsListImpl);
