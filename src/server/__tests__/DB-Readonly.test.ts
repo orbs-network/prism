@@ -13,7 +13,7 @@ import { IDB } from '../db/IDB';
 import { InMemoryDB } from '../db/InMemoryDB';
 import { MongoDB } from '../db/MongoDB';
 import { genLogger } from '../logger/LoggerFactory';
-import { generateRandomGetBlockRespose } from '../orbs-adapter/fake-blocks-generator';
+import { generateRandomGetBlockResponse } from '../orbs-adapter/fake-blocks-generator';
 import { blockResponseToBlock, blockResponseTransactionsToTxs } from '../transformers/blockTransform';
 
 const logger: winston.Logger = genLogger(false, false, false);
@@ -34,7 +34,7 @@ function testReadOnlyDb(db: IDB, dbName: string) {
     });
 
     it('should NOT store blocks by hash', async () => {
-      const block = generateRandomGetBlockRespose(1n);
+      const block = generateRandomGetBlockResponse(1n);
 
       await db.storeBlock(blockResponseToBlock(block));
       const blockHash = encodeHex(block.resultsBlockHash);
@@ -44,7 +44,7 @@ function testReadOnlyDb(db: IDB, dbName: string) {
     });
 
     it('should NOT store txs', async () => {
-      const block = generateRandomGetBlockRespose(1n);
+      const block = generateRandomGetBlockResponse(1n);
 
       await db.storeBlock(blockResponseToBlock(block));
       const txes = blockResponseTransactionsToTxs(block);

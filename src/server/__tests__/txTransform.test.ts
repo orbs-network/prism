@@ -7,13 +7,13 @@
  */
 
 import { IShortTx } from '../../shared/IContractData';
-import { generateRandomGetBlockRespose } from '../orbs-adapter/fake-blocks-generator';
+import { generateRandomGetBlockResponse } from '../orbs-adapter/fake-blocks-generator';
 import { blockResponseTransactionAsTx } from '../transformers/blockTransform';
 import { txToShortTx } from '../transformers/txTransform';
 
 describe('txTransform', () => {
   it('should convert ITx to IShortTx', async () => {
-    const block = generateRandomGetBlockRespose(1n);
+    const block = generateRandomGetBlockResponse(1n);
 
     const failingTx = blockResponseTransactionAsTx(block, 0);
     failingTx.executionResult = 'ERROR';

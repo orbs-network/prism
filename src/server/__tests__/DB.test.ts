@@ -19,7 +19,7 @@ import {
   generateBlockResponseWithTransaction,
   generateBlockTransaction,
   generateContractDeployTransaction,
-  generateRandomGetBlockRespose,
+  generateRandomGetBlockResponse,
 } from '../orbs-adapter/fake-blocks-generator';
 import {
   blockResponseToBlock,
@@ -48,7 +48,7 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should store and retrive blocks by hash', async () => {
-      const block = blockResponseToBlock(generateRandomGetBlockRespose(1n));
+      const block = blockResponseToBlock(generateRandomGetBlockResponse(1n));
 
       await db.storeBlock(block);
 
@@ -67,7 +67,7 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should be able to retrive blocks by height', async () => {
-      const block = blockResponseToBlock(generateRandomGetBlockRespose(1n));
+      const block = blockResponseToBlock(generateRandomGetBlockResponse(1n));
 
       await db.storeBlock(block);
 
@@ -76,11 +76,11 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should be able to retrive the latest blocks', async () => {
-      const block1 = blockResponseToBlock(generateRandomGetBlockRespose(1n));
-      const block2 = blockResponseToBlock(generateRandomGetBlockRespose(2n));
-      const block3 = blockResponseToBlock(generateRandomGetBlockRespose(3n));
-      const block4 = blockResponseToBlock(generateRandomGetBlockRespose(4n));
-      const block5 = blockResponseToBlock(generateRandomGetBlockRespose(5n));
+      const block1 = blockResponseToBlock(generateRandomGetBlockResponse(1n));
+      const block2 = blockResponseToBlock(generateRandomGetBlockResponse(2n));
+      const block3 = blockResponseToBlock(generateRandomGetBlockResponse(3n));
+      const block4 = blockResponseToBlock(generateRandomGetBlockResponse(4n));
+      const block5 = blockResponseToBlock(generateRandomGetBlockResponse(5n));
       await db.storeBlock(block1);
       await db.storeBlock(block2);
       await db.storeBlock(block3);
@@ -92,7 +92,7 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should store and retrive txs', async () => {
-      const block = generateRandomGetBlockRespose(1n);
+      const block = generateRandomGetBlockResponse(1n);
       const txes = blockResponseTransactionsToTxs(block);
 
       await db.storeTxes(txes);
@@ -104,7 +104,7 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should ignore case when retrive txs', async () => {
-      const block = generateRandomGetBlockRespose(1n);
+      const block = generateRandomGetBlockResponse(1n);
       const txes = blockResponseTransactionsToTxs(block);
 
       // conver all to upper case
@@ -119,9 +119,9 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should be able to retrive the last block height', async () => {
-      const block10 = blockResponseToBlock(generateRandomGetBlockRespose(10n));
-      const block11 = blockResponseToBlock(generateRandomGetBlockRespose(11n));
-      const block12 = blockResponseToBlock(generateRandomGetBlockRespose(12n));
+      const block10 = blockResponseToBlock(generateRandomGetBlockResponse(10n));
+      const block11 = blockResponseToBlock(generateRandomGetBlockResponse(11n));
+      const block12 = blockResponseToBlock(generateRandomGetBlockResponse(12n));
 
       await db.storeBlock(block10);
       await db.storeBlock(block11);

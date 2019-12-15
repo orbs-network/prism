@@ -10,7 +10,7 @@ import { IDB } from '../db/IDB';
 import { InMemoryDB } from '../db/InMemoryDB';
 import { detectBlockChainGaps } from '../gaps-filler/GapsDetector';
 import { genLogger } from '../logger/LoggerFactory';
-import { generateRandomGetBlockRespose } from '../orbs-adapter/fake-blocks-generator';
+import { generateRandomGetBlockResponse } from '../orbs-adapter/fake-blocks-generator';
 import { Storage } from '../storage/storage';
 
 describe('Gaps Detector', () => {
@@ -19,13 +19,13 @@ describe('Gaps Detector', () => {
     const db: IDB = new InMemoryDB();
     await db.init();
     const storage: Storage = new Storage(db);
-    await storage.handleNewBlock(generateRandomGetBlockRespose(1n));
-    await storage.handleNewBlock(generateRandomGetBlockRespose(2n));
-    await storage.handleNewBlock(generateRandomGetBlockRespose(3n));
-    await storage.handleNewBlock(generateRandomGetBlockRespose(6n));
-    await storage.handleNewBlock(generateRandomGetBlockRespose(7n));
-    await storage.handleNewBlock(generateRandomGetBlockRespose(8n));
-    await storage.handleNewBlock(generateRandomGetBlockRespose(10n));
+    await storage.handleNewBlock(generateRandomGetBlockResponse(1n));
+    await storage.handleNewBlock(generateRandomGetBlockResponse(2n));
+    await storage.handleNewBlock(generateRandomGetBlockResponse(3n));
+    await storage.handleNewBlock(generateRandomGetBlockResponse(6n));
+    await storage.handleNewBlock(generateRandomGetBlockResponse(7n));
+    await storage.handleNewBlock(generateRandomGetBlockResponse(8n));
+    await storage.handleNewBlock(generateRandomGetBlockResponse(10n));
 
     const latestHeight = await storage.getLatestBlockHeight();
     const actual = await detectBlockChainGaps(storage, 1n, latestHeight);
@@ -37,10 +37,10 @@ describe('Gaps Detector', () => {
     const db: IDB = new InMemoryDB();
     await db.init();
     const storage: Storage = new Storage(db);
-    await storage.handleNewBlock(generateRandomGetBlockRespose(6n));
-    await storage.handleNewBlock(generateRandomGetBlockRespose(7n));
-    await storage.handleNewBlock(generateRandomGetBlockRespose(10n));
-    await storage.handleNewBlock(generateRandomGetBlockRespose(20n));
+    await storage.handleNewBlock(generateRandomGetBlockResponse(6n));
+    await storage.handleNewBlock(generateRandomGetBlockResponse(7n));
+    await storage.handleNewBlock(generateRandomGetBlockResponse(10n));
+    await storage.handleNewBlock(generateRandomGetBlockResponse(20n));
 
     const actual = await detectBlockChainGaps(storage, 4n, 15n);
     expect(actual).toEqual([4n, 5n, 8n, 9n, 11n, 12n, 13n, 14n, 15n]);
