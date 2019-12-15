@@ -84,8 +84,8 @@ describe(`DBBuilder`, () => {
   }
 
   /**
-     * As Jest do not have BigInt support yet. this will convert all BigInt calls to numbers.
-     */
+   * As Jest do not have BigInt support yet. this will convert all BigInt calls to numbers.
+   */
   function DEV_TO_REMOVE_convertMockBigIntToNumber() {
         spyBlocksPollingGetBlock.mock.calls = spyBlocksPollingGetBlock.mock.calls.map(call => call.map(v => Number(v)));
   }
