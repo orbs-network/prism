@@ -83,7 +83,7 @@ describe(`DBBuilder`, () => {
     await db.storeBlock(block3);
   }
 
-    /**
+  /**
      * As Jest do not have BigInt support yet. this will convert all BigInt calls to numbers.
      */
   function DEV_TO_REMOVE_convertMockBigIntToNumber() {
@@ -118,9 +118,14 @@ describe(`DBBuilder`, () => {
   }
 
   async function expectProperDBBuilding(highestExistingBlock: number, expectedBlockHeights: number[], expectedBlocks: GetBlockResponse[]) {
-    const totalBlocksToRead = expectedBlockHeights.length;
-
     DEV_TO_REMOVE_convertMockBigIntToNumber();
+
+    await expectProperDBBuildingUnitTests(highestExistingBlock, expectedBlockHeights, expectedBlocks);
+    await expectProperDBBuildingE2ETests(highestExistingBlock, expectedBlockHeights, expectedBlocks);
+  }
+
+  async function expectProperDBBuildingUnitTests(highestExistingBlock: number, expectedBlockHeights: number[], expectedBlocks: GetBlockResponse[]) {
+    const totalBlocksToRead = expectedBlockHeights.length;
 
     // Reading of blocks (Unit tests)
     expect(spyBlocksPollingGetBlock, 'Should call "getBlockAt" number-of-blocks times').toBeCalledTimes(totalBlocksToRead);
@@ -134,7 +139,21 @@ describe(`DBBuilder`, () => {
       expect(spyStorageHandleNewBlock, `Should call "handleNewBlock" with all of the mocked blocks - ${mockedBlock}`).toBeCalledWith(mockedBlock);
     }
 
-    // Handling of blocks (E2E)
+    // Signal transition of 'Db filling method' (Unit tests)
+    expect(spyDbSetDbFillingMethod, 'Should set "DB filling method" to "DbBuilder" and then "None" ').toHaveBeenNthCalledWith(1, 'DBBuilder');
+    expect(spyDbSetDbFillingMethod, 'Should set "DB filling method" to "DbBuilder" and then "None" ').toHaveBeenNthCalledWith(2, 'None');
+    expect(spyDbSetDbFillingMethod, 'Call "setDbFillingMethod twice"').toBeCalledTimes(2);
+
+    // Signal transition of 'Db Building status' (Unit tests)
+    expect(spyDbSetDbBuildingStatus, 'Should set "DB Building Status" to "In Work" and then to "Done"').toHaveBeenNthCalledWith(1, 'InWork');
+    expect(spyDbSetDbBuildingStatus, 'Should set "DB Building Status" to "In Work" and then to "Done"').toHaveBeenNthCalledWith(2, 'Done');
+    expect(spyDbSetDbBuildingStatus, 'Call "setDbBuildingStatus once"').toBeCalledTimes(2);
+  }
+
+  async function expectProperDBBuildingE2ETests(highestExistingBlock: number, expectedBlockHeights: number[], expectedBlocks: GetBlockResponse[]) {
+    const totalBlocksToRead = expectedBlockHeights.length;
+
+    // Handling of blocks
     expect(spyStorageHandleNewBlock, 'Should call "handleNewBlock" number-of-blocks times').toBeCalledTimes(totalBlocksToRead);
     for (const mockedBlock of expectedBlocks) {
       const blockFromDb = await storage.getBlockByHash(encodeHex(mockedBlock.resultsBlockHash));
@@ -153,19 +172,11 @@ describe(`DBBuilder`, () => {
       }
     }
 
-    // Signal transition of 'Db filling method' (Unit tests)
-    expect(spyDbSetDbFillingMethod, 'Should set "DB filling method" to "DbBuilder" and then "None" ').toHaveBeenNthCalledWith(1, 'DBBuilder');
-    expect(spyDbSetDbFillingMethod, 'Should set "DB filling method" to "DbBuilder" and then "None" ').toHaveBeenNthCalledWith(2, 'None');
-    expect(spyDbSetDbFillingMethod, 'Call "setDbFillingMethod twice"').toBeCalledTimes(2);
-    // Signal transition of 'Db filling method' (E2E)
+    // Signal transition of 'Db filling method'
     const dbFillingMethod = await db.getDBFillingMethod();
     expect(dbFillingMethod, 'Should have "None" as the "DB Filling Method" when done').toBe('None');
 
-    // Signal transition of 'Db Building status' (Unit tests)
-    expect(spyDbSetDbBuildingStatus, 'Should set "DB Building Status" to "In Work" and then to "Done"').toHaveBeenNthCalledWith(1, 'InWork');
-    expect(spyDbSetDbBuildingStatus, 'Should set "DB Building Status" to "In Work" and then to "Done"').toHaveBeenNthCalledWith(2, 'Done');
-    expect(spyDbSetDbBuildingStatus, 'Call "setDbBuildingStatus once"').toBeCalledTimes(2);
-    // Signal transition of 'Db Building status' (E2E)
+    // Signal transition of 'Db Building status'
     const dbBuildingStatus = await db.getDBBuildingStatus();
     expect(dbBuildingStatus, 'Should have "Done" value for "DB Building Status"').toBe('Done');
 
