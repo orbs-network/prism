@@ -20,6 +20,7 @@ import { compose } from 'redux';
 import { searchAction } from '../actions/searchActions';
 import { Logo } from './Logo';
 import { PrismLink } from './PrismLink';
+import { Button } from '@material-ui/core';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -108,6 +109,9 @@ const HeaderImpl = withStyles(styles)(
               <PrismLink to={'/'} className={classes.cleanLink} id='home'>
                 <Logo />
               </PrismLink>
+              <PrismLink to={'/contracts'}>
+                <Button variant='outlined'>Contracts</Button>
+              </PrismLink>
               <div className={classes.title}>
                 <Typography variant='h5'>ORBS Blockchain Explorer</Typography>
               </div>
@@ -145,12 +149,4 @@ const mapDispatchToProps = {
   search: searchAction,
 };
 
-export const Header: any = withRouter(
-  compose(
-    withStyles(styles),
-    connect(
-      null,
-      mapDispatchToProps,
-    ),
-  )(HeaderImpl),
-);
+export const Header: any = withRouter(compose(withStyles(styles), connect(null, mapDispatchToProps))(HeaderImpl));
