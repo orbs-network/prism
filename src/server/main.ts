@@ -58,7 +58,7 @@ async function main() {
   const orbsBlocksPolling = genOrbsBlocksPolling(logger);
   await orbsBlocksPolling.init();
 
-  const dbBuilder = new DBBuilder(db, storage, orbsBlocksPolling, {
+  const dbBuilder = new DBBuilder(db, storage, orbsBlocksPolling, logger, {
     blocksBatchSize: BLOCKS_POLLING_BATCH_SIZE,
     maxParallelPromises: MAXIMUM_PARALLEL_PROMISES,
   });

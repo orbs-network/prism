@@ -4,6 +4,8 @@ import { chunk } from 'lodash';
 import fill from 'fill-range';
 import { IDB } from './IDB';
 import { Storage } from '../storage/storage';
+import winston from 'winston';
+import {increaseDbBuilderBuiltBlocks} from '../metrics/prometheusMetrics';
 
 export interface IDBBuilderConfigurations {
   blocksBatchSize: number;
@@ -14,7 +16,8 @@ export interface IDBBuilderConfigurations {
 }
 
 export class DBBuilder {
-  constructor(private db: IDB, private storage: Storage, private orbsBlocksPolling: IOrbsBlocksPolling, private dbBuilderConfigs: IDBBuilderConfigurations) {}
+  constructor(private db: IDB, private storage: Storage, private orbsBlocksPolling: IOrbsBlocksPolling,
+              private logger: winston.Logger, private dbBuilderConfigs: IDBBuilderConfigurations) {}
 
   public async init(prismVersion: string): Promise<void> {
     const hasBlocks = (await this.db.getLatestBlockHeight()) > 0n;
@@ -84,8 +87,8 @@ export class DBBuilder {
         // Save the latest built block
         await this.db.setLastBuiltBlockHeight(blockHeightsGroup[blockHeightsGroup.length - 1]);
       } catch (e) {
-        console.error(`Exception while working on block group ${blockHeightsGroup[0]}-${blockHeightsGroup[blockHeightsGroup.length - 1]}`);
-        console.error(e);
+        this.logger.error(`Exception while working on block group ${blockHeightsGroup[0]}-${blockHeightsGroup[blockHeightsGroup.length - 1]}`);
+        this.logger.error(e);
       }
     }
   }
@@ -120,15 +123,23 @@ export class DBBuilder {
     }
 
     const hrEnd = process.hrtime(hrStart);
-    console.log(`Finished fetching and storing for range ${blocksRange} with ${successCount} success and ${errorCount} errors. ${hrEnd[0]} seconds, ${(hrEnd[1] / 1_000_000).toFixed(3)} ms`);
+    this.logger.info(`Finished fetching and storing for range ${blocksRange} with ${successCount} success and ${errorCount} errors. ${hrEnd[0]} seconds, ${(hrEnd[1] / 1_000_000).toFixed(3)} ms`);
+
+    increaseDbBuilderBuiltBlocks(successCount);
   }
 
   private async getAndStoreBlock(blockHeight: bigint): Promise<void> {
     const block = await this.orbsBlocksPolling.getBlockAt(blockHeight);
 
     if (block) {
-      await this.storage.handleNewBlock(block);
+      try{
+        await this.storage.handleNewBlock(block);
+      } catch (e) {
+        this.logger.error(`Failed storing block ${blockHeight} - ${e}`);
+        throw e;
+      }
     } else {
+      this.logger.error(`Got empty block for ${blockHeight}`);
       throw new Error(`ERROR : Got no block response for block ${blockHeight}`);
     }
   }
