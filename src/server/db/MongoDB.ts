@@ -80,18 +80,20 @@ export class MongoDB implements IDB {
 
       mongoose.connection.once('error', reject);
 
-      mongoose.connect(this.connectionUrl, { useNewUrlParser: true }).then(db => {
-        this.db = db;
+      mongoose
+        .connect(this.connectionUrl, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
+        .then(db => {
+          this.db = db;
 
-        txSchema.index({ txId: 'text' });
-        blockSchema.index({ blockHash: 'text' });
+          txSchema.index({ txId: 'text' });
+          blockSchema.index({ blockHash: 'text' });
 
-        // model
-        this.BlockModel = mongoose.model('Block', blockSchema);
-        this.TxModel = mongoose.model('Tx', txSchema);
-        this.CacheModel = mongoose.model('Cache', cacheSchema);
-        resolve();
-      });
+          // model
+          this.BlockModel = mongoose.model('Block', blockSchema);
+          this.TxModel = mongoose.model('Tx', txSchema);
+          this.CacheModel = mongoose.model('Cache', cacheSchema);
+          resolve();
+        });
     });
   }
 
@@ -122,9 +124,9 @@ export class MongoDB implements IDB {
     if (this.readOnlyMode) {
       return;
     }
-    await this.BlockModel.remove({});
-    await this.TxModel.remove({});
-    await this.CacheModel.remove({});
+    await this.BlockModel.deleteMany({});
+    await this.TxModel.deleteMany({});
+    await this.CacheModel.deleteMany({});
   }
 
   public async storeBlock(block: IBlock): Promise<void> {
@@ -263,7 +265,7 @@ export class MongoDB implements IDB {
     this.logger.info(`Searching for all txes for contract: ${contractName}`);
 
     let skip = 0;
-    const count = await this.TxModel.count({ contractName });
+    const count = await this.TxModel.countDocuments({ contractName });
     const lastExecutionIdx = count - 1;
     if (startFromExecutionIdx === undefined) {
       startFromExecutionIdx = lastExecutionIdx;
