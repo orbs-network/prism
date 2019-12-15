@@ -89,12 +89,6 @@ describe(`DBBuilder`, () => {
         spyBlocksPollingGetBlock.mock.calls = spyBlocksPollingGetBlock.mock.calls.map(call => call.map(v => Number(v)));
   }
 
-  function expectDbToRebuild(): void {
-    expect(spyStorageHandleNewBlock, '"Handle new block" to be called').toHaveBeenCalled();
-    expect(spyDbStoreBlock, '"Store Block" to be called').toHaveBeenCalled();
-    expect(spyDbStoreTxes, '"Store Txes" to be called').toHaveBeenCalled();
-  }
-
   function expectDbToNotRebuild(): void {
     expect(spyStorageHandleNewBlock, '"Handle new block" not to be called').not.toHaveBeenCalled();
     expect(spyDbStoreBlock, '"Store Block" not to be called').not.toHaveBeenCalled();
@@ -288,49 +282,6 @@ describe(`DBBuilder`, () => {
       await db.setDBBuildingStatus('NonExistingValue');
 
       await expect(dbBuilder.init(PRISM_VERSION)).rejects.toThrow();
-    });
-  });
-
-  describe('Older tests', () => {
-    it('should rebuild the db when the db is empty', async () => {
-      expect(await db.getLatestBlockHeight()).toBe(0n);
-      expect(await db.getBlockByHeight('1')).toBeNull();
-      expect(await db.getBlockByHeight('2')).toBeNull();
-      expect(await db.getBlockByHeight('3')).toBeNull();
-
-      initSpies();
-      await dbBuilder.init(PRISM_VERSION);
-
-      expectDbToNotBeCleared();
-
-      expect(await db.getLatestBlockHeight()).toBe(3n);
-      expect(await db.getBlockByHeight('1')).toEqual(block1);
-      expect(await db.getBlockByHeight('2')).toEqual(block2);
-      expect(await db.getBlockByHeight('3')).toEqual(block3);
-    });
-
-    it('should not rebuild the db when the db has blocks', async () => {
-      await fillDbWithBlocks();
-      initSpies();
-      await dbBuilder.init(PRISM_VERSION);
-      expectDbToNotBeCleared();
-      expectDbToNotRebuild();
-    });
-
-    it('should clear & rebuild the db when the db version is older', async () => {
-      await fillDbWithBlocks();
-      initSpies();
-      await dbBuilder.init('2.0.0');
-      expectDbToBeCleared();
-      expectDbToRebuild();
-    });
-
-    it('should not rebuild the db when the db version is newer', async () => {
-      await fillDbWithBlocks();
-      initSpies();
-      await dbBuilder.init('0.0.4');
-      expectDbToNotBeCleared();
-      expectDbToNotRebuild();
     });
   });
 });
