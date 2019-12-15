@@ -119,7 +119,12 @@ export class InMemoryDB implements IDB {
       if (tx.contractName === '_Deployments' && tx.methodName === 'deployService' && tx.executionResult === 'SUCCESS') {
         const { inputArguments: args } = tx;
         if (args.length >= 3 && args[0].type === 'string' && args[1].type === 'uint32') {
-          result.push({ contractName: args[0].value });
+          const contractGist: IContractGist = {
+            contractName: args[0].value,
+            txId: tx.txId,
+            deployedBy: tx.signerAddress,
+          }
+          result.push(contractGist);
         }
       }
     }

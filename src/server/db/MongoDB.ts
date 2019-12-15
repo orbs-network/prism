@@ -203,14 +203,21 @@ export class MongoDB implements IDB {
         methodName: 'deployService',
         executionResult: 'SUCCESS',
       },
-      { _id: false, inputArguments: true },
+      { _id: false, inputArguments: true, signerAddress: true, txId: true },
     )
       .lean()
       .exec();
 
     if (result) {
       this.logger.info(`${result.length} contracts found [${Date.now() - startTime}ms.]`);
-      return result.map(row => ({ contractName: row.inputArguments[0].value }));
+      return result.map(row => {
+        const contractGit: IContractGist = {
+          contractName: row.inputArguments[0].value,
+          deployedBy: row.signerAddress,
+          txId: row.txId,
+        };
+        return contractGit;
+      });
     } else {
       this.logger.info(`No deployed contracts found`);
       return [];

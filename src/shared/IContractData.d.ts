@@ -21,4 +21,6 @@ export interface IContractData {
 
 export interface IContractGist {
   contractName: string;
+  txId: string;
+  deployedBy: string;
 }

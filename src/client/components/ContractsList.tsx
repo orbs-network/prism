@@ -6,13 +6,25 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { createStyles, Grid, Theme, withStyles, WithStyles } from '@material-ui/core';
+import {
+  createStyles,
+  Grid,
+  Theme,
+  withStyles,
+  WithStyles,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+} from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { loadDeployedContractsAction } from '../actions/contractsActions';
 import { IRootState } from '../reducers/rootReducer';
 import { IContractGist } from '../../shared/IContractData';
+import { PrismLink } from './PrismLink';
 
 const styles = (theme: Theme) => createStyles({});
 
@@ -50,14 +62,38 @@ const ContractsListImpl = withStyles(styles)(
       return (
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            {deployedContracts.map(c => (
-              <Typography key={c.contractName}>{c.contractName}</Typography>
-            ))}
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Contract Name</TableCell>
+                  <TableCell>Deployed By</TableCell>
+                  <TableCell>Deployment Tx</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {deployedContracts.map(c => {
+                  return (
+                    <TableRow key={c.contractName}>
+                      <TableCell>
+                        <PrismLink to={`/contract/${c.contractName}`}>{c.contractName}</PrismLink>
+                      </TableCell>
+                      <TableCell>{c.deployedBy}</TableCell>
+                      <TableCell>
+                        <PrismLink to={`/tx/${c.txId}`}>{this.getElipsisTx(c.txId)}</PrismLink>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
           </Grid>
         </Grid>
       );
     }
 
+    private getElipsisTx(txId: string) {
+      return txId.substr(0, 20) + '...';
+    }
     private fetchData() {
       this.props.loadDeployedContracts();
     }

@@ -231,7 +231,18 @@ function testDb(db: IDB, dbName: string) {
       await db.storeTxes([tx1, tx2]);
 
       const actualAfter = await db.getDeployedContracts();
-      const expected: IContractGist[] = [{ contractName: 'test-contract1' }, { contractName: 'test-contract2' }];
+      const expected: IContractGist[] = [
+        {
+          contractName: 'test-contract1',
+          deployedBy: tx1.signerAddress,
+          txId: tx1.txId,
+        },
+        {
+          contractName: 'test-contract2',
+          deployedBy: tx2.signerAddress,
+          txId: tx2.txId,
+        },
+      ];
       expect(expected).toEqual(actualAfter);
     });
 

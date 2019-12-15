@@ -15,7 +15,7 @@ import { InMemoryDB } from '../db/InMemoryDB';
 import { genLogger } from '../logger/LoggerFactory';
 import { generateBlockResponseWithTransaction, generateBlockTransaction, generateContractDeployTransaction, generateRandomGetBlockRespose } from '../orbs-adapter/fake-blocks-generator';
 import { Storage } from '../storage/storage';
-import { blockResponseToBlock, blockResponseTransactionAsTx, blockResponseTransactionsToTxs } from '../transformers/blockTransform';
+import { blockResponseToBlock, blockResponseTransactionAsTx, blockResponseTransactionsToTxs, blockTransactionToTx } from '../transformers/blockTransform';
 import { txToShortTx } from '../transformers/txTransform';
 
 describe('storage', () => {
@@ -109,11 +109,27 @@ describe('storage', () => {
       await storage.handleNewBlock(generateBlockResponseWithTransaction(2n, deploy2Tx));
       await storage.handleNewBlock(generateBlockResponseWithTransaction(3n, deploy3Tx));
 
+      const tx1 = blockTransactionToTx('1', 0, deploy1Tx);
+      const tx2 = blockTransactionToTx('2', 0, deploy2Tx);
+      const tx3 = blockTransactionToTx('3', 0, deploy3Tx);
+      
       const actual = await storage.getAllDeployedContracts();
       const expected: IContractGist[] = [
-        {contractName: 'test-contract-1'},
-        {contractName: 'test-contract-2'},
-        {contractName: 'test-contract-3'},
+        { 
+          contractName: 'test-contract-1',
+          deployedBy: tx1.signerAddress,
+          txId: tx1.txId
+         },
+        { 
+          contractName: 'test-contract-2',
+          deployedBy: tx2.signerAddress,
+          txId: tx2.txId
+         },
+        { 
+          contractName: 'test-contract-3',
+          deployedBy: tx3.signerAddress,
+          txId: tx3.txId
+         },
       ]
       expect(expected).toEqual(actual);
 
