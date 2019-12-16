@@ -66,12 +66,10 @@ export class DBBuilder {
   }
 
   private async buildFromBlockHeightWithStateSignaling(startingBlockHeight: number) {
-    await this.db.setDBFillingMethod('DBBuilder');
     await this.db.setDBBuildingStatus('InWork');
 
     await this.buildFromBlockHeight(startingBlockHeight);
 
-    await this.db.setDBFillingMethod('None');
     await this.db.setDBBuildingStatus('Done');
   }
 
@@ -140,7 +138,7 @@ export class DBBuilder {
       }
     } else {
       this.logger.error(`Got empty block for ${blockHeight}`);
-      throw new Error(`ERROR : Got no block response for block ${blockHeight}`);
+      throw new Error(`ERROR : Gotnpm no block response for block ${blockHeight}`);
     }
   }
 

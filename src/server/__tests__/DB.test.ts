@@ -11,7 +11,7 @@ import * as winston from 'winston';
 import { IShortTx, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 import { MONGODB_URI } from '../config';
-import {IDB, TDBBuildingStatus, TDBFillingMethod} from '../db/IDB';
+import {IDB, TDBBuildingStatus } from '../db/IDB';
 import { InMemoryDB } from '../db/InMemoryDB';
 import { MongoDB } from '../db/MongoDB';
 import { genLogger } from '../logger/LoggerFactory';
@@ -177,29 +177,6 @@ function testDb(db: IDB, dbName: string) {
       const actual = await db.getVersion();
       expect(actual).toEqual('1.0.0');
       expect(actual).not.toEqual(initial);
-    });
-
-    it('Should have "None" as default "DB Filling Method"', async () => {
-      const defaultValue = await db.getDBFillingMethod();
-
-      expect(defaultValue).toEqual('None');
-    });
-
-    it('Should be able to store, retrieve and update the "DB Filling Method"', async () => {
-      const initial = await db.getDBFillingMethod();
-      const firstValue: TDBFillingMethod = 'DBBuilder';
-      const secondValue: TDBFillingMethod = 'GapsFiller';
-
-      await db.setDBFillingMethod(firstValue);
-      const actualFirst = await db.getDBFillingMethod();
-      expect(actualFirst).toEqual(firstValue);
-
-      await db.setDBFillingMethod(secondValue);
-      const actualSecond = await db.getDBFillingMethod();
-      expect(actualSecond).toEqual(secondValue);
-
-      expect(actualFirst).not.toEqual(initial);
-      expect(actualSecond).not.toEqual(initial);
     });
 
     it('Should have "None" as default "DB Building status"', async () => {

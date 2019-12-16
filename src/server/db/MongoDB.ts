@@ -13,7 +13,7 @@ import { IBlock } from '../../shared/IBlock';
 import { IShortTx, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 import { txToShortTx } from '../transformers/txTransform';
-import {IDB, TDBBuildingStatus, TDBFillingMethod} from './IDB';
+import {IDB, TDBBuildingStatus } from './IDB';
 
 mongooseLong(mongoose);
 mongoose.set('useFindAndModify', false);
@@ -25,8 +25,6 @@ interface ICacheDocument extends mongoose.Document {
 }
 
 interface IDBConstructionStateDocument extends mongoose.Document {
-  _id: number;
-  dbFillingMethod: TDBFillingMethod;
   dbBuildingStatus: TDBBuildingStatus;
   lastBuiltBlockHeight: number;
 }
@@ -39,7 +37,6 @@ const cacheSchema = new mongoose.Schema({
 
 const dbConstructionStateSchema = new mongoose.Schema({
   _id: Number,
-  dbFillingMethod: { type: String, default: 'None'},
   dbBuildingStatus: { type: String, default: 'None'},
   lastBuiltBlockHeight: { type: Number, default: 0},
 });
@@ -130,20 +127,6 @@ export class MongoDB implements IDB {
       return;
     }
     await this.CacheModel.updateOne({ _id: 1 }, { $set: { dbVersion } }, { upsert: true });
-  }
-
-  public async getDBFillingMethod(): Promise<TDBFillingMethod> {
-    const result = await this.dbConstructionStateModel.findOne({ _id: 1 });
-
-    if (result && result.dbFillingMethod !== undefined) {
-      return result.dbFillingMethod;
-    }
-
-    return 'None';
-  }
-
-  public async setDBFillingMethod(dbFillingMethod: TDBFillingMethod): Promise<void> {
-    await this.upsertToDbConstructionStateModel({ dbFillingMethod });
   }
 
   public async getDBBuildingStatus(): Promise<TDBBuildingStatus> {
@@ -237,7 +220,7 @@ export class MongoDB implements IDB {
   }
 
   public async getBlockByHeight(blockHeight: string): Promise<IBlock> {
-    const blockHeightAsNumber = parseInt(blockHeight);
+    const blockHeightAsNumber = parseInt(blockHeight, 10);
     if (Number.isNaN(blockHeightAsNumber)) {
       return null;
     }

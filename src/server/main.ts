@@ -73,9 +73,6 @@ async function main() {
           const GAP_FILLER_INITIAL_DELAY = 60 * 1000; // We wait a minute before we start the gap filler
           await sleep(GAP_FILLER_INITIAL_DELAY);
           fillGapsForever(logger, storage, db, orbsBlocksPolling, GAP_FILLER_INTERVAL);
-
-          // TODO : FUTURE : O.L : Move this to be 'gap filler's responsibility
-          await db.setDBFillingMethod('GapsFiller');
         }
       });
 

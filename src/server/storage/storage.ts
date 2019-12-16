@@ -125,7 +125,6 @@ export class Storage implements INewBlocksHandler {
 
   public async getDiagnostics() {
     const dbVersion = await this.db.getVersion();
-    const dbFillingMethod = await this.db.getDBFillingMethod();
     const dbBuildingStatus = await this.db.getDBBuildingStatus();
     const lastBuiltBlock = await this.db.getLastBuiltBlockHeight();
     const latestBlockHeight = Number(await this.db.getLatestBlockHeight());
@@ -133,7 +132,6 @@ export class Storage implements INewBlocksHandler {
     return {
       DB: {
         dbVersion,
-        dbFillingMethod,
         dbBuildingStatus,
         lastBuiltBlock,
       },

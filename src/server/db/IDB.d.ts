@@ -10,15 +10,12 @@ import { IBlock } from '../../shared/IBlock';
 import { IShortTx, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 
-export type TDBFillingMethod = 'DBBuilder' | 'GapsFiller' | 'None';
 export type TDBBuildingStatus = 'Done' | 'InWork' | 'None';
 
 export interface IDB {
   init(): Promise<void>;
   getVersion(): Promise<string>;
   setVersion(version: string): Promise<void>;
-  getDBFillingMethod(): Promise<TDBFillingMethod>;
-  setDBFillingMethod(dbFillingMethod: TDBFillingMethod): Promise<void>;
   getDBBuildingStatus(): Promise<TDBBuildingStatus>;
   setDBBuildingStatus(dbBuildingStatus: TDBBuildingStatus): Promise<void>;
   getLastBuiltBlockHeight(): Promise<number>;

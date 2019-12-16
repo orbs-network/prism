@@ -10,17 +10,15 @@ import { IBlock } from '../../shared/IBlock';
 import { IShortTx, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 import { txToShortTx } from '../transformers/txTransform';
-import {IDB, TDBBuildingStatus, TDBFillingMethod} from './IDB';
+import {IDB, TDBBuildingStatus } from './IDB';
 
 interface IDBConstructionStateInMemory {
-  dbFillingMethod: TDBFillingMethod;
   dbBuildingStatus: TDBBuildingStatus;
   lastBuiltBlockHeight: number;
 }
 
 const defaultDbConstructionState: IDBConstructionStateInMemory = Object.freeze({
   dbBuildingStatus: 'None',
-  dbFillingMethod: 'None',
   lastBuiltBlockHeight: 0,
 });
 
@@ -54,18 +52,6 @@ export class InMemoryDB implements IDB {
     }
 
     this.dbVersion = version;
-  }
-
-  public async getDBFillingMethod(): Promise<TDBFillingMethod> {
-    return this.dbConstructionState.dbFillingMethod;
-  }
-
-  public async setDBFillingMethod(dbFillingMethod: TDBFillingMethod): Promise<void> {
-    if (this.readOnlyMode) {
-      return ;
-    }
-
-    this.dbConstructionState.dbFillingMethod = dbFillingMethod;
   }
 
   public async getDBBuildingStatus(): Promise<TDBBuildingStatus> {
