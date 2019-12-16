@@ -65,6 +65,8 @@ export class DBBuilder {
           }
         }
       }
+
+      this.logger.info('DB Builder finished successfully');
     } catch (e) {
       if (e instanceof DBBuilderError) {
         throw e;

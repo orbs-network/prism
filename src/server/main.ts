@@ -12,13 +12,11 @@ import { genOrbsBlocksPolling } from './orbs-adapter/OrbsBlocksPollingFactory';
 import { initServer } from './server';
 import { Storage } from './storage/storage';
 import { WS } from './ws/ws';
-import { sleep } from './gaps-filler/Cron';
 import config from './config';
 import winston from 'winston';
 import { genLogger } from './logger/LoggerFactory';
 import { DBBuilder } from './db/DBBuilder';
 import {increasePulledBlocksCounter} from './metrics/prometheusMetrics';
-import {GetBlockResponse} from 'orbs-client-sdk/dist/codec/OpGetBlock';
 
 async function main() {
   console.log(`*******************************************`);
@@ -62,22 +60,17 @@ async function main() {
     blocksBatchSize: BLOCKS_POLLING_BATCH_SIZE,
     maxParallelPromises: MAXIMUM_PARALLEL_PROMISES,
   });
+
   dbBuilder.init(PRISM_VERSION)
       .then(() => {
-        logger.info('Finished DB Building');
+        fillGapsForever(logger, storage, db, orbsBlocksPolling, GAP_FILLER_INTERVAL);
       })
-      .catch(e => {
-        logger.error(`Error While Building DB : ${e}`);
-      }).finally(async () => {
-        if (GAP_FILLER_ACTIVE) {
-          const GAP_FILLER_INITIAL_DELAY = 60 * 1000; // We wait a minute before we start the gap filler
-          await sleep(GAP_FILLER_INITIAL_DELAY);
-          fillGapsForever(logger, storage, db, orbsBlocksPolling, GAP_FILLER_INTERVAL);
-        }
+      .catch(() => { // DEV_NOTE : Only critical error can be thrown from the 'DB Builder'
+        process.exit(1);
       });
 
   orbsBlocksPolling.RegisterToNewBlocks({
-    handleNewBlock: async (block: GetBlockResponse) => increasePulledBlocksCounter()
+    handleNewBlock: async () => increasePulledBlocksCounter()
   });
   orbsBlocksPolling.RegisterToNewBlocks(ws);
   orbsBlocksPolling.RegisterToNewBlocks(storage);

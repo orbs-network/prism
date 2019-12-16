@@ -6,9 +6,10 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import * as winston from 'winston';
-import { IDB } from '../db/IDB';
+import winston from 'winston';
 import { IOrbsBlocksPolling } from 'orbs-blocks-polling-js';
+import { GAP_FILLER_ACTIVE } from '../config';
+import { IDB } from '../db/IDB';
 import { Storage } from '../storage/storage';
 import { cron } from './Cron';
 import { detectBlockChainGaps } from './GapsDetector';
@@ -22,10 +23,12 @@ export function fillGapsForever(
   orbsBlocksPolling: IOrbsBlocksPolling,
   interval: number,
 ): void {
-  cron(async () => {
-    logger.info(`Cron Job started.`);
-    await fillGaps(logger, storage, orbsBlocksPolling);
-  }, interval);
+  if (GAP_FILLER_ACTIVE) {
+    cron(async () => {
+      logger.info(`Cron Job started.`);
+      await fillGaps(logger, storage, orbsBlocksPolling);
+    }, interval);
+  }
 }
 
 async function storeBlockAt(
