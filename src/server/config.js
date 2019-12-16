@@ -47,8 +47,8 @@ const ORBS_NETWORK_TYPE = process.env.ORBS_NETWORK_TYPE || 'TEST_NET';
 const POOLING_INTERVAL = parseInt(process.env.POOLING_INTERVAL || '2000');
 
 // DB Builder
-const BLOCKS_POLLING_BATCH_SIZE = 1000;
-const MAXIMUM_PARALLEL_PROMISES = 100;
+const BLOCKS_POLLING_BATCH_SIZE = parseInt(process.env.BLOCKS_POLLING_BATCH_SIZE) || 1000;
+const MAXIMUM_PARALLEL_PROMISES = parseInt(process.env.MAXIMUM_PARALLEL_PROMISES) ||100;
 
 // gap filler
 const GAP_FILLER_ACTIVE = process.env.GAP_FILLER_ACTIVE !== 'false'; // default: true
