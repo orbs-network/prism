@@ -132,7 +132,7 @@ export class DBBuilder {
     const block = await this.orbsBlocksPolling.getBlockAt(blockHeight);
 
     if (block) {
-      try{
+      try {
         await this.storage.handleNewBlock(block);
       } catch (e) {
         this.logger.error(`Failed storing block ${blockHeight} - ${e}`);

@@ -16,6 +16,7 @@ import { Storage } from '../storage/storage';
 import { blockResponseToBlock } from '../transformers/blockTransform';
 import 'jest-expect-message';
 import { encodeHex } from 'orbs-client-sdk';
+import {getTestingLogger} from '../logger/LoggerFactory';
 
 describe(`DBBuilder`, () => {
   const PRISM_VERSION = '1.0.0';
@@ -53,7 +54,7 @@ describe(`DBBuilder`, () => {
     orbsBlocksPolling = new OrbsBlocksPollingMock();
     orbsBlocksPolling.setBlockChain([blockResponse1, blockResponse2, blockResponse3]);
 
-    dbBuilder = new DBBuilder(db, storage, orbsBlocksPolling, {
+    dbBuilder = new DBBuilder(db, storage, orbsBlocksPolling, getTestingLogger(), {
       blocksBatchSize: DB_BUILDING_BATCH_SIZE,
       maxParallelPromises: DB_BUILDING_MAX_PARALLEL_PROMISES,
     });
