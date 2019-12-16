@@ -17,6 +17,7 @@ import { blockResponseToBlock } from '../transformers/blockTransform';
 import 'jest-expect-message';
 import { encodeHex } from 'orbs-client-sdk';
 import {getTestingLogger} from './testingLogger';
+import {DBBuilderError, TDBBuilderErrorCode} from '../db/DBBuilderError';
 
 describe(`DBBuilder`, () => {
   const PRISM_VERSION = '1.0.0';
@@ -212,11 +213,20 @@ describe(`DBBuilder`, () => {
     });
 
     describe('When DB-Version !== Prism-Version', () => {
-      it('Should do nothing when DB-Version > Prism-Version', async () => {
-        initSpies();
-        await dbBuilder.init('0.5.5');
+      it('Should throw an error when DB-Version > Prism-Version', async () => {
+        let errorCode: TDBBuilderErrorCode;
 
-        // TODO : E2E : expect DB to be empty.
+        initSpies();
+
+        // Ensure error throwing
+        await expect(dbBuilder.init('0.5.5').catch(e => {
+          errorCode = e.code;
+          throw e;
+        })).rejects.toThrowError(DBBuilderError);
+
+        // Ensure right error code
+        expect(errorCode).toBe<TDBBuilderErrorCode>('LowerDbVersion');
+
         expectNothingToHappen();
       });
 

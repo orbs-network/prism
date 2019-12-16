@@ -6,6 +6,7 @@ import { IDB } from './IDB';
 import { Storage } from '../storage/storage';
 import winston from 'winston';
 import {increaseDbBuilderBuiltBlocks} from '../metrics/prometheusMetrics';
+import {DBBuilderError} from './DBBuilderError';
 
 export interface IDBBuilderConfigurations {
   blocksBatchSize: number;
@@ -28,9 +29,10 @@ export class DBBuilder {
     } else {
       const dbVersion = await this.db.getVersion();
 
-      // In the rare case that Prism has a lower version than the DB, do nothing.
+      // In the rare case that Prism has a lower version than the DB, throw an error as
+      // this case should never happen
       if (semver.lt(prismVersion, dbVersion)) {
-        return;
+        throw new DBBuilderError('LowerDbVersion', `Db Builder version is '${prismVersion}' while Db version is ${dbVersion}`);
       } else if (semver.gt(prismVersion, dbVersion)) { // A new version means that we want to rebuild the entire DB
         await this.db.clearAll();
 
@@ -46,10 +48,14 @@ export class DBBuilder {
             return;
           case 'InWork':
             // Continue from the last saved block
-            const lastBuiltBlockHeight = (await this.db.getLastBuiltBlockHeight());
+            const lastBuiltBlockHeight = await this.db.getLastBuiltBlockHeight();
             await this.buildFromBlockHeightWithStateSignaling(Number(lastBuiltBlockHeight) + 1);
             break;
           case 'HasNotStarted':
+            // DEV_NOTE : This is a physically possible situation, though in a normal function of the program, we should
+            // not get here and this code is here only to cover all cases.
+            this.logger.warn(`WEIRED : Got DB building status of ${dbBuildingStatus} while having db version already set, we should not have gotten here`);
+
             // Start building from scratch
             await this.rebuildFromScratch();
             break;
@@ -58,7 +64,6 @@ export class DBBuilder {
         }
       }
     }
-
   }
 
   private async rebuildFromScratch() {
