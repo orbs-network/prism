@@ -42,7 +42,7 @@ const dbConstructionStateSchema = new mongoose.Schema({
 });
 
 const blockSchema = new mongoose.Schema({
-  blockHash: String,
+  blockHash: { type: String, index: { unique: true }},
   blockHeight: { type: (mongoose.Schema.Types as any).Long, index: { unique: true }},
   blockTimestamp: Number,
   txIds: [String],
@@ -92,9 +92,6 @@ export class MongoDB implements IDB {
         .then(db => {
           mongoose.connection.removeListener('error', reject);
           this.db = db;
-
-          txSchema.index({ txId: 'text' });
-          blockSchema.index({ blockHash: 'text' });
 
           // model
           this.BlockModel = mongoose.model('Block', blockSchema);
