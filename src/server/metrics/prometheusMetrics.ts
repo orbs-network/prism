@@ -1,5 +1,9 @@
 import client from 'prom-client';
 
+// Initializing default metrics
+const collectDefaultMetrics = client.collectDefaultMetrics;
+collectDefaultMetrics({ timeout: 5000 });
+
 const pulledBlocksCounter = new client.Counter({
     name: 'new_blocks_received',
     help: 'How many new blocks were received since app startup.',

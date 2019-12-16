@@ -14,6 +14,7 @@ import { apiRouter } from './routes/api-router';
 import { pagesRouter } from './routes/pages-router';
 import { staticsRouter } from './routes/statics-router';
 import { Storage } from './storage/storage';
+import {metricsRouter} from './routes/metrics-router';
 
 export function initServer(storage: Storage) {
   const app = express();
@@ -27,6 +28,7 @@ export function initServer(storage: Storage) {
   app.use('/logs', express.static(path.join(process.cwd(), 'logs')));
   app.use(staticsRouter());
   app.use(apiRouter(storage));
+  app.use(metricsRouter(storage));
   app.use(pagesRouter());
 
   const server = app.listen(config.SERVER_PORT, () => {
