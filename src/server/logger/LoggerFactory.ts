@@ -31,14 +31,3 @@ export function genLogger(toConsole: boolean, toFile: boolean, toRemote: boolean
 
   return logger;
 }
-
-export function getTestingLogger(): winston.Logger {
-  const logger = winston.createLogger({
-    level: 'info',
-    format: winston.format.json(),
-  });
-
-  logger.add(new winston.transports.Console({ format: winston.format.simple() }));
-
-  return logger;
-}

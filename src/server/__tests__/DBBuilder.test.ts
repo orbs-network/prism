@@ -16,7 +16,7 @@ import { Storage } from '../storage/storage';
 import { blockResponseToBlock } from '../transformers/blockTransform';
 import 'jest-expect-message';
 import { encodeHex } from 'orbs-client-sdk';
-import {getTestingLogger} from '../logger/LoggerFactory';
+import {getTestingLogger} from './testingLogger';
 
 describe(`DBBuilder`, () => {
   const PRISM_VERSION = '1.0.0';

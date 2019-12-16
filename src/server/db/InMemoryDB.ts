@@ -17,10 +17,10 @@ interface IDBConstructionStateInMemory {
   lastBuiltBlockHeight: number;
 }
 
-const defaultDbConstructionState: IDBConstructionStateInMemory = Object.freeze({
+const defaultDbConstructionState: Readonly<IDBConstructionStateInMemory> = {
   dbBuildingStatus: 'HasNotStarted',
   lastBuiltBlockHeight: 0,
-});
+};
 
 const BLOCKS_IN_MEMORY_CAP = 10_000;
 const TRANSACTION_IN_MEMORY_CAP = 10_000;
@@ -30,7 +30,7 @@ export class InMemoryDB implements IDB {
   private txes: Map<string, ITx>;
   private heighestConsecutiveBlockHeight: bigint = 0n;
   private dbVersion: string = '0.0.0';
-  private dbConstructionState: IDBConstructionStateInMemory = Object.assign({}, defaultDbConstructionState);
+  private dbConstructionState: IDBConstructionStateInMemory = {...defaultDbConstructionState};
 
   constructor(private readOnlyMode: boolean = false) {}
 
@@ -85,7 +85,7 @@ export class InMemoryDB implements IDB {
     this.blocks = new Map();
     this.txes = new Map();
     this.heighestConsecutiveBlockHeight = 0n;
-    this.dbConstructionState = Object.assign({}, defaultDbConstructionState);
+    this.dbConstructionState = {...defaultDbConstructionState};
   }
 
   public async storeBlock(block: IBlock): Promise<void> {
@@ -162,7 +162,8 @@ export class InMemoryDB implements IDB {
             contractName: args[0].value,
             txId: tx.txId,
             deployedBy: tx.signerAddress,
-          }
+          };
+
           result.push(contractGist);
         }
       }
@@ -216,7 +217,7 @@ export class InMemoryDB implements IDB {
   }
 
   private capTxes(): void {
-    if (this.txes.size > (1.1 * TRANSACTION_IN_MEMORY_CAP)) {
+    if (this.txes.size > TRANSACTION_IN_MEMORY_CAP) {
       const txArr = Array.from(this.txes);
       this.txes.clear();
       txArr
@@ -228,7 +229,7 @@ export class InMemoryDB implements IDB {
   }
 
   private capBlocks(): void {
-    if (this.blocks.size > (1.1 * BLOCKS_IN_MEMORY_CAP)) {
+    if (this.blocks.size > BLOCKS_IN_MEMORY_CAP) {
       const blocksArr = Array.from(this.blocks);
       this.blocks.clear();
       blocksArr
