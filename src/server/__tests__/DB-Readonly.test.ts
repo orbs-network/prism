@@ -62,9 +62,9 @@ function testReadOnlyDb(db: IDB, dbName: string) {
     });
 
     it('should NOT store the highest consecutive block height', async () => {
-      await db.setVersion('1.2.3');
+      await db.setVersion(5);
       const actual = await db.getVersion();
-      expect(actual).toEqual('0.0.0');
+      expect(actual).toEqual(0);
     });
 
     it('should NOT store the DB building status', async () => {

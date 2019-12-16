@@ -21,7 +21,7 @@ mongoose.set('useFindAndModify', false);
 interface ICacheDocument extends mongoose.Document {
   _id: number;
   heighestConsecutiveBlockHeight: bigint;
-  dbVersion: string;
+  dbVersion: number;
 }
 
 interface IDBConstructionStateDocument extends mongoose.Document {
@@ -32,7 +32,7 @@ interface IDBConstructionStateDocument extends mongoose.Document {
 const cacheSchema = new mongoose.Schema({
   _id: Number,
   heighestConsecutiveBlockHeight: (mongoose.Schema.Types as any).Long,
-  dbVersion: String,
+  dbVersion: Number,
 });
 
 const dbConstructionStateSchema = new mongoose.Schema({
@@ -110,16 +110,16 @@ export class MongoDB implements IDB {
     }
   }
 
-  public async getVersion(): Promise<string> {
+  public async getVersion(): Promise<number> {
     const result = await this.CacheModel.findOne({ _id: 1 });
     if (result && result.dbVersion !== undefined) {
       return result.dbVersion;
     }
 
-    return '0.0.0';
+    return 0;
   }
 
-  public async setVersion(dbVersion: string): Promise<void> {
+  public async setVersion(dbVersion: number): Promise<void> {
     if (this.readOnlyMode) {
       return;
     }

@@ -20,7 +20,7 @@ import {getTestingLogger} from './testingLogger';
 import {DBBuilderError, TDBBuilderErrorCode} from '../db/DBBuilderError';
 
 describe(`DBBuilder`, () => {
-  const PRISM_VERSION = '1.0.0';
+  const dbVersionForTest = 5;
   const BLOCKCHAIN_LENGTH = 100;
   const DB_BUILDING_BATCH_SIZE = 50;
   const DB_BUILDING_MAX_PARALLEL_PROMISES = 20;
@@ -48,7 +48,7 @@ describe(`DBBuilder`, () => {
   beforeEach(async () => {
     db = new InMemoryDB();
     await db.init();
-    await db.setVersion(PRISM_VERSION);
+    await db.setVersion(dbVersionForTest);
     storage = new Storage(db);
 
     orbsBlocksPolling = new OrbsBlocksPollingMock();
@@ -181,7 +181,7 @@ describe(`DBBuilder`, () => {
     expectDbToNotRebuild();
   }
 
-  async function expectDbVersionToBeSet(expectedDbVersion: string) {
+  async function expectDbVersionToBeSet(expectedDbVersion: number) {
     const dbVersion = await db.getVersion();
 
     expect(spySetDbVersion, 'Should call "Set Db Version" exactly once').toBeCalledTimes(1);
@@ -197,9 +197,9 @@ describe(`DBBuilder`, () => {
 
       orbsBlocksPolling.setBlockChain(blocks);
 
-      await dbBuilder.init(PRISM_VERSION);
+      await dbBuilder.init(dbVersionForTest);
 
-      await expectDbVersionToBeSet(PRISM_VERSION);
+      await expectDbVersionToBeSet(dbVersionForTest);
       await expectFullDBBuildFromZero(BLOCKCHAIN_LENGTH, blocks);
     });
   });
@@ -212,14 +212,15 @@ describe(`DBBuilder`, () => {
       await fillDbWithBlocks();
     });
 
-    describe('When DB-Version !== Prism-Version', () => {
-      it('Should throw an error when DB-Version > Prism-Version', async () => {
+    describe('When current DB-Version !== Prism DB-Version', () => {
+      it('Should throw an error when current DB-Version > Prism Db-Version', async () => {
+        const lowerThanExistingDbVersion = dbVersionForTest - 2;
         let errorCode: TDBBuilderErrorCode;
 
         initSpies();
 
         // Ensure error throwing
-        await expect(dbBuilder.init('0.5.5').catch(e => {
+        await expect(dbBuilder.init(lowerThanExistingDbVersion).catch(e => {
           errorCode = e.code;
           throw e;
         })).rejects.toThrowError(DBBuilderError);
@@ -230,28 +231,28 @@ describe(`DBBuilder`, () => {
         expectNothingToHappen();
       });
 
-      it('Should clear the DB and rebuild from zero when the DB-Version < Prism-Version + update Db-version', async () => {
-        const DB_VERSION_FOR_TEST = '2.0.0';
+      it('Should clear the DB and rebuild from zero when the current DB-Version < Prism DB-Version + update Db-version', async () => {
+        const higherThanExistingDbVersion = dbVersionForTest + 2;
 
         const blocks = generateAllBlockHeightsForChainLength(BLOCKCHAIN_LENGTH).map(h => generateRandomGetBlockResponse(BigInt(h)));
 
         orbsBlocksPolling.setBlockChain(blocks);
 
         initSpies();
-        await dbBuilder.init(DB_VERSION_FOR_TEST);
+        await dbBuilder.init(higherThanExistingDbVersion);
 
         expectDbToBeCleared();
-        await expectDbVersionToBeSet(DB_VERSION_FOR_TEST);
+        await expectDbVersionToBeSet(higherThanExistingDbVersion);
         await expectFullDBBuildFromZero(BLOCKCHAIN_LENGTH, blocks);
       });
     });
 
-    describe('When DB-Version === Prism-Version', () => {
+    describe('When current DB-Version === Prism DB-Version', () => {
       it ('Should do nothing when "Db Building status" == "Done"', async () => {
         await db.setDBBuildingStatus('Done');
 
         initSpies();
-        await dbBuilder.init(PRISM_VERSION);
+        await dbBuilder.init(dbVersionForTest);
 
         expectNothingToHappen();
       });
@@ -264,7 +265,7 @@ describe(`DBBuilder`, () => {
         orbsBlocksPolling.setBlockChain(blocks);
 
         initSpies();
-        await dbBuilder.init(PRISM_VERSION);
+        await dbBuilder.init(dbVersionForTest);
 
         await expectFullDBBuildFromZero(BLOCKCHAIN_LENGTH, blocks);
       });
@@ -280,7 +281,7 @@ describe(`DBBuilder`, () => {
         await db.setLastBuiltBlockHeight(lastBuiltBlock);
 
         initSpies();
-        await dbBuilder.init(PRISM_VERSION);
+        await dbBuilder.init(dbVersionForTest);
 
         await expectFullDBBuildFromPreviousPoint(existingBlocksInChain, lastBuiltBlock, blocks);
       });
@@ -296,7 +297,7 @@ describe(`DBBuilder`, () => {
       // @ts-ignore (Intentionally for the test's sake)
       await db.setDBBuildingStatus('NonExistingValue');
 
-      await expect(dbBuilder.init(PRISM_VERSION)).rejects.toThrow();
+      await expect(dbBuilder.init(dbVersionForTest)).rejects.toThrow();
     });
   });
 });

@@ -1,5 +1,4 @@
 import { IOrbsBlocksPolling } from 'orbs-blocks-polling-js';
-import semver from 'semver';
 import { chunk } from 'lodash';
 import fill from 'fill-range';
 import { IDB } from './IDB';
@@ -20,24 +19,24 @@ export class DBBuilder {
   constructor(private db: IDB, private storage: Storage, private orbsBlocksPolling: IOrbsBlocksPolling,
               private logger: winston.Logger, private dbBuilderConfigs: IDBBuilderConfigurations) {}
 
-  public async init(prismVersion: string): Promise<void> {
+  public async init(dbVersion: number): Promise<void> {
     try {
       const hasBlocks = (await this.db.getLatestBlockHeight()) > 0n;
 
       if (!hasBlocks) {
-        await this.setDbVersion(prismVersion);
+        await this.setDbVersion(dbVersion);
         await this.rebuildFromScratch();
       } else {
-        const dbVersion = await this.db.getVersion();
+        const currentDbVersion = await this.db.getVersion();
 
         // In the rare case that Prism has a lower version than the DB, throw an error as
         // this case should never happen
-        if (semver.lt(prismVersion, dbVersion)) {
-          throw new DBBuilderError('LowerDbVersion', `Db Builder version is '${prismVersion}' while Db version is ${dbVersion}`);
-        } else if (semver.gt(prismVersion, dbVersion)) { // A new version means that we want to rebuild the entire DB
+        if (dbVersion < currentDbVersion) {
+          throw new DBBuilderError('LowerDbVersion', `Db Builder version is '${dbVersion}' while Db version is ${currentDbVersion}`);
+        } else if (dbVersion > currentDbVersion) { // A new version means that we want to rebuild the entire DB
           await this.db.clearAll();
 
-          await this.setDbVersion(prismVersion);
+          await this.setDbVersion(dbVersion);
 
           await this.rebuildFromScratch();
         } else {
@@ -157,7 +156,7 @@ export class DBBuilder {
     }
   }
 
-  private async setDbVersion(prismVersion: string) {
-    await this.db.setVersion(prismVersion);
+  private async setDbVersion(dbVersion: number) {
+    await this.db.setVersion(dbVersion);
   }
 }

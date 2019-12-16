@@ -17,6 +17,7 @@ import winston from 'winston';
 import { genLogger } from './logger/LoggerFactory';
 import { DBBuilder } from './db/DBBuilder';
 import {increasePulledBlocksCounter} from './metrics/prometheusMetrics';
+import {CURRENT_DB_VERSION} from './db/IDB';
 
 async function main() {
   console.log(`*******************************************`);
@@ -61,7 +62,7 @@ async function main() {
     maxParallelPromises: MAXIMUM_PARALLEL_PROMISES,
   });
 
-  dbBuilder.init(PRISM_VERSION)
+  dbBuilder.init(CURRENT_DB_VERSION)
       .then(() => {
         fillGapsForever(logger, storage, db, orbsBlocksPolling, GAP_FILLER_INTERVAL);
       })

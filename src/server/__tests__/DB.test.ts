@@ -157,25 +157,27 @@ function testDb(db: IDB, dbName: string) {
 
     it('should have a db version 0.0.0 as the default', async () => {
       const actual = await db.getVersion();
-      expect(actual).toEqual('0.0.0');
+      expect(actual).toEqual(0);
     });
 
-    it('should store and retrive the db version ', async () => {
+    it('should store and retrieve the db version ', async () => {
       const initial = await db.getVersion();
 
-      await db.setVersion('0.0.4');
+      const testedDbVersion = 4;
+
+      await db.setVersion(testedDbVersion);
       const actual = await db.getVersion();
-      expect(actual).toEqual('0.0.4');
+      expect(actual).toEqual(testedDbVersion);
       expect(actual).not.toEqual(initial);
     });
 
     it('should be able to update existing db version ', async () => {
       const initial = await db.getVersion();
 
-      await db.setVersion('0.1.2');
-      await db.setVersion('1.0.0');
+      await db.setVersion(4);
+      await db.setVersion(5);
       const actual = await db.getVersion();
-      expect(actual).toEqual('1.0.0');
+      expect(actual).toEqual(5);
       expect(actual).not.toEqual(initial);
     });
 

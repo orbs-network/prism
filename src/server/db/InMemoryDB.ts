@@ -28,8 +28,8 @@ const TRANSACTION_IN_MEMORY_CAP = 10_000;
 export class InMemoryDB implements IDB {
   private blocks: Map<string, IBlock>;
   private txes: Map<string, ITx>;
-  private heighestConsecutiveBlockHeight: bigint = 0n;
-  private dbVersion: string = '0.0.0';
+  private highestConsecutiveBlockHeight: bigint = 0n;
+  private dbVersion: number = 0;
   private dbConstructionState: IDBConstructionStateInMemory = {...defaultDbConstructionState};
 
   constructor(private readOnlyMode: boolean = false) {}
@@ -43,10 +43,10 @@ export class InMemoryDB implements IDB {
     // nothing to destroy...
   }
 
-  public async getVersion(): Promise<string> {
+  public async getVersion(): Promise<number> {
     return this.dbVersion;
   }
-  public async setVersion(version: string): Promise<void> {
+  public async setVersion(version: number): Promise<void> {
     if (this.readOnlyMode) {
       return;
     }
@@ -84,7 +84,7 @@ export class InMemoryDB implements IDB {
     }
     this.blocks = new Map();
     this.txes = new Map();
-    this.heighestConsecutiveBlockHeight = 0n;
+    this.highestConsecutiveBlockHeight = 0n;
     this.dbConstructionState = {...defaultDbConstructionState};
   }
 
@@ -122,14 +122,14 @@ export class InMemoryDB implements IDB {
   }
 
   public async getHighestConsecutiveBlockHeight(): Promise<bigint> {
-    return this.heighestConsecutiveBlockHeight;
+    return this.highestConsecutiveBlockHeight;
   }
 
   public async setHighestConsecutiveBlockHeight(value: bigint): Promise<void> {
     if (this.readOnlyMode) {
       return;
     }
-    this.heighestConsecutiveBlockHeight = value;
+    this.highestConsecutiveBlockHeight = value;
   }
 
   public async getBlockByHash(blockHash: string): Promise<IBlock> {
