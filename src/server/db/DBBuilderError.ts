@@ -1,4 +1,4 @@
-export type TDBBuilderErrorCode = 'LowerDbVersion';
+export type TDBBuilderErrorCode = 'LowerDbVersion' | 'InvalidDbBuildingStatus';
 
 export class DBBuilderError extends Error {
     public readonly code: TDBBuilderErrorCode;

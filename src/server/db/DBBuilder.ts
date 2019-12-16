@@ -21,47 +21,55 @@ export class DBBuilder {
               private logger: winston.Logger, private dbBuilderConfigs: IDBBuilderConfigurations) {}
 
   public async init(prismVersion: string): Promise<void> {
-    const hasBlocks = (await this.db.getLatestBlockHeight()) > 0n;
+    try {
+      const hasBlocks = (await this.db.getLatestBlockHeight()) > 0n;
 
-    if (!hasBlocks) {
-      await this.setFreshDbStats(prismVersion);
-      await this.rebuildFromScratch();
-    } else {
-      const dbVersion = await this.db.getVersion();
-
-      // In the rare case that Prism has a lower version than the DB, throw an error as
-      // this case should never happen
-      if (semver.lt(prismVersion, dbVersion)) {
-        throw new DBBuilderError('LowerDbVersion', `Db Builder version is '${prismVersion}' while Db version is ${dbVersion}`);
-      } else if (semver.gt(prismVersion, dbVersion)) { // A new version means that we want to rebuild the entire DB
-        await this.db.clearAll();
-
-        await this.setFreshDbStats(prismVersion);
-
+      if (!hasBlocks) {
+        await this.setDbVersion(prismVersion);
         await this.rebuildFromScratch();
       } else {
-        const dbBuildingStatus = await this.db.getDBBuildingStatus();
+        const dbVersion = await this.db.getVersion();
 
-        switch (dbBuildingStatus) {
-          case 'Done':
-            // No need to do anything, its the gaps filler's job now
-            return;
-          case 'InWork':
-            // Continue from the last saved block
-            const lastBuiltBlockHeight = await this.db.getLastBuiltBlockHeight();
-            await this.buildFromBlockHeightWithStateSignaling(Number(lastBuiltBlockHeight) + 1);
-            break;
-          case 'HasNotStarted':
-            // DEV_NOTE : This is a physically possible situation, though in a normal function of the program, we should
-            // not get here and this code is here only to cover all cases.
-            this.logger.warn(`WEIRED : Got DB building status of ${dbBuildingStatus} while having db version already set, we should not have gotten here`);
+        // In the rare case that Prism has a lower version than the DB, throw an error as
+        // this case should never happen
+        if (semver.lt(prismVersion, dbVersion)) {
+          throw new DBBuilderError('LowerDbVersion', `Db Builder version is '${prismVersion}' while Db version is ${dbVersion}`);
+        } else if (semver.gt(prismVersion, dbVersion)) { // A new version means that we want to rebuild the entire DB
+          await this.db.clearAll();
 
-            // Start building from scratch
-            await this.rebuildFromScratch();
-            break;
-          default:
-            throw new Error(`Unknown 'DB Building status of ${dbBuildingStatus}`);
+          await this.setDbVersion(prismVersion);
+
+          await this.rebuildFromScratch();
+        } else {
+          const dbBuildingStatus = await this.db.getDBBuildingStatus();
+
+          switch (dbBuildingStatus) {
+            case 'Done':
+              // No need to do anything, its the gaps filler's job now
+              return;
+            case 'InWork':
+              // Continue from the last saved block
+              const lastBuiltBlockHeight = await this.db.getLastBuiltBlockHeight();
+              await this.buildFromBlockHeightWithStateSignaling(Number(lastBuiltBlockHeight) + 1);
+              break;
+            case 'HasNotStarted':
+              // DEV_NOTE : This is a physically possible situation, though in a normal function of the program, we should
+              // not get here and this code is here only to cover all cases.
+              this.logger.warn(`WEIRED : Got DB building status of ${dbBuildingStatus} while having db version already set, we should not have gotten here`);
+
+              // Start building from scratch
+              await this.rebuildFromScratch();
+              break;
+            default:
+              throw new DBBuilderError('InvalidDbBuildingStatus', `Unknown 'DB Building status of ${dbBuildingStatus}`);
+          }
         }
+      }
+    } catch (e) {
+      if (e instanceof DBBuilderError) {
+        throw e;
+      } else {
+        this.logger.error(`Error while building DB: ${e}`);
       }
     }
   }
@@ -147,7 +155,7 @@ export class DBBuilder {
     }
   }
 
-  private async setFreshDbStats(prismVersion: string) {
+  private async setDbVersion(prismVersion: string) {
     await this.db.setVersion(prismVersion);
   }
 }
