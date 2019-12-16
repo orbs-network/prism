@@ -33,7 +33,6 @@ describe(`DBBuilder`, () => {
   let spyDbStoreBlock: jest.SpyInstance;
   let spyDbStoreTxes: jest.SpyInstance;
   let spyDbClear: jest.SpyInstance;
-  let spyDbSetDbFillingMethod: jest.SpyInstance;
   let spyDbSetDbBuildingStatus: jest.SpyInstance;
   let spyBlocksPollingGetBlock: jest.SpyInstance;
   let spySetDbVersion: jest.SpyInstance;
@@ -72,7 +71,6 @@ describe(`DBBuilder`, () => {
     spyDbStoreBlock = jest.spyOn(db, 'storeBlock');
     spyDbStoreTxes = jest.spyOn(db, 'storeTxes');
     spyDbClear = jest.spyOn(db, 'clearAll');
-    spyDbSetDbFillingMethod = jest.spyOn(db, 'setDBFillingMethod');
     spyDbSetDbBuildingStatus = jest.spyOn(db, 'setDBBuildingStatus');
     spySetDbVersion = jest.spyOn(db, 'setVersion');
     spyBlocksPollingGetBlock = jest.spyOn(orbsBlocksPolling, 'getBlockAt');
@@ -140,11 +138,6 @@ describe(`DBBuilder`, () => {
       expect(spyStorageHandleNewBlock, `Should call "handleNewBlock" with all of the mocked blocks - ${mockedBlock}`).toBeCalledWith(mockedBlock);
     }
 
-    // Signal transition of 'Db filling method' (Unit tests)
-    expect(spyDbSetDbFillingMethod, 'Should set "DB filling method" to "DbBuilder" and then "None" ').toHaveBeenNthCalledWith(1, 'DBBuilder');
-    expect(spyDbSetDbFillingMethod, 'Should set "DB filling method" to "DbBuilder" and then "None" ').toHaveBeenNthCalledWith(2, 'None');
-    expect(spyDbSetDbFillingMethod, 'Call "setDbFillingMethod twice"').toBeCalledTimes(2);
-
     // Signal transition of 'Db Building status' (Unit tests)
     expect(spyDbSetDbBuildingStatus, 'Should set "DB Building Status" to "In Work" and then to "Done"').toHaveBeenNthCalledWith(1, 'InWork');
     expect(spyDbSetDbBuildingStatus, 'Should set "DB Building Status" to "In Work" and then to "Done"').toHaveBeenNthCalledWith(2, 'Done');
@@ -172,10 +165,6 @@ describe(`DBBuilder`, () => {
         expect(dbTransaction.blockHeight, `Should link the transaction to the right block(block ${mockedBlock.blockHeight}), tx ${transaction.txId}`).toBe(mockedBlock.blockHeight.toString());
       }
     }
-
-    // Signal transition of 'Db filling method'
-    const dbFillingMethod = await db.getDBFillingMethod();
-    expect(dbFillingMethod, 'Should have "None" as the "DB Filling Method" when done').toBe('None');
 
     // Signal transition of 'Db Building status'
     const dbBuildingStatus = await db.getDBBuildingStatus();
@@ -258,7 +247,7 @@ describe(`DBBuilder`, () => {
       });
 
       it ('Should build from zero when "Db Building status" == "None"', async () => {
-        await db.setDBBuildingStatus('None');
+        await db.setDBBuildingStatus('HasNotStarted');
 
         const blocks = generateAllBlockHeightsForChainLength(BLOCKCHAIN_LENGTH).map(h => generateRandomGetBlockResponse(BigInt(h)));
 

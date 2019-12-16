@@ -70,7 +70,7 @@ function testReadOnlyDb(db: IDB, dbName: string) {
     it('should NOT store the DB building status', async () => {
       await db.setDBBuildingStatus('InWork');
       const actual = await db.getDBBuildingStatus();
-      expect(actual).toEqual('None');
+      expect(actual).toEqual('HasNotStarted');
     });
   });
 }

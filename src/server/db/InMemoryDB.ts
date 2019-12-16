@@ -18,7 +18,7 @@ interface IDBConstructionStateInMemory {
 }
 
 const defaultDbConstructionState: IDBConstructionStateInMemory = Object.freeze({
-  dbBuildingStatus: 'None',
+  dbBuildingStatus: 'HasNotStarted',
   lastBuiltBlockHeight: 0,
 });
 

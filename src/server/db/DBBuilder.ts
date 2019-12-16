@@ -49,7 +49,7 @@ export class DBBuilder {
             const lastBuiltBlockHeight = (await this.db.getLastBuiltBlockHeight());
             await this.buildFromBlockHeightWithStateSignaling(Number(lastBuiltBlockHeight) + 1);
             break;
-          case 'None':
+          case 'HasNotStarted':
             // Start building from scratch
             await this.rebuildFromScratch();
             break;

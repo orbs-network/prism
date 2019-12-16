@@ -182,7 +182,7 @@ function testDb(db: IDB, dbName: string) {
     it('Should have "None" as default "DB Building status"', async () => {
       const defaultValue = await db.getDBBuildingStatus();
 
-      expect(defaultValue).toEqual('None');
+      expect(defaultValue).toEqual('HasNotStarted');
     });
 
     it('Should be able to store, retrieve and update the "DB Building status"', async () => {

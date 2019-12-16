@@ -136,7 +136,7 @@ export class MongoDB implements IDB {
       return result.dbBuildingStatus;
     }
 
-    return 'None';
+    return 'HasNotStarted';
   }
 
   public async setDBBuildingStatus(dbBuildingStatus: TDBBuildingStatus): Promise<void> {

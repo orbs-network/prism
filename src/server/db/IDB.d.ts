@@ -10,7 +10,7 @@ import { IBlock } from '../../shared/IBlock';
 import { IShortTx, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 
-export type TDBBuildingStatus = 'Done' | 'InWork' | 'None';
+export type TDBBuildingStatus = 'Done' | 'InWork' | 'HasNotStarted';
 
 export interface IDB {
   init(): Promise<void>;
