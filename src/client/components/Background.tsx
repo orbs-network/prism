@@ -9,6 +9,7 @@
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { Typography } from '@material-ui/core';
+import {DbBuildingStatusIndicator} from './DbBuildingStatusIndicator';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -23,6 +24,11 @@ const styles = (theme: Theme) =>
       position: `fixed`,
       bottom: 4,
       left: 4,
+    },
+    dbBuildingStatus: {
+        position: `fixed`,
+        bottom: 4,
+        right: 4,
     },
     triangle: {
       opacity: 0.25,
@@ -74,6 +80,10 @@ export const Background = withStyles(styles)(
           <Typography className={classes.prismVersion} variant='caption'>
             {prismVersion}
           </Typography>
+
+            <div className={classes.dbBuildingStatus}>
+                <DbBuildingStatusIndicator />
+            </div>
         </div>
       );
     }

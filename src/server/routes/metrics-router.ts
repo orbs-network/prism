@@ -15,7 +15,7 @@ export function metricsRouter(storage: Storage) {
   const router = Router();
 
   // Manual diagnostics
-  router.get('/api/health/diagnostics', async (req, res) => {
+  router.get('/api/health/status', async (req, res) => {
     try {
       const diagnostics = await storage.getDiagnostics();
       res.send(diagnostics);

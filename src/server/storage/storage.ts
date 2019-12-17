@@ -16,6 +16,7 @@ import { ITx } from '../../shared/ITx';
 import { ISearchResult } from '../../shared/ISearchResult';
 import { IDB } from '../db/IDB';
 import { blockResponseToBlock, blockResponseTransactionsToTxs, blockToBlockSummary } from '../transformers/blockTransform';
+import {IHealthStatusApiResponse} from '../../shared/apis/metricsApis';
 
 export class Storage implements INewBlocksHandler {
   constructor(private db: IDB) {}
@@ -123,7 +124,7 @@ export class Storage implements INewBlocksHandler {
     return null;
   }
 
-  public async getDiagnostics() {
+  public async getDiagnostics(): Promise<IHealthStatusApiResponse> {
     const dbVersion = await this.db.getVersion();
     const dbBuildingStatus = await this.db.getDBBuildingStatus();
     const lastBuiltBlock = await this.db.getLastBuiltBlockHeight();
