@@ -69,7 +69,7 @@ const styles = (theme: Theme) =>
 interface IProps extends WithStyles<typeof styles> {}
 
 export const AppRoot = withStyles(styles)(({ classes }: IProps) => (
-  <BrowserRouter basename={`/vchains/${vchainId}/`}>
+  <BrowserRouter>
     <Provider store={store}>
       <MuiThemeProvider theme={baseTheme}>
         <CssBaseline />
