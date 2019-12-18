@@ -203,7 +203,7 @@ export class MongoDB implements IDB {
   public async getBlockByHash(blockHash: string): Promise<IBlock> {
     const startTime = Date.now();
     this.logger.info(`Searching for block by hash: ${blockHash}`);
-    const result = await this.BlockModel.findOne({ $text: { $search: blockHash } }, { _id: false, __v: false })
+    const result = await this.BlockModel.findOne({ 'blockHash': blockHash }, { _id: false, __v: false })
       .lean()
       .exec();
 
@@ -384,7 +384,8 @@ export class MongoDB implements IDB {
   public async getTxById(txId: string): Promise<ITx> {
     const startTime = Date.now();
     this.logger.info(`Searching for tx by txId: ${txId}`);
-    const result = await this.TxModel.findOne({ $text: { $search: txId } }, { _id: false, __v: false })
+    const caseInsensitiveTxId = new RegExp(txId, 'i');
+    const result = await this.TxModel.findOne({ 'txId': caseInsensitiveTxId }, { _id: false, __v: false })
       .lean()
       .exec();
 
