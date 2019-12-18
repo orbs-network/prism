@@ -16,6 +16,7 @@ import { ITx } from '../../shared/ITx';
 import { ISearchResult } from '../../shared/ISearchResult';
 import { IDB } from '../db/IDB';
 import { blockResponseToBlock, blockResponseTransactionsToTxs, blockToBlockSummary } from '../transformers/blockTransform';
+import {IHealthStatusApiResponse} from '../../shared/apis/metricsApis';
 
 export class Storage implements INewBlocksHandler {
   constructor(private db: IDB) {}
@@ -37,12 +38,12 @@ export class Storage implements INewBlocksHandler {
     return this.db.getLatestBlockHeight();
   }
 
-  public getHeighestConsecutiveBlockHeight(): Promise<bigint> {
-    return this.db.getHeighestConsecutiveBlockHeight();
+  public getHighestConsecutiveBlockHeight(): Promise<bigint> {
+    return this.db.getHighestConsecutiveBlockHeight();
   }
 
-  public setHeighestConsecutiveBlockHeight(value: bigint): Promise<void> {
-    return this.db.setHeighestConsecutiveBlockHeight(value);
+  public setHighestConsecutiveBlockHeight(value: bigint): Promise<void> {
+    return this.db.setHighestConsecutiveBlockHeight(value);
   }
 
   public getTx(txId: string): Promise<ITx> {
@@ -121,5 +122,23 @@ export class Storage implements INewBlocksHandler {
     }
 
     return null;
+  }
+
+  public async getDiagnostics(): Promise<IHealthStatusApiResponse> {
+    const dbVersion = await this.db.getVersion();
+    const dbBuildingStatus = await this.db.getDBBuildingStatus();
+    const lastBuiltBlock = await this.db.getLastBuiltBlockHeight();
+    const latestBlockHeight = Number(await this.db.getLatestBlockHeight());
+
+    return {
+      DB: {
+        dbVersion,
+        dbBuildingStatus,
+        lastBuiltBlock,
+      },
+      ORBS_SYNC: {
+        latestBlockHeight,
+      },
+    };
   }
 }

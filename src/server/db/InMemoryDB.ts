@@ -10,13 +10,27 @@ import { IBlock } from '../../shared/IBlock';
 import { IShortTx, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 import { txToShortTx } from '../transformers/txTransform';
-import { IDB } from './IDB';
+import {IDB, TDBBuildingStatus } from './IDB';
+
+interface IDBConstructionStateInMemory {
+  dbBuildingStatus: TDBBuildingStatus;
+  lastBuiltBlockHeight: number;
+}
+
+const defaultDbConstructionState: Readonly<IDBConstructionStateInMemory> = {
+  dbBuildingStatus: 'HasNotStarted',
+  lastBuiltBlockHeight: 0,
+};
+
+const BLOCKS_IN_MEMORY_CAP = 10_000;
+const TRANSACTION_IN_MEMORY_CAP = 10_000;
 
 export class InMemoryDB implements IDB {
   private blocks: Map<string, IBlock>;
   private txes: Map<string, ITx>;
-  private heighestConsecutiveBlockHeight: bigint = 0n;
-  private dbVersion: string = '0.0.0';
+  private highestConsecutiveBlockHeight: bigint = 0n;
+  private dbVersion: number = 0;
+  private dbConstructionState: IDBConstructionStateInMemory = {...defaultDbConstructionState};
 
   constructor(private readOnlyMode: boolean = false) {}
 
@@ -29,15 +43,39 @@ export class InMemoryDB implements IDB {
     // nothing to destroy...
   }
 
-  public async getVersion(): Promise<string> {
+  public async getVersion(): Promise<number> {
     return this.dbVersion;
   }
-  public async setVersion(version: string): Promise<void> {
+  public async setVersion(version: number): Promise<void> {
     if (this.readOnlyMode) {
       return;
     }
 
     this.dbVersion = version;
+  }
+
+  public async getDBBuildingStatus(): Promise<TDBBuildingStatus> {
+    return this.dbConstructionState.dbBuildingStatus;
+  }
+
+  public async setDBBuildingStatus(dbBuildingStatus: TDBBuildingStatus): Promise<void> {
+    if (this.readOnlyMode) {
+      return ;
+    }
+
+    this.dbConstructionState.dbBuildingStatus = dbBuildingStatus;
+  }
+
+  public async getLastBuiltBlockHeight(): Promise<number> {
+    return this.dbConstructionState.lastBuiltBlockHeight;
+  }
+
+  public async setLastBuiltBlockHeight(lastBuiltBlockHeight: number): Promise<void> {
+    if (this.readOnlyMode) {
+      return ;
+    }
+
+    this.dbConstructionState.lastBuiltBlockHeight = lastBuiltBlockHeight;
   }
 
   public async clearAll(): Promise<void> {
@@ -46,7 +84,8 @@ export class InMemoryDB implements IDB {
     }
     this.blocks = new Map();
     this.txes = new Map();
-    this.heighestConsecutiveBlockHeight = 0n;
+    this.highestConsecutiveBlockHeight = 0n;
+    this.dbConstructionState = {...defaultDbConstructionState};
   }
 
   public async storeBlock(block: IBlock): Promise<void> {
@@ -82,15 +121,15 @@ export class InMemoryDB implements IDB {
     return null;
   }
 
-  public async getHeighestConsecutiveBlockHeight(): Promise<bigint> {
-    return this.heighestConsecutiveBlockHeight;
+  public async getHighestConsecutiveBlockHeight(): Promise<bigint> {
+    return this.highestConsecutiveBlockHeight;
   }
 
-  public async setHeighestConsecutiveBlockHeight(value: bigint): Promise<void> {
+  public async setHighestConsecutiveBlockHeight(value: bigint): Promise<void> {
     if (this.readOnlyMode) {
       return;
     }
-    this.heighestConsecutiveBlockHeight = value;
+    this.highestConsecutiveBlockHeight = value;
   }
 
   public async getBlockByHash(blockHash: string): Promise<IBlock> {
@@ -123,7 +162,8 @@ export class InMemoryDB implements IDB {
             contractName: args[0].value,
             txId: tx.txId,
             deployedBy: tx.signerAddress,
-          }
+          };
+
           result.push(contractGist);
         }
       }
@@ -177,25 +217,25 @@ export class InMemoryDB implements IDB {
   }
 
   private capTxes(): void {
-    if (this.txes.size > 1100) {
+    if (this.txes.size > TRANSACTION_IN_MEMORY_CAP) {
       const txArr = Array.from(this.txes);
       this.txes.clear();
       txArr
         .map(item => item[1])
         .sort((a, b) => a.timestamp - b.timestamp)
-        .filter((_, idx) => idx < 1000)
+        .filter((_, idx) => idx < TRANSACTION_IN_MEMORY_CAP)
         .forEach(tx => this.txes.set(tx.txId.toLowerCase(), tx));
     }
   }
 
   private capBlocks(): void {
-    if (this.blocks.size > 1100) {
+    if (this.blocks.size > BLOCKS_IN_MEMORY_CAP) {
       const blocksArr = Array.from(this.blocks);
       this.blocks.clear();
       blocksArr
         .map(item => item[1])
         .sort((a, b) => a.blockTimestamp - b.blockTimestamp)
-        .filter((_, idx) => idx < 1000)
+        .filter((_, idx) => idx < BLOCKS_IN_MEMORY_CAP)
         .forEach(block => this.blocks.set(block.blockHash, block));
     }
   }

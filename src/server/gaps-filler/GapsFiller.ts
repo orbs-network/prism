@@ -6,9 +6,10 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import * as winston from 'winston';
-import { IDB } from '../db/IDB';
+import winston from 'winston';
 import { IOrbsBlocksPolling } from 'orbs-blocks-polling-js';
+import { GAP_FILLER_ACTIVE } from '../config';
+import { IDB } from '../db/IDB';
 import { Storage } from '../storage/storage';
 import { cron } from './Cron';
 import { detectBlockChainGaps } from './GapsDetector';
@@ -22,10 +23,12 @@ export function fillGapsForever(
   orbsBlocksPolling: IOrbsBlocksPolling,
   interval: number,
 ): void {
-  cron(async () => {
-    logger.info(`Cron Job started.`);
-    await fillGaps(logger, storage, orbsBlocksPolling);
-  }, interval);
+  if (GAP_FILLER_ACTIVE) {
+    cron(async () => {
+      logger.info(`Cron Job started.`);
+      await fillGaps(logger, storage, orbsBlocksPolling);
+    }, interval);
+  }
 }
 
 async function storeBlockAt(
@@ -56,12 +59,12 @@ async function storeBlocksChunk(
   }
   await Promise.all(promises);
   const heighestBlockHeight = chunk[chunk.length - 1];
-  await storage.setHeighestConsecutiveBlockHeight(heighestBlockHeight);
+  await storage.setHighestConsecutiveBlockHeight(heighestBlockHeight);
 }
 
 export async function fillGaps(logger: winston.Logger, storage: Storage, orbsBlocksPolling: IOrbsBlocksPolling): Promise<void> {
   const toHeight = await storage.getLatestBlockHeight();
-  const fromHeight = (await storage.getHeighestConsecutiveBlockHeight()) + 1n;
+  const fromHeight = (await storage.getHighestConsecutiveBlockHeight()) + 1n;
   logger.info(`Searching for gaps from ${fromHeight} to ${toHeight}`, { func: 'fillGaps' });
   const gaps = await detectBlockChainGaps(storage, fromHeight, toHeight);
   logger.info(`${gaps.length} missing blocks to fill`, { func: 'fillGaps' });
@@ -75,5 +78,5 @@ export async function fillGaps(logger: winston.Logger, storage: Storage, orbsBlo
       { func: 'fillGaps' },
     );
   }
-  await storage.setHeighestConsecutiveBlockHeight(toHeight);
+  await storage.setHighestConsecutiveBlockHeight(toHeight);
 }

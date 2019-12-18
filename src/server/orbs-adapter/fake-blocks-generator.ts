@@ -14,7 +14,7 @@ export function generateBlockResponseWithTransaction(
   blockHeight: bigint,
   txes: BlockTransaction | BlockTransaction[],
 ): GetBlockResponse {
-  const getBlockResponse: GetBlockResponse = generateRandomGetBlockRespose(blockHeight);
+  const getBlockResponse: GetBlockResponse = generateRandomGetBlockResponse(blockHeight);
   getBlockResponse.transactions = Array.isArray(txes) ? txes : [txes];
   return getBlockResponse;
 }
@@ -32,7 +32,7 @@ export function generateOverflowGetBlockRespose(blockHeight: bigint): GetBlockRe
   };
 }
 
-export function generateRandomGetBlockRespose(blockHeight: bigint): GetBlockResponse {
+export function generateRandomGetBlockResponse(blockHeight: bigint): GetBlockResponse {
   const numTransactions = Math.floor(Math.random() * 10 + 6);
   const protocolVersion = 1;
   const virtualChainId = 42;

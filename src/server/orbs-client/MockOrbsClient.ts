@@ -7,7 +7,7 @@
  */
 
 import { GetBlockResponse } from 'orbs-client-sdk/dist/codec/OpGetBlock';
-import { generateOverflowGetBlockRespose, generateRandomGetBlockRespose } from '../orbs-adapter/fake-blocks-generator';
+import { generateOverflowGetBlockRespose, generateRandomGetBlockResponse } from '../orbs-adapter/fake-blocks-generator';
 
 export class MockOrbsClient {
   private orbsBlockChain: Map<bigint, GetBlockResponse> = new Map();
@@ -31,7 +31,7 @@ export class MockOrbsClient {
 
   public generateBlocks(count: number): void {
     for (let i = 0; i < count; i++) {
-      const block = generateRandomGetBlockRespose(BigInt(this.orbsBlockChain.size + 1));
+      const block = generateRandomGetBlockResponse(BigInt(this.orbsBlockChain.size + 1));
       this.orbsBlockChain.set(BigInt(block.blockHeight), block);
     }
   }

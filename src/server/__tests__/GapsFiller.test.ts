@@ -37,7 +37,7 @@ describe('Gaps Filler', () => {
   });
 
   it('should fill all the missing blocks', async () => {
-    // append 10 blocks to orbs block chain (No one is listenning)
+    // append 10 blocks to orbs block chain (No one is listening)
     orbsClientMock.generateBlocks(10);
 
     // start orbs adapter scheduler (Will start from height 10 + 1)
@@ -65,8 +65,8 @@ describe('Gaps Filler', () => {
     }
   });
 
-  it('should update the heighest consecutive block height after filling the gap', async () => {
-    // append 10 blocks to orbs block chain (No one is listenning)
+  it('should update the highest consecutive block height after filling the gap', async () => {
+    // append 10 blocks to orbs block chain (No one is listening)
     orbsClientMock.generateBlocks(10);
 
     // start orbs adapter scheduler (Will start from height 10 + 1)
@@ -82,7 +82,7 @@ describe('Gaps Filler', () => {
     await fillGaps(logger, storage, orbsBlocksPolling);
 
     // make sure that the storage holds the all 15 blocks
-    const actual = await storage.getHeighestConsecutiveBlockHeight();
+    const actual = await storage.getHighestConsecutiveBlockHeight();
     expect(actual).toBe(15n);
   });
 });

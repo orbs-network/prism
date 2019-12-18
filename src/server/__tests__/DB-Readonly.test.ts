@@ -13,13 +13,15 @@ import { IDB } from '../db/IDB';
 import { InMemoryDB } from '../db/InMemoryDB';
 import { MongoDB } from '../db/MongoDB';
 import { genLogger } from '../logger/LoggerFactory';
-import { generateRandomGetBlockRespose } from '../orbs-adapter/fake-blocks-generator';
+import { generateRandomGetBlockResponse } from '../orbs-adapter/fake-blocks-generator';
 import { blockResponseToBlock, blockResponseTransactionsToTxs } from '../transformers/blockTransform';
 
 const logger: winston.Logger = genLogger(false, false, false);
 
-testReadOnlyDb(new InMemoryDB(true), 'InMemoryDB');
-testReadOnlyDb(new MongoDB(logger, MONGODB_URI, true), 'MongoDB');
+describe('Db Read Only', () => {
+  testReadOnlyDb(new InMemoryDB(true), 'InMemoryDB');
+  testReadOnlyDb(new MongoDB(logger, MONGODB_URI, true), 'MongoDB');
+});
 
 function testReadOnlyDb(db: IDB, dbName: string) {
   describe(`${dbName} - Readonly`, () => {
@@ -34,7 +36,7 @@ function testReadOnlyDb(db: IDB, dbName: string) {
     });
 
     it('should NOT store blocks by hash', async () => {
-      const block = generateRandomGetBlockRespose(1n);
+      const block = generateRandomGetBlockResponse(1n);
 
       await db.storeBlock(blockResponseToBlock(block));
       const blockHash = encodeHex(block.resultsBlockHash);
@@ -44,7 +46,7 @@ function testReadOnlyDb(db: IDB, dbName: string) {
     });
 
     it('should NOT store txs', async () => {
-      const block = generateRandomGetBlockRespose(1n);
+      const block = generateRandomGetBlockResponse(1n);
 
       await db.storeBlock(blockResponseToBlock(block));
       const txes = blockResponseTransactionsToTxs(block);
@@ -55,16 +57,22 @@ function testReadOnlyDb(db: IDB, dbName: string) {
       }
     });
 
-    it('should NOT store the heighest consecutive block height', async () => {
-      await db.setHeighestConsecutiveBlockHeight(123n);
-      const actual = await db.getHeighestConsecutiveBlockHeight();
+    it('should NOT store the highest consecutive block height', async () => {
+      await db.setHighestConsecutiveBlockHeight(123n);
+      const actual = await db.getHighestConsecutiveBlockHeight();
       expect(actual).toEqual(0n);
     });
 
-    it('should NOT store the heighest consecutive block height', async () => {
-      await db.setVersion('1.2.3');
+    it('should NOT store the highest consecutive block height', async () => {
+      await db.setVersion(5);
       const actual = await db.getVersion();
-      expect(actual).toEqual('0.0.0');
+      expect(actual).toEqual(0);
+    });
+
+    it('should NOT store the DB building status', async () => {
+      await db.setDBBuildingStatus('InWork');
+      const actual = await db.getDBBuildingStatus();
+      expect(actual).toEqual('HasNotStarted');
     });
   });
 }

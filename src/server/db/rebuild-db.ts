@@ -51,7 +51,7 @@ async function storeAllBlocks(toHeight: bigint, storage: Storage, orbsBlocksPoll
   }
   console.log(`done storing all block from 1 to ${toHeight}`);
   // mark the cache with the latest block
-  await storage.setHeighestConsecutiveBlockHeight(toHeight);
+  await storage.setHighestConsecutiveBlockHeight(toHeight);
 }
 
 function genOrbsBlocksPolling(logger: winston.Logger, orbsEndpoint: string, vchainId: number): IOrbsBlocksPolling {

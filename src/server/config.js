@@ -17,7 +17,7 @@ if (IS_DEV) {
 const { version } = require(findUp.sync('package.json'));
 
 ////////////// CONFIG VARIABLES ///////////////
-const PRISM_VERSION = `v${version}`;
+const PRISM_VERSION = `${version}`;
 
 // debug
 const MINIFYED_REACT_JS = process.env.MINIFYED_REACT_JS !== 'false'; // default: true
@@ -46,6 +46,10 @@ const ORBS_NETWORK_TYPE = process.env.ORBS_NETWORK_TYPE || 'TEST_NET';
 // polling
 const POOLING_INTERVAL = parseInt(process.env.POOLING_INTERVAL || '2000');
 
+// DB Builder
+const BLOCKS_POLLING_BATCH_SIZE = parseInt(process.env.BLOCKS_POLLING_BATCH_SIZE) || 1000;
+const MAXIMUM_PARALLEL_PROMISES = parseInt(process.env.MAXIMUM_PARALLEL_PROMISES) ||100;
+
 // gap filler
 const GAP_FILLER_ACTIVE = process.env.GAP_FILLER_ACTIVE !== 'false'; // default: true
 const GAP_FILLER_INTERVAL = parseInt(process.env.GAP_FILLER_INTERVAL_IN_MINUTES || '30') * 60 * 1000;
@@ -70,4 +74,8 @@ module.exports = {
   DB_IS_READ_ONLY,
   GAP_FILLER_ACTIVE,
   GAP_FILLER_INTERVAL,
+
+  // DB Builder
+  BLOCKS_POLLING_BATCH_SIZE,
+  MAXIMUM_PARALLEL_PROMISES,
 };

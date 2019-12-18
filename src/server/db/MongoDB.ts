@@ -6,14 +6,14 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import * as mongoose from 'mongoose';
-import * as mongooseLong from 'mongoose-long';
-import * as winston from 'winston';
+import mongoose from 'mongoose';
+import mongooseLong from 'mongoose-long';
+import winston from 'winston';
 import { IBlock } from '../../shared/IBlock';
 import { IShortTx, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 import { txToShortTx } from '../transformers/txTransform';
-import { IDB } from './IDB';
+import {IDB, TDBBuildingStatus } from './IDB';
 
 mongooseLong(mongoose);
 mongoose.set('useFindAndModify', false);
@@ -21,24 +21,35 @@ mongoose.set('useFindAndModify', false);
 interface ICacheDocument extends mongoose.Document {
   _id: number;
   heighestConsecutiveBlockHeight: bigint;
-  dbVersion: string;
+  dbVersion: number;
+}
+
+interface IDBConstructionStateDocument extends mongoose.Document {
+  dbBuildingStatus: TDBBuildingStatus;
+  lastBuiltBlockHeight: number;
 }
 
 const cacheSchema = new mongoose.Schema({
   _id: Number,
   heighestConsecutiveBlockHeight: (mongoose.Schema.Types as any).Long,
-  dbVersion: String,
+  dbVersion: Number,
+});
+
+const dbConstructionStateSchema = new mongoose.Schema({
+  _id: Number,
+  dbBuildingStatus: { type: String, default: 'None'},
+  lastBuiltBlockHeight: { type: Number, default: 0},
 });
 
 const blockSchema = new mongoose.Schema({
-  blockHash: String,
-  blockHeight: (mongoose.Schema.Types as any).Long,
+  blockHash: { type: String, index: { unique: true }},
+  blockHeight: { type: (mongoose.Schema.Types as any).Long, index: { unique: true }},
   blockTimestamp: Number,
   txIds: [String],
 });
 
 const txSchema = new mongoose.Schema({
-  txId: String,
+  txId: { type: String, index: { unique: true }},
   idxInBlock: Number,
   blockHeight: (mongoose.Schema.Types as any).Long,
   protocolVersion: Number,
@@ -68,6 +79,7 @@ export class MongoDB implements IDB {
   private BlockModel: mongoose.Model<mongoose.Document>;
   private TxModel: mongoose.Model<mongoose.Document>;
   private CacheModel: mongoose.Model<ICacheDocument>;
+  private dbConstructionStateModel: mongoose.Model<IDBConstructionStateDocument>;
 
   constructor(private logger: winston.Logger, private connectionUrl: string, private readOnlyMode: boolean = false) {}
 
@@ -81,13 +93,11 @@ export class MongoDB implements IDB {
           mongoose.connection.removeListener('error', reject);
           this.db = db;
 
-          txSchema.index({ txId: 'text' });
-          blockSchema.index({ blockHash: 'text' });
-
           // model
           this.BlockModel = mongoose.model('Block', blockSchema);
           this.TxModel = mongoose.model('Tx', txSchema);
           this.CacheModel = mongoose.model('Cache', cacheSchema);
+          this.dbConstructionStateModel = mongoose.model('DbConstructionState', dbConstructionStateSchema);
           resolve();
         });
     });
@@ -100,29 +110,59 @@ export class MongoDB implements IDB {
     }
   }
 
-  public async getVersion(): Promise<string> {
+  public async getVersion(): Promise<number> {
     const result = await this.CacheModel.findOne({ _id: 1 });
     if (result && result.dbVersion !== undefined) {
       return result.dbVersion;
     }
 
-    return '0.0.0';
+    return 0;
   }
 
-  public async setVersion(dbVersion: string): Promise<void> {
+  public async setVersion(dbVersion: number): Promise<void> {
     if (this.readOnlyMode) {
       return;
     }
     await this.CacheModel.updateOne({ _id: 1 }, { $set: { dbVersion } }, { upsert: true });
   }
 
+  public async getDBBuildingStatus(): Promise<TDBBuildingStatus> {
+    const result = await this.dbConstructionStateModel.findOne({ _id: 1 });
+
+    if (result && result.dbBuildingStatus !== undefined) {
+      return result.dbBuildingStatus;
+    }
+
+    return 'HasNotStarted';
+  }
+
+  public async setDBBuildingStatus(dbBuildingStatus: TDBBuildingStatus): Promise<void> {
+    await this.upsertToDbConstructionStateModel({ dbBuildingStatus });
+  }
+
+  public async getLastBuiltBlockHeight(): Promise<number> {
+    const result = await this.dbConstructionStateModel.findOne({ _id: 1 });
+
+    if (result && result.lastBuiltBlockHeight !== undefined) {
+      return result.lastBuiltBlockHeight;
+    }
+
+    return 0;
+  }
+
+  public async setLastBuiltBlockHeight(lastBuiltBlockHeight: number): Promise<void> {
+    await this.upsertToDbConstructionStateModel({ lastBuiltBlockHeight });
+  }
+
   public async clearAll(): Promise<void> {
     if (this.readOnlyMode) {
       return;
     }
+
     await this.BlockModel.deleteMany({});
     await this.TxModel.deleteMany({});
     await this.CacheModel.deleteMany({});
+    await this.dbConstructionStateModel.deleteMany({});
   }
 
   public async storeBlock(block: IBlock): Promise<void> {
@@ -163,7 +203,7 @@ export class MongoDB implements IDB {
   public async getBlockByHash(blockHash: string): Promise<IBlock> {
     const startTime = Date.now();
     this.logger.info(`Searching for block by hash: ${blockHash}`);
-    const result = await this.BlockModel.findOne({ $text: { $search: blockHash } }, { _id: false, __v: false })
+    const result = await this.BlockModel.findOne({ 'blockHash': blockHash }, { _id: false, __v: false })
       .lean()
       .exec();
 
@@ -177,7 +217,7 @@ export class MongoDB implements IDB {
   }
 
   public async getBlockByHeight(blockHeight: string): Promise<IBlock> {
-    const blockHeightAsNumber = parseInt(blockHeight);
+    const blockHeightAsNumber = parseInt(blockHeight, 10);
     if (Number.isNaN(blockHeightAsNumber)) {
       return null;
     }
@@ -289,7 +329,7 @@ export class MongoDB implements IDB {
     }
   }
 
-  public async getHeighestConsecutiveBlockHeight(): Promise<bigint> {
+  public async getHighestConsecutiveBlockHeight(): Promise<bigint> {
     const result = await this.CacheModel.findOne({ _id: 1 });
     if (result && result.heighestConsecutiveBlockHeight !== undefined) {
       return BigInt(result.heighestConsecutiveBlockHeight);
@@ -298,7 +338,7 @@ export class MongoDB implements IDB {
     return 0n;
   }
 
-  public async setHeighestConsecutiveBlockHeight(value: bigint): Promise<void> {
+  public async setHighestConsecutiveBlockHeight(value: bigint): Promise<void> {
     if (this.readOnlyMode) {
       return;
     }
@@ -344,7 +384,8 @@ export class MongoDB implements IDB {
   public async getTxById(txId: string): Promise<ITx> {
     const startTime = Date.now();
     this.logger.info(`Searching for tx by txId: ${txId}`);
-    const result = await this.TxModel.findOne({ $text: { $search: txId } }, { _id: false, __v: false })
+    const caseInsensitiveTxId = new RegExp(txId, 'i');
+    const result = await this.TxModel.findOne({ 'txId': caseInsensitiveTxId }, { _id: false, __v: false })
       .lean()
       .exec();
 
@@ -360,5 +401,13 @@ export class MongoDB implements IDB {
   private async storeTx(tx: ITx): Promise<void> {
     const txInstance = new this.TxModel(blockHeighToBigInt(tx));
     await txInstance.save();
+  }
+
+  private async upsertToDbConstructionStateModel(doc: Partial<IDBConstructionStateDocument>) {
+    if (this.readOnlyMode) {
+      return;
+    }
+
+    await this.dbConstructionStateModel.updateOne({ _id: 1 }, { $set: doc }, { upsert: true });
   }
 }

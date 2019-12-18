@@ -13,7 +13,7 @@ import { IContractData, IShortTx, IContractGist } from '../../shared/IContractDa
 import { ISearchResult } from '../../shared/ISearchResult';
 import { InMemoryDB } from '../db/InMemoryDB';
 import { genLogger } from '../logger/LoggerFactory';
-import { generateBlockResponseWithTransaction, generateBlockTransaction, generateContractDeployTransaction, generateRandomGetBlockRespose } from '../orbs-adapter/fake-blocks-generator';
+import { generateBlockResponseWithTransaction, generateBlockTransaction, generateContractDeployTransaction, generateRandomGetBlockResponse } from '../orbs-adapter/fake-blocks-generator';
 import { Storage } from '../storage/storage';
 import { blockResponseToBlock, blockResponseTransactionAsTx, blockResponseTransactionsToTxs, blockTransactionToTx } from '../transformers/blockTransform';
 import { txToShortTx } from '../transformers/txTransform';
@@ -25,7 +25,7 @@ describe('storage', () => {
     const db = new InMemoryDB();
     await db.init();
     const storage = new Storage(db);
-    const block = generateRandomGetBlockRespose(1n);
+    const block = generateRandomGetBlockResponse(1n);
     await storage.handleNewBlock(block);
 
     const expected = blockResponseToBlock(block);
@@ -38,7 +38,7 @@ describe('storage', () => {
     const db = new InMemoryDB();
     await db.init();
     const storage = new Storage(db);
-    const block = generateRandomGetBlockRespose(1n);
+    const block = generateRandomGetBlockResponse(1n);
     await storage.handleNewBlock(block);
     const txes = blockResponseTransactionsToTxs(block);
 
@@ -53,8 +53,8 @@ describe('storage', () => {
       const db = new InMemoryDB();
       await db.init();
       const storage = new Storage(db);
-      const block1 = generateRandomGetBlockRespose(1n);
-      const block2 = generateRandomGetBlockRespose(2n);
+      const block1 = generateRandomGetBlockResponse(1n);
+      const block2 = generateRandomGetBlockResponse(2n);
       await storage.handleNewBlock(block1);
       await storage.handleNewBlock(block2);
 
@@ -68,8 +68,8 @@ describe('storage', () => {
       const db = new InMemoryDB();
       await db.init();
       const storage = new Storage(db);
-      const block1 = generateRandomGetBlockRespose(1n);
-      const block2 = generateRandomGetBlockRespose(2n);
+      const block1 = generateRandomGetBlockResponse(1n);
+      const block2 = generateRandomGetBlockResponse(2n);
       await storage.handleNewBlock(block1);
       await storage.handleNewBlock(block2);
 

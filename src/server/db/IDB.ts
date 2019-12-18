@@ -10,10 +10,20 @@ import { IBlock } from '../../shared/IBlock';
 import { IShortTx, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 
+export type TDBBuildingStatus = 'Done' | 'InWork' | 'HasNotStarted';
+
+// DEV_NOTE : IMPORTANT : We should increase this version value any time we have breaking changes in the DB content.
+export const CURRENT_DB_VERSION = 1;
+
 export interface IDB {
   init(): Promise<void>;
-  getVersion(): Promise<string>;
-  setVersion(version: string): Promise<void>;
+  getVersion(): Promise<number>;
+  setVersion(version: number): Promise<void>;
+  getDBBuildingStatus(): Promise<TDBBuildingStatus>;
+  setDBBuildingStatus(dbBuildingStatus: TDBBuildingStatus): Promise<void>;
+  getLastBuiltBlockHeight(): Promise<number>;
+  setLastBuiltBlockHeight(lastBuiltBlockHeight: number): Promise<void>;
+
   destroy(): Promise<void>;
   clearAll(): Promise<void>;
   storeBlock(block: IBlock): Promise<void>;
@@ -22,8 +32,8 @@ export interface IDB {
   getBlockByHash(blockHash: string): Promise<IBlock>;
   getBlockByHeight(blockHeight: string): Promise<IBlock>;
   getLatestBlockHeight(): Promise<bigint>;
-  getHeighestConsecutiveBlockHeight(): Promise<bigint>;
-  setHeighestConsecutiveBlockHeight(value: bigint): Promise<void>;
+  getHighestConsecutiveBlockHeight(): Promise<bigint>;
+  setHighestConsecutiveBlockHeight(value: bigint): Promise<void>;
   getTxById(txId: string): Promise<ITx>;
   getDeployContractTx(contractName: string, ignoreCase?: boolean): Promise<ITx>;
   getDeployedContracts(): Promise<IContractGist[]>;

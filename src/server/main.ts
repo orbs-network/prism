@@ -12,11 +12,12 @@ import { genOrbsBlocksPolling } from './orbs-adapter/OrbsBlocksPollingFactory';
 import { initServer } from './server';
 import { Storage } from './storage/storage';
 import { WS } from './ws/ws';
-import { sleep } from './gaps-filler/Cron';
-import * as config from './config';
-import * as winston from 'winston';
+import config from './config';
+import winston from 'winston';
 import { genLogger } from './logger/LoggerFactory';
 import { DBBuilder } from './db/DBBuilder';
+import {increasePulledBlocksCounter} from './metrics/prometheusMetrics';
+import {CURRENT_DB_VERSION} from './db/IDB';
 
 async function main() {
   console.log(`*******************************************`);
@@ -31,7 +32,9 @@ async function main() {
     LOG_TO_CONSOLE,
     LOG_TO_FILE,
     LOG_TO_ROLLBAR,
-    PRISM_VERSION
+    PRISM_VERSION,
+    BLOCKS_POLLING_BATCH_SIZE,
+    MAXIMUM_PARALLEL_PROMISES
   } = config;
   const logger: winston.Logger = genLogger(LOG_TO_CONSOLE, LOG_TO_FILE, LOG_TO_ROLLBAR);
 
@@ -53,18 +56,26 @@ async function main() {
   // link all the parts
   const orbsBlocksPolling = genOrbsBlocksPolling(logger);
   await orbsBlocksPolling.init();
-  // const dbBuilder = new DBBuilder(db, storage, orbsBlocksPolling);
-  // await dbBuilder.init(PRISM_VERSION);
 
+  const dbBuilder = new DBBuilder(db, storage, orbsBlocksPolling, logger, {
+    blocksBatchSize: BLOCKS_POLLING_BATCH_SIZE,
+    maxParallelPromises: MAXIMUM_PARALLEL_PROMISES,
+  });
+
+  dbBuilder.init(CURRENT_DB_VERSION)
+      .then(() => {
+        fillGapsForever(logger, storage, db, orbsBlocksPolling, GAP_FILLER_INTERVAL);
+      })
+      .catch(() => { // DEV_NOTE : Only critical error can be thrown from the 'DB Builder'
+        process.exit(1);
+      });
+
+  orbsBlocksPolling.RegisterToNewBlocks({
+    handleNewBlock: async () => increasePulledBlocksCounter()
+  });
   orbsBlocksPolling.RegisterToNewBlocks(ws);
   orbsBlocksPolling.RegisterToNewBlocks(storage);
   await orbsBlocksPolling.initPolling(POOLING_INTERVAL);
-
-  if (GAP_FILLER_ACTIVE) {
-    const GAP_FILLER_INITIAL_DELAY = 60 * 1000; // We wait a minute before we start the gap filler
-    await sleep(GAP_FILLER_INITIAL_DELAY);
-    fillGapsForever(logger, storage, db, orbsBlocksPolling, GAP_FILLER_INTERVAL);
-  }
 }
 
 main();

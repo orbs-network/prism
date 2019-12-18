@@ -11,7 +11,7 @@ import * as winston from 'winston';
 import { IShortTx, IContractGist } from '../../shared/IContractData';
 import { ITx } from '../../shared/ITx';
 import { MONGODB_URI } from '../config';
-import { IDB } from '../db/IDB';
+import {IDB, TDBBuildingStatus } from '../db/IDB';
 import { InMemoryDB } from '../db/InMemoryDB';
 import { MongoDB } from '../db/MongoDB';
 import { genLogger } from '../logger/LoggerFactory';
@@ -19,7 +19,7 @@ import {
   generateBlockResponseWithTransaction,
   generateBlockTransaction,
   generateContractDeployTransaction,
-  generateRandomGetBlockRespose,
+  generateRandomGetBlockResponse,
 } from '../orbs-adapter/fake-blocks-generator';
 import {
   blockResponseToBlock,
@@ -30,8 +30,10 @@ import { txToShortTx } from '../transformers/txTransform';
 
 const logger: winston.Logger = genLogger(false, false, false);
 
-testDb(new InMemoryDB(), 'InMemoryDB');
-testDb(new MongoDB(logger, MONGODB_URI), 'MongoDB');
+describe('DB Tests', () => {
+  testDb(new InMemoryDB(), 'InMemoryDB');
+  testDb(new MongoDB(logger, MONGODB_URI), 'MongoDB');
+});
 
 function testDb(db: IDB, dbName: string) {
   describe(dbName, () => {
@@ -46,7 +48,7 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should store and retrive blocks by hash', async () => {
-      const block = blockResponseToBlock(generateRandomGetBlockRespose(1n));
+      const block = blockResponseToBlock(generateRandomGetBlockResponse(1n));
 
       await db.storeBlock(block);
 
@@ -65,7 +67,7 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should be able to retrive blocks by height', async () => {
-      const block = blockResponseToBlock(generateRandomGetBlockRespose(1n));
+      const block = blockResponseToBlock(generateRandomGetBlockResponse(1n));
 
       await db.storeBlock(block);
 
@@ -74,11 +76,11 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should be able to retrive the latest blocks', async () => {
-      const block1 = blockResponseToBlock(generateRandomGetBlockRespose(1n));
-      const block2 = blockResponseToBlock(generateRandomGetBlockRespose(2n));
-      const block3 = blockResponseToBlock(generateRandomGetBlockRespose(3n));
-      const block4 = blockResponseToBlock(generateRandomGetBlockRespose(4n));
-      const block5 = blockResponseToBlock(generateRandomGetBlockRespose(5n));
+      const block1 = blockResponseToBlock(generateRandomGetBlockResponse(1n));
+      const block2 = blockResponseToBlock(generateRandomGetBlockResponse(2n));
+      const block3 = blockResponseToBlock(generateRandomGetBlockResponse(3n));
+      const block4 = blockResponseToBlock(generateRandomGetBlockResponse(4n));
+      const block5 = blockResponseToBlock(generateRandomGetBlockResponse(5n));
       await db.storeBlock(block1);
       await db.storeBlock(block2);
       await db.storeBlock(block3);
@@ -90,7 +92,7 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should store and retrive txs', async () => {
-      const block = generateRandomGetBlockRespose(1n);
+      const block = generateRandomGetBlockResponse(1n);
       const txes = blockResponseTransactionsToTxs(block);
 
       await db.storeTxes(txes);
@@ -102,7 +104,7 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should ignore case when retrive txs', async () => {
-      const block = generateRandomGetBlockRespose(1n);
+      const block = generateRandomGetBlockResponse(1n);
       const txes = blockResponseTransactionsToTxs(block);
 
       // conver all to upper case
@@ -117,9 +119,9 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should be able to retrive the last block height', async () => {
-      const block10 = blockResponseToBlock(generateRandomGetBlockRespose(10n));
-      const block11 = blockResponseToBlock(generateRandomGetBlockRespose(11n));
-      const block12 = blockResponseToBlock(generateRandomGetBlockRespose(12n));
+      const block10 = blockResponseToBlock(generateRandomGetBlockResponse(10n));
+      const block11 = blockResponseToBlock(generateRandomGetBlockResponse(11n));
+      const block12 = blockResponseToBlock(generateRandomGetBlockResponse(12n));
 
       await db.storeBlock(block10);
       await db.storeBlock(block11);
@@ -135,46 +137,94 @@ function testDb(db: IDB, dbName: string) {
     });
 
     it('should store and retrive the heighest consecutive block height ', async () => {
-      const initial = await db.getHeighestConsecutiveBlockHeight();
+      const initial = await db.getHighestConsecutiveBlockHeight();
 
-      await db.setHeighestConsecutiveBlockHeight(initial + 123n);
-      const actual = await db.getHeighestConsecutiveBlockHeight();
+      await db.setHighestConsecutiveBlockHeight(initial + 123n);
+      const actual = await db.getHighestConsecutiveBlockHeight();
       expect(actual).toEqual(initial + 123n);
       expect(actual).not.toEqual(initial);
     });
 
     it('should be able to update existing heighest consecutive block height ', async () => {
-      const initial = await db.getHeighestConsecutiveBlockHeight();
+      const initial = await db.getHighestConsecutiveBlockHeight();
 
-      await db.setHeighestConsecutiveBlockHeight(123n);
-      await db.setHeighestConsecutiveBlockHeight(456n);
-      const actual = await db.getHeighestConsecutiveBlockHeight();
+      await db.setHighestConsecutiveBlockHeight(123n);
+      await db.setHighestConsecutiveBlockHeight(456n);
+      const actual = await db.getHighestConsecutiveBlockHeight();
       expect(actual).toEqual(456n);
       expect(actual).not.toEqual(initial);
     });
 
     it('should have a db version 0.0.0 as the default', async () => {
       const actual = await db.getVersion();
-      expect(actual).toEqual('0.0.0');
+      expect(actual).toEqual(0);
     });
 
-    it('should store and retrive the db version ', async () => {
+    it('should store and retrieve the db version ', async () => {
       const initial = await db.getVersion();
 
-      await db.setVersion('0.0.4');
+      const testedDbVersion = 4;
+
+      await db.setVersion(testedDbVersion);
       const actual = await db.getVersion();
-      expect(actual).toEqual('0.0.4');
+      expect(actual).toEqual(testedDbVersion);
       expect(actual).not.toEqual(initial);
     });
 
     it('should be able to update existing db version ', async () => {
       const initial = await db.getVersion();
 
-      await db.setVersion('0.1.2');
-      await db.setVersion('1.0.0');
+      await db.setVersion(4);
+      await db.setVersion(5);
       const actual = await db.getVersion();
-      expect(actual).toEqual('1.0.0');
+      expect(actual).toEqual(5);
       expect(actual).not.toEqual(initial);
+    });
+
+    it('Should have "None" as default "DB Building status"', async () => {
+      const defaultValue = await db.getDBBuildingStatus();
+
+      expect(defaultValue).toEqual('HasNotStarted');
+    });
+
+    it('Should be able to store, retrieve and update the "DB Building status"', async () => {
+      const initial = await db.getDBBuildingStatus();
+      const firstValue: TDBBuildingStatus = 'InWork';
+      const secondValue: TDBBuildingStatus = 'Done';
+
+      await db.setDBBuildingStatus(firstValue);
+      const actualFirst = await db.getDBBuildingStatus();
+      expect(actualFirst).toEqual(firstValue);
+
+      await db.setDBBuildingStatus(secondValue);
+      const actualSecond = await db.getDBBuildingStatus();
+      expect(actualSecond).toEqual(secondValue);
+
+      expect(actualFirst).not.toEqual(initial);
+      expect(actualSecond).not.toEqual(initial);
+    });
+
+    it('Should have 0 as default "Latest Built block height"', async () => {
+      const defaultValue = await db.getLastBuiltBlockHeight();
+
+      expect(defaultValue).toEqual(0);
+    });
+
+    it('Should be able to store, retrieve and update the "Latest built block height"', async () => {
+      const initial = await db.getLastBuiltBlockHeight();
+      const firstValue: number = 100;
+      const secondValue: number = 200;
+
+      await db.setLastBuiltBlockHeight(firstValue);
+      const actualFirst = await db.getLastBuiltBlockHeight();
+      expect(actualFirst).toEqual(firstValue);
+
+      await db.setLastBuiltBlockHeight(secondValue);
+      const actualSecond = await db.getLastBuiltBlockHeight();
+      expect(actualSecond).toEqual(secondValue);
+
+      expect(actualFirst).not.toEqual(initial);
+      expect(actualSecond).not.toEqual(initial);
     });
 
     it('should retrive contract by name', async () => {

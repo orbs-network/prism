@@ -13,6 +13,7 @@ module.exports = {
   testEnvironment: 'node',
   testRegex: '.*test.ts$',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  setupFilesAfterEnv: ["jest-expect-message"], //dev_note  Added for 'jest-expect-message'
   globals: {
     'ts-jest': {
       tsConfig: '<rootDir>/tsconfig.json',

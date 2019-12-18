@@ -7,12 +7,12 @@
  */
 
 import { stringifyMethodCall } from '../args/argsStringifier';
-import { generateRandomGetBlockRespose } from '../orbs-adapter/fake-blocks-generator';
+import { generateRandomGetBlockResponse } from '../orbs-adapter/fake-blocks-generator';
 import { blockResponseTransactionAsTx } from '../transformers/blockTransform';
 
 describe('argsStringifier', () => {
   it('should stringify Tx method name', async () => {
-    const block = generateRandomGetBlockRespose(1n);
+    const block = generateRandomGetBlockResponse(1n);
 
     const tx = blockResponseTransactionAsTx(block, 0);
     tx.methodName = 'METHOD_NAME';
@@ -23,7 +23,7 @@ describe('argsStringifier', () => {
   });
 
   it('should stringify Tx args', async () => {
-    const block = generateRandomGetBlockRespose(1n);
+    const block = generateRandomGetBlockResponse(1n);
 
     const tx = blockResponseTransactionAsTx(block, 0);
     tx.methodName = 'METHOD_NAME';
@@ -39,7 +39,7 @@ describe('argsStringifier', () => {
   });
 
   it('should stringify Tx return args', async () => {
-    const block = generateRandomGetBlockRespose(1n);
+    const block = generateRandomGetBlockResponse(1n);
 
     const tx = blockResponseTransactionAsTx(block, 0);
     tx.methodName = 'METHOD_NAME';
@@ -61,7 +61,7 @@ describe('argsStringifier', () => {
   });
 
   it('should shorten long strings', async () => {
-    const block = generateRandomGetBlockRespose(1n);
+    const block = generateRandomGetBlockResponse(1n);
 
     const tx = blockResponseTransactionAsTx(block, 0);
     tx.methodName = 'METHOD_NAME';

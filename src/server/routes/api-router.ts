@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import * as bodyParser from 'body-parser';
+import bodyParser from 'body-parser';
 import { Router } from 'express';
 import { IBlock, IBlockSummary } from '../../shared/IBlock';
 import { IContractData, IContractGist } from '../../shared/IContractData';
