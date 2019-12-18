@@ -18,8 +18,10 @@ import { blockResponseToBlock, blockResponseTransactionsToTxs } from '../transfo
 
 const logger: winston.Logger = genLogger(false, false, false);
 
-testReadOnlyDb(new InMemoryDB(true), 'InMemoryDB');
-testReadOnlyDb(new MongoDB(logger, MONGODB_URI, true), 'MongoDB');
+describe('Db Read Only', () => {
+  testReadOnlyDb(new InMemoryDB(true), 'InMemoryDB');
+  testReadOnlyDb(new MongoDB(logger, MONGODB_URI, true), 'MongoDB');
+});
 
 function testReadOnlyDb(db: IDB, dbName: string) {
   describe(`${dbName} - Readonly`, () => {
