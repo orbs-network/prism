@@ -49,7 +49,7 @@ async function main() {
   }
 
   // internals
-  const storage = new Storage(db);
+  const storage = new Storage(db, logger);
   const server = initServer(storage);
   const ws = new WS(logger, server);
 

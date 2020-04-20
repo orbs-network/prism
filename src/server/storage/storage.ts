@@ -17,9 +17,10 @@ import { ISearchResult } from '../../shared/ISearchResult';
 import { IDB } from '../db/IDB';
 import { blockResponseToBlock, blockResponseTransactionsToTxs, blockToBlockSummary } from '../transformers/blockTransform';
 import {IHealthStatusApiResponse} from '../../shared/apis/metricsApis';
+import * as winston from "winston";
 
 export class Storage implements INewBlocksHandler {
-  constructor(private db: IDB) {}
+  constructor(private db: IDB, private logger: winston.Logger) {}
 
   public getBlockByHash(blockHash: string): Promise<IBlock> {
     return this.db.getBlockByHash(blockHash);
@@ -85,7 +86,13 @@ export class Storage implements INewBlocksHandler {
   public async handleNewBlock(getBlockResponse: GetBlockResponse): Promise<void> {
     const block = blockResponseToBlock(getBlockResponse);
     const txes = blockResponseTransactionsToTxs(getBlockResponse);
-    await Promise.all([this.db.storeBlock(block), this.db.storeTxes(txes)]);
+
+    try {
+      await Promise.all([this.db.storeBlock(block), this.db.storeTxes(txes)]);
+    } catch (e) {
+      this.logger.error(`Failed handling block ${getBlockResponse.blockHeight} : ${e}`);
+      throw e;
+    }
   }
 
   public async search(term: string): Promise<ISearchResult> {
