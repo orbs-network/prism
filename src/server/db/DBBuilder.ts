@@ -146,6 +146,7 @@ export class DBBuilder {
     if (block) {
       try {
         await this.storage.handleNewBlock(block);
+        this.logger.info(`Successfully store block ${block.blockHeight}`);
       } catch (e) {
         this.logger.error(`Failed storing block ${blockHeight} - ${e}`);
         throw e;
