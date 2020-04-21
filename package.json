@@ -1,6 +1,6 @@
 {
   "name": "prism",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Prism, Orbs block explorer",
   "main": "index.js",
   "engines": {
@@ -71,7 +71,7 @@
     "mongoose-long": "^0.2.1",
     "object-hash": "^2.0.1",
     "orbs-blocks-polling-js": "^2.0.1",
-    "orbs-client-sdk": "^2.2.2",
+    "orbs-client-sdk": "^2.3.1",
     "postprocessing": "^6.9.0",
     "prom-client": "^11.5.3",
     "query-string": "^6.9.0",
