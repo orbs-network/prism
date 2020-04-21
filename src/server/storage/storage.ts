@@ -84,8 +84,16 @@ export class Storage implements INewBlocksHandler {
   }
 
   public async handleNewBlock(getBlockResponse: GetBlockResponse): Promise<void> {
-    const block = blockResponseToBlock(getBlockResponse);
-    const txes = blockResponseTransactionsToTxs(getBlockResponse);
+    let block: IBlock;
+    let txes: ITx[];
+
+    try{
+      block = blockResponseToBlock(getBlockResponse);
+      txes = blockResponseTransactionsToTxs(getBlockResponse);
+    } catch (e) {
+      this.logger.error(`Error while processing block and txs for block ${getBlockResponse.blockHeight} : ${e}`);
+      throw e;
+    }
 
     try {
       await Promise.all([this.db.storeBlock(block), this.db.storeTxes(txes)]);

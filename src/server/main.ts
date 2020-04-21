@@ -38,6 +38,11 @@ async function main() {
   } = config;
   const logger: winston.Logger = genLogger(LOG_TO_CONSOLE, LOG_TO_FILE, LOG_TO_ROLLBAR);
 
+  // Unhandled rejection logger - To raise awareness to problems
+  process.on('unhandledRejection', (reason, promise) => {
+    logger.error(`!!! Unhandled rejection !!! : ${(reason as any).stack || reason}`);
+  });
+
   // externals
   const db = genDb(logger);
   try {
