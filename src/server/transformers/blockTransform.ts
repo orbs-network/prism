@@ -53,6 +53,13 @@ export function blockResponseTransactionAsTx(block: GetBlockResponse, idxInBlock
 }
 
 export function blockTransactionToTx(blockHeight: string, idxInBlock: number, tx: BlockTransaction): ITx {
+  const isSystemTx = tx.contractName === '_Triggers' && tx.methodName === 'trigger';
+  const SYSTEM_TRIGGER_PUBLIC_ADDRESS = '0x0000000000000000000000000000000000000000';
+  const SYSTEM_TRIGGER_PUBLIC_KEY = 'System trigger';
+
+  const signerPublicKey = isSystemTx ? SYSTEM_TRIGGER_PUBLIC_KEY : encodeHex(tx.signerPublicKey);
+  const signerAddress = isSystemTx ? SYSTEM_TRIGGER_PUBLIC_ADDRESS : encodeHex(calcClientAddressOfEd25519PublicKey(tx.signerPublicKey));
+
   return {
     idxInBlock,
     txId: encodeHex(tx.txId),
@@ -60,8 +67,8 @@ export function blockTransactionToTx(blockHeight: string, idxInBlock: number, tx
     protocolVersion: tx.protocolVersion,
     virtualChainId: tx.virtualChainId,
     timestamp: tx.timestamp.getTime(),
-    signerPublicKey: encodeHex(tx.signerPublicKey),
-    signerAddress: encodeHex(calcClientAddressOfEd25519PublicKey(tx.signerPublicKey)),
+    signerPublicKey,
+    signerAddress,
     contractName: tx.contractName,
     methodName: tx.methodName,
     inputArguments: tx.inputArguments.map(convertToRawArgument),
