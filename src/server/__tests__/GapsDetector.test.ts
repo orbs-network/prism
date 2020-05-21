@@ -18,7 +18,7 @@ describe('Gaps Detector', () => {
     const logger = genLogger(false, false, false);
     const db: IDB = new InMemoryDB();
     await db.init();
-    const storage: Storage = new Storage(db);
+    const storage: Storage = new Storage(db, logger);
     await storage.handleNewBlock(generateRandomGetBlockResponse(1n));
     await storage.handleNewBlock(generateRandomGetBlockResponse(2n));
     await storage.handleNewBlock(generateRandomGetBlockResponse(3n));
@@ -36,7 +36,7 @@ describe('Gaps Detector', () => {
     const logger = genLogger(false, false, false);
     const db: IDB = new InMemoryDB();
     await db.init();
-    const storage: Storage = new Storage(db);
+    const storage: Storage = new Storage(db, logger);
     await storage.handleNewBlock(generateRandomGetBlockResponse(6n));
     await storage.handleNewBlock(generateRandomGetBlockResponse(7n));
     await storage.handleNewBlock(generateRandomGetBlockResponse(10n));

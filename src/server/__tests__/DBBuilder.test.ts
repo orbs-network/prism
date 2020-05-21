@@ -18,12 +18,15 @@ import 'jest-expect-message';
 import { encodeHex } from 'orbs-client-sdk';
 import {getTestingLogger} from './testingLogger';
 import {DBBuilderError, TDBBuilderErrorCode} from '../db/DBBuilderError';
+import * as winston from 'winston';
+import {genLogger} from '../logger/LoggerFactory';
 
 describe(`DBBuilder`, () => {
   const dbVersionForTest = 5;
   const BLOCKCHAIN_LENGTH = 100;
   const DB_BUILDING_BATCH_SIZE = 50;
   const DB_BUILDING_MAX_PARALLEL_PROMISES = 20;
+  const logger: winston.Logger = genLogger(false, false, false);
 
   let db: IDB;
   let storage: Storage;
@@ -49,7 +52,7 @@ describe(`DBBuilder`, () => {
     db = new InMemoryDB();
     await db.init();
     await db.setVersion(dbVersionForTest);
-    storage = new Storage(db);
+    storage = new Storage(db, logger);
 
     orbsBlocksPolling = new OrbsBlocksPollingMock();
     orbsBlocksPolling.setBlockChain([blockResponse1, blockResponse2, blockResponse3]);
