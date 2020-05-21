@@ -24,7 +24,7 @@ describe('storage', () => {
   it('should store and retrive blocks', async () => {
     const db = new InMemoryDB();
     await db.init();
-    const storage = new Storage(db);
+    const storage = new Storage(db, logger);
     const block = generateRandomGetBlockResponse(1n);
     await storage.handleNewBlock(block);
 
@@ -37,7 +37,7 @@ describe('storage', () => {
   it('should store and retrive txs', async () => {
     const db = new InMemoryDB();
     await db.init();
-    const storage = new Storage(db);
+    const storage = new Storage(db, logger);
     const block = generateRandomGetBlockResponse(1n);
     await storage.handleNewBlock(block);
     const txes = blockResponseTransactionsToTxs(block);
@@ -52,7 +52,7 @@ describe('storage', () => {
     it('should be able to find a block by hash', async () => {
       const db = new InMemoryDB();
       await db.init();
-      const storage = new Storage(db);
+      const storage = new Storage(db, logger);
       const block1 = generateRandomGetBlockResponse(1n);
       const block2 = generateRandomGetBlockResponse(2n);
       await storage.handleNewBlock(block1);
@@ -67,7 +67,7 @@ describe('storage', () => {
     it('should be able to find a tx by id', async () => {
       const db = new InMemoryDB();
       await db.init();
-      const storage = new Storage(db);
+      const storage = new Storage(db, logger);
       const block1 = generateRandomGetBlockResponse(1n);
       const block2 = generateRandomGetBlockResponse(2n);
       await storage.handleNewBlock(block1);
@@ -86,7 +86,7 @@ describe('storage', () => {
     it('should return null result when nothing found', async () => {
       const db = new InMemoryDB();
       await db.init();
-      const storage = new Storage(db);
+      const storage = new Storage(db, logger);
 
       const expected: ISearchResult = null;
       const actual = await storage.search('fake hash');
@@ -96,7 +96,7 @@ describe('storage', () => {
     it('should return All deployed contracts', async () => {
       const db = new InMemoryDB();
       await db.init();
-      const storage = new Storage(db);
+      const storage = new Storage(db, logger);
 
       const contract1Name: string = 'test-contract-1';
       const contract2Name: string = 'test-contract-2';
@@ -112,20 +112,20 @@ describe('storage', () => {
       const tx1 = blockTransactionToTx('1', 0, deploy1Tx);
       const tx2 = blockTransactionToTx('2', 0, deploy2Tx);
       const tx3 = blockTransactionToTx('3', 0, deploy3Tx);
-      
+
       const actual = await storage.getAllDeployedContracts();
       const expected: IContractGist[] = [
-        { 
+        {
           contractName: 'test-contract-1',
           deployedBy: tx1.signerAddress,
           txId: tx1.txId
          },
-        { 
+        {
           contractName: 'test-contract-2',
           deployedBy: tx2.signerAddress,
           txId: tx2.txId
          },
-        { 
+        {
           contractName: 'test-contract-3',
           deployedBy: tx3.signerAddress,
           txId: tx3.txId
@@ -149,7 +149,7 @@ describe('storage', () => {
 
       const db = new InMemoryDB();
       await db.init();
-      const storage = new Storage(db);
+      const storage = new Storage(db, logger);
       await storage.handleNewBlock(deployBlock);
       await storage.handleNewBlock(block2);
       await storage.handleNewBlock(block3);

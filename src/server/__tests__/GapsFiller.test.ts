@@ -28,7 +28,7 @@ describe('Gaps Filler', () => {
 
     orbsClientMock = new MockOrbsClient();
     orbsBlocksPolling = new OrbsBlocksPolling(orbsClientMock as any, logger);
-    storage = new Storage(db);
+    storage = new Storage(db, logger);
     orbsBlocksPolling.RegisterToNewBlocks(storage);
   });
 
