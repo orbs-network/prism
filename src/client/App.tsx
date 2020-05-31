@@ -76,9 +76,11 @@ const AppImpl = ({ classes, location }: IProps) => {
             render={({ match }) => {
               const executionIdx = queryString.parse(location.search).executionIdx;
               const executionIdxAsNumber = executionIdx ? Number(executionIdx) : undefined;
+              const contractName = match.params.contractName;
+
               return (
                 <div style={props} className={classes.swipeContainer}>
-                  <ContractDetails contractName={match.params.contractName} executionIdx={executionIdxAsNumber} />
+                  <ContractDetails contractName={contractName} executionIdx={executionIdxAsNumber} />
                 </div>
               );
             }}
