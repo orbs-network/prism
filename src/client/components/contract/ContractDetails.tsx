@@ -16,6 +16,7 @@ import { IRootState } from '../../reducers/rootReducer';
 import { ContractCode } from './ContractCode';
 import { ContractHistory } from './ContractHistory';
 import { HistoryPaginator } from './HistoryTxPaginator';
+import {useCallback, useEffect} from "react";
 
 const styles = (theme: Theme) => createStyles({});
 
@@ -31,54 +32,45 @@ interface IProps extends WithStyles<typeof styles> {
   loadContract: (contractName: string, historyPaginator: HistoryPaginator) => void;
 }
 
-const ContractDetailsImpl = withStyles(styles)(
-  class extends React.Component<IProps & IOwnProps> {
-    public componentDidMount() {
-      if (!this.props.isLoading) {
-        if (!this.props.contractData || this.props.error) {
-          this.fetchData();
-        }
-      }
-    }
+const ContractDetailsImpl = withStyles(styles)((props: IOwnProps & IProps) => {
+    const { isLoading, contractData, error, loadContract, contractName, executionIdx } = props;
 
-    public componentDidUpdate(prevProps: IOwnProps) {
-      if (this.props.contractName !== prevProps.contractName || this.props.executionIdx !== prevProps.executionIdx) {
-        this.fetchData();
-      }
-    }
+    const fetchData = useCallback((contractName: string, executionIdx?: number) => {
+        const historyPaginator: HistoryPaginator = new HistoryPaginator(executionIdx);
+        loadContract(contractName, historyPaginator);
+    }, [loadContract]);
 
-    public render() {
-      if (this.props.isLoading) {
+    useEffect(() => {
+        fetchData(contractName, executionIdx);
+    }, [fetchData, contractName, executionIdx]);
+
+    if (isLoading) {
         return <Typography>Loading...</Typography>;
-      }
+    }
 
-      if (!this.props.contractData) {
+    if (!contractData) {
         return <Typography>Empty...</Typography>;
-      }
+    }
 
-      if (this.props.error) {
+    if (error) {
         return <Typography variant='h4'>{this.props.error}</Typography>;
-      }
+    }
 
-      const { code, contractName, blocksInfo } = this.props.contractData;
-      return (
+    const { code, contractName: contractNameFromData, blocksInfo } = contractData;
+
+
+    return (
         <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <ContractCode code={code} contractName={contractName} />
-          </Grid>
-          <Grid item xs={12}>
-            <ContractHistory blocksInfo={blocksInfo} contractName={contractName} />
-          </Grid>
+            <Grid item xs={12}>
+                <ContractCode code={code} contractName={contractNameFromData} />
+            </Grid>
+            <Grid item xs={12}>
+                <ContractHistory blocksInfo={blocksInfo} contractName={contractNameFromData} />
+            </Grid>
         </Grid>
-      );
-    }
+    )
 
-    private fetchData() {
-      const historyPaginator: HistoryPaginator = new HistoryPaginator(this.props.executionIdx);
-      this.props.loadContract(this.props.contractName, historyPaginator);
-    }
-  },
-);
+});
 
 const mapStateToProps = (state: IRootState, ownProps: IOwnProps) => ({
   contractData: state.focusedContract.contractData,
