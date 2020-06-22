@@ -32,6 +32,8 @@ import { PrevHistoryPageButton } from './PrevHistoryPageButton';
 import { NextHistoryPageButton } from './NextHistoryPageButton';
 import { HistoryPaginator } from './HistoryTxPaginator';
 import { CONTRACT_TXES_HISTORY_PAGE_SIZE } from '../../../shared/Constants';
+import {useCallback} from "react";
+import { useClipboard } from 'use-clipboard-copy';
 
 SyntaxHighlighter.registerLanguage('go', goLang);
 
@@ -66,6 +68,14 @@ export const ContractHistory = withStyles(styles)(({ blocksInfo, contractName, c
     const firstTx = blocksInfo[firstBlockHeight].txes[0];
     nextPage = new HistoryPaginator(firstTx.executionIdx + CONTRACT_TXES_HISTORY_PAGE_SIZE);
   }
+
+  const clipboard = useClipboard();
+  const onTxIdCopy = useCallback((txId: string) => {
+    clipboard.copy(txId);
+    alert('Copied');
+    // TODO : O.L : Add better alert message (snackbar ?)
+  }, [clipboard]);
+
   return (
     <Card>
       <CardHeader
@@ -91,13 +101,16 @@ export const ContractHistory = withStyles(styles)(({ blocksInfo, contractName, c
             {blockHeights.map(blockHeight => {
               return (
                 <TableRow key={blockHeight}>
+                  {/* Block Height */}
                   <TableCell>
                     <ConsoleText>
                       <PrismLink to={`/block/${blockHeight}`}>{blockHeight}</PrismLink>
                     </ConsoleText>
                   </TableCell>
+
+                  {/* Transaction details */}
                   <TableCell>
-                    <ShortTxesList txes={blocksInfo[blockHeight].txes} />
+                    <ShortTxesList saveToClipboard={onTxIdCopy} txes={blocksInfo[blockHeight].txes} />
                   </TableCell>
                 </TableRow>
               );

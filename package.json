@@ -87,6 +87,7 @@
     "socket.io-client": "^2.3.0",
     "three": "^0.111.0",
     "tslib": "^1.10.0",
+    "use-clipboard-copy": "^0.1.2",
     "winston": "^3.2.1",
     "winston-transport-rollbar": "^2.4.0"
   },
