@@ -217,8 +217,9 @@ export class MongoDB implements IDB {
   }
 
   public async getBlockByHeight(blockHeight: string): Promise<IBlock> {
+    const isDigitsOnly =  /^\d+$/.test(blockHeight);
     const blockHeightAsNumber = parseInt(blockHeight, 10);
-    if (Number.isNaN(blockHeightAsNumber)) {
+    if (Number.isNaN(blockHeightAsNumber) || !isDigitsOnly) {
       return null;
     }
     const startTime = Date.now();
