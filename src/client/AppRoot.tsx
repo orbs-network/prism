@@ -26,6 +26,7 @@ import { Background } from './components/Background';
 import { Header } from './components/Header';
 import { configureStore } from './store';
 import { VChainDetails } from './VChainDetails';
+import { SnackbarProvider } from 'notistack';
 
 const vchainId = (window as any).vchainId;
 const prismVersion = (window as any).prismVersion;
@@ -74,11 +75,13 @@ export const AppRoot = withStyles(styles)(({ classes }: IProps) => (
       <MuiThemeProvider theme={baseTheme}>
         <CssBaseline />
         <Background prismVersion={prismVersion} />
-        <Header />
-        <div className={classes.appContainer}>
-          <VChainDetails vchainId={vchainId} />
-          <App />
-        </div>
+        <SnackbarProvider maxSnack={2}>
+          <Header />
+          <div className={classes.appContainer}>
+            <VChainDetails vchainId={vchainId} />
+            <App />
+          </div>
+        </SnackbarProvider>
       </MuiThemeProvider>
     </Provider>
   </BrowserRouter>

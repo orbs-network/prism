@@ -16,7 +16,7 @@ import { IRootState } from '../../reducers/rootReducer';
 import { ContractCode } from './ContractCode';
 import { ContractHistory } from './ContractHistory';
 import { HistoryPaginator } from './HistoryTxPaginator';
-import {useCallback, useEffect} from "react";
+import { useCallback, useEffect } from 'react';
 
 const styles = (theme: Theme) => createStyles({});
 
@@ -33,43 +33,44 @@ interface IProps extends WithStyles<typeof styles> {
 }
 
 const ContractDetailsImpl = withStyles(styles)((props: IOwnProps & IProps) => {
-    const { isLoading, contractData, error, loadContract, contractName, executionIdx } = props;
+  const { isLoading, contractData, error, loadContract, contractName, executionIdx } = props;
 
-    const fetchData = useCallback((contractName: string, executionIdx?: number) => {
-        const historyPaginator: HistoryPaginator = new HistoryPaginator(executionIdx);
-        loadContract(contractName, historyPaginator);
-    }, [loadContract]);
+  const fetchData = useCallback(
+    (contractName: string, executionIdx?: number) => {
+      const historyPaginator: HistoryPaginator = new HistoryPaginator(executionIdx);
+      loadContract(contractName, historyPaginator);
+    },
+    [loadContract],
+  );
 
-    useEffect(() => {
-        fetchData(contractName, executionIdx);
-    }, [fetchData, contractName, executionIdx]);
+  useEffect(() => {
+    fetchData(contractName, executionIdx);
+  }, [fetchData, contractName, executionIdx]);
 
-    if (isLoading) {
-        return <Typography>Loading...</Typography>;
-    }
+  if (isLoading) {
+    return <Typography>Loading...</Typography>;
+  }
 
-    if (!contractData) {
-        return <Typography>Empty...</Typography>;
-    }
+  if (!contractData) {
+    return <Typography>Empty...</Typography>;
+  }
 
-    if (error) {
-        return <Typography variant='h4'>{this.props.error}</Typography>;
-    }
+  if (error) {
+    return <Typography variant='h4'>{this.props.error}</Typography>;
+  }
 
-    const { code, contractName: contractNameFromData, blocksInfo } = contractData;
+  const { code, contractName: contractNameFromData, blocksInfo } = contractData;
 
-
-    return (
-        <Grid container spacing={3}>
-            <Grid item xs={12}>
-                <ContractCode code={code} contractName={contractNameFromData} />
-            </Grid>
-            <Grid item xs={12}>
-                <ContractHistory blocksInfo={blocksInfo} contractName={contractNameFromData} />
-            </Grid>
-        </Grid>
-    )
-
+  return (
+    <Grid container spacing={3}>
+      <Grid item xs={12}>
+        <ContractCode code={code} contractName={contractNameFromData} />
+      </Grid>
+      <Grid item xs={12}>
+        <ContractHistory blocksInfo={blocksInfo} contractName={contractNameFromData} />
+      </Grid>
+    </Grid>
+  );
 });
 
 const mapStateToProps = (state: IRootState, ownProps: IOwnProps) => ({
@@ -82,7 +83,4 @@ const dispatchProps = {
   loadContract: loadContractDataAction,
 };
 
-export const ContractDetails = connect(
-  mapStateToProps,
-  dispatchProps,
-)(ContractDetailsImpl);
+export const ContractDetails = connect(mapStateToProps, dispatchProps)(ContractDetailsImpl);

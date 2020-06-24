@@ -32,6 +32,10 @@ import { PrevHistoryPageButton } from './PrevHistoryPageButton';
 import { NextHistoryPageButton } from './NextHistoryPageButton';
 import { HistoryPaginator } from './HistoryTxPaginator';
 import { CONTRACT_TXES_HISTORY_PAGE_SIZE } from '../../../shared/Constants';
+import { useCallback } from 'react';
+import { useClipboard } from 'use-clipboard-copy';
+import { ContractTransactionsTable } from './contractTransactionsTable/ContractTransactionsTable';
+import { useSnackbar, VariantType } from 'notistack';
 
 SyntaxHighlighter.registerLanguage('go', goLang);
 
@@ -51,6 +55,7 @@ interface IProps extends WithStyles<typeof styles> {
 }
 
 export const ContractHistory = withStyles(styles)(({ blocksInfo, contractName, classes }: IProps) => {
+  const { enqueueSnackbar } = useSnackbar();
   const blockHeights = Object.keys(blocksInfo).sort((a, b) => subtract(b, a));
   let prevPage: HistoryPaginator;
   let nextPage: HistoryPaginator;
@@ -66,6 +71,17 @@ export const ContractHistory = withStyles(styles)(({ blocksInfo, contractName, c
     const firstTx = blocksInfo[firstBlockHeight].txes[0];
     nextPage = new HistoryPaginator(firstTx.executionIdx + CONTRACT_TXES_HISTORY_PAGE_SIZE);
   }
+
+  const clipboard = useClipboard();
+  const onTxIdCopy = useCallback(
+    (txId: string) => {
+      clipboard.copy(txId);
+      enqueueSnackbar('Copied !', { variant: 'success', autoHideDuration: 3000 });
+      // TODO : O.L : Add better alert message (snackbar ?)
+    },
+    [clipboard],
+  );
+
   return (
     <Card>
       <CardHeader
@@ -80,30 +96,11 @@ export const ContractHistory = withStyles(styles)(({ blocksInfo, contractName, c
         classes={{ root: classes.header, action: classes.headerActions }}
       />
       <CardContent>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Block Height</TableCell>
-              <TableCell>Transactions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {blockHeights.map(blockHeight => {
-              return (
-                <TableRow key={blockHeight}>
-                  <TableCell>
-                    <ConsoleText>
-                      <PrismLink to={`/block/${blockHeight}`}>{blockHeight}</PrismLink>
-                    </ConsoleText>
-                  </TableCell>
-                  <TableCell>
-                    <ShortTxesList txes={blocksInfo[blockHeight].txes} />
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+        <ContractTransactionsTable
+          blocksInfo={blocksInfo}
+          orderedBlockHeights={blockHeights}
+          saveToClipboard={onTxIdCopy}
+        />
       </CardContent>
     </Card>
   );
