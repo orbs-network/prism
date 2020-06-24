@@ -32,8 +32,9 @@ import { PrevHistoryPageButton } from './PrevHistoryPageButton';
 import { NextHistoryPageButton } from './NextHistoryPageButton';
 import { HistoryPaginator } from './HistoryTxPaginator';
 import { CONTRACT_TXES_HISTORY_PAGE_SIZE } from '../../../shared/Constants';
-import {useCallback} from "react";
+import { useCallback } from 'react';
 import { useClipboard } from 'use-clipboard-copy';
+import { ContractTransactionsTable } from './contractTransactionsTable/ContractTransactionsTable';
 
 SyntaxHighlighter.registerLanguage('go', goLang);
 
@@ -70,11 +71,14 @@ export const ContractHistory = withStyles(styles)(({ blocksInfo, contractName, c
   }
 
   const clipboard = useClipboard();
-  const onTxIdCopy = useCallback((txId: string) => {
-    clipboard.copy(txId);
-    alert('Copied');
-    // TODO : O.L : Add better alert message (snackbar ?)
-  }, [clipboard]);
+  const onTxIdCopy = useCallback(
+    (txId: string) => {
+      clipboard.copy(txId);
+      alert('Copied');
+      // TODO : O.L : Add better alert message (snackbar ?)
+    },
+    [clipboard],
+  );
 
   return (
     <Card>
@@ -90,33 +94,11 @@ export const ContractHistory = withStyles(styles)(({ blocksInfo, contractName, c
         classes={{ root: classes.header, action: classes.headerActions }}
       />
       <CardContent>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Block Height</TableCell>
-              <TableCell>Transactions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {blockHeights.map(blockHeight => {
-              return (
-                <TableRow key={blockHeight}>
-                  {/* Block Height */}
-                  <TableCell>
-                    <ConsoleText>
-                      <PrismLink to={`/block/${blockHeight}`}>{blockHeight}</PrismLink>
-                    </ConsoleText>
-                  </TableCell>
-
-                  {/* Transaction details */}
-                  <TableCell>
-                    <ShortTxesList saveToClipboard={onTxIdCopy} txes={blocksInfo[blockHeight].txes} />
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+        <ContractTransactionsTable
+          blocksInfo={blocksInfo}
+          orderedBlockHeights={blockHeights}
+          saveToClipboard={onTxIdCopy}
+        />
       </CardContent>
     </Card>
   );

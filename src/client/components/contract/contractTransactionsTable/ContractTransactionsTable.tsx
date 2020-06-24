@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react';
-import { IContractBlocksInfo } from '../../../shared/IContractData';
+import { IContractBlocksInfo } from '../../../../shared/IContractData';
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
-import { ConsoleText } from '../ConsoleText';
-import { PrismLink } from '../PrismLink';
-import { ShortTxesList } from '../ShortTxesList';
+import { ConsoleText } from '../../ConsoleText';
+import { PrismLink } from '../../PrismLink';
+import { ShortTxesList } from '../../ShortTxesList';
+import { TransactionsTableBlockRows } from './TransactionsTableBlockRows';
 
 interface IProps {
   blocksInfo: IContractBlocksInfo;
@@ -19,19 +20,12 @@ export const ContractTransactionsTable = React.memo<IProps>((props) => {
       const txes = blocksInfo[blockHeight].txes;
 
       return (
-        <TableRow key={blockHeight}>
-          {/* Block Height */}
-          <TableCell>
-            <ConsoleText>
-              <PrismLink to={`/block/${blockHeight}`}>{blockHeight}</PrismLink>
-            </ConsoleText>
-          </TableCell>
-
-          {/* Transaction details */}
-          {/*<TableCell>*/}
-          <ShortTxesList saveToClipboard={saveToClipboard} txes={txes} />
-          {/*</TableCell>*/}
-        </TableRow>
+        <TransactionsTableBlockRows
+          blockHeight={blockHeight}
+          saveToClipboard={saveToClipboard}
+          txes={txes}
+          key={blockHeight}
+        />
       );
     });
   }, [orderedBlockHeights, blocksInfo, saveToClipboard]);

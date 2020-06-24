@@ -11,25 +11,31 @@ interface IProps {
   txes: IShortTx[];
 }
 
-export const TransactionsTableBlockRow = React.memo<IProps>((props) => {
+export const TransactionsTableBlockRows = React.memo<IProps>((props) => {
   const { blockHeight, txes, saveToClipboard } = props;
 
   const innerRows = useMemo(() => {}, []);
 
-  return (
-    <TableRow key={blockHeight}>
-      {/* Block Height */}
-      <TableCell rowSpan={3}>
-        <ConsoleText>
-          <PrismLink to={`/block/${blockHeight}`}>{blockHeight}</PrismLink>
-        </ConsoleText>
-      </TableCell>
+  const [firstTx, ...restOfTxes] = txes;
 
-      {innerRows}
-      {/* Transaction details */}
-      {/*<TableCell>*/}
-      <ShortTxesList saveToClipboard={saveToClipboard} txes={txes} />
-      {/*</TableCell>*/}
-    </TableRow>
+  return (
+    <>
+      {/* First Row  */}
+      <TableRow key={blockHeight} hover>
+        {/* Block Height */}
+        <TableCell rowSpan={txes.length + 1}>
+          <ConsoleText>
+            <PrismLink to={`/block/${blockHeight}`}>{blockHeight}</PrismLink>
+          </ConsoleText>
+        </TableCell>
+      </TableRow>
+
+      {/* Rest of the rows */}
+      {txes.map((tx) => (
+        <TableRow key={tx.txId} hover>
+          <TableCell> {tx.txId} </TableCell>
+        </TableRow>
+      ))}
+    </>
   );
 });
