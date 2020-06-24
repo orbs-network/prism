@@ -21,6 +21,7 @@ const useStyles = makeStyles({
 });
 
 export const ContractTransactionsTable = React.memo<IProps>((props) => {
+  // @ts-ignore
   const classes = useStyles();
   const { orderedBlockHeights, blocksInfo, saveToClipboard } = props;
 

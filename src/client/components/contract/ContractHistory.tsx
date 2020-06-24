@@ -35,6 +35,7 @@ import { CONTRACT_TXES_HISTORY_PAGE_SIZE } from '../../../shared/Constants';
 import { useCallback } from 'react';
 import { useClipboard } from 'use-clipboard-copy';
 import { ContractTransactionsTable } from './contractTransactionsTable/ContractTransactionsTable';
+import { useSnackbar, VariantType } from 'notistack';
 
 SyntaxHighlighter.registerLanguage('go', goLang);
 
@@ -54,6 +55,7 @@ interface IProps extends WithStyles<typeof styles> {
 }
 
 export const ContractHistory = withStyles(styles)(({ blocksInfo, contractName, classes }: IProps) => {
+  const { enqueueSnackbar } = useSnackbar();
   const blockHeights = Object.keys(blocksInfo).sort((a, b) => subtract(b, a));
   let prevPage: HistoryPaginator;
   let nextPage: HistoryPaginator;
@@ -74,7 +76,7 @@ export const ContractHistory = withStyles(styles)(({ blocksInfo, contractName, c
   const onTxIdCopy = useCallback(
     (txId: string) => {
       clipboard.copy(txId);
-      alert('Copied');
+      enqueueSnackbar('Copied !', { variant: 'success', autoHideDuration: 3000 });
       // TODO : O.L : Add better alert message (snackbar ?)
     },
     [clipboard],

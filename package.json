@@ -69,6 +69,7 @@
     "lodash": "^4.17.15",
     "mongoose": "^5.8.1",
     "mongoose-long": "^0.2.1",
+    "notistack": "^0.9.17",
     "object-hash": "^2.0.1",
     "orbs-blocks-polling-js": "^2.0.1",
     "orbs-client-sdk": "^2.4.0",
