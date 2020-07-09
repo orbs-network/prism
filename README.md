@@ -37,6 +37,7 @@ The configuration of Prism is all done using environment variables. In the `.env
 | `POOLING_INTERVAL`               | Prism server uses pooling to "know" about a new block, this is the interval between calls to the Orbs node.                      | `2000`                    |                                   |
 | `GAP_FILLER_ACTIVE`              | Prism uses a gaps filler to fill skipped blocks (Blocks that the pooling misses). Set this variable to `false` to deactivate it. | `true`                    | `false`                           |
 | `GAP_FILLER_INTERVAL_IN_MINUTES` | The interval that the gaps filler checks for gaps.                                                                               | `30`                      |                                   |
+| `AUTHENTICATION`                 | A username:password pair for accessing prism (optional)                                                                          | -                         |                                   |
 
 ## Database
 
