@@ -29,6 +29,7 @@ const LOG_TO_ROLLBAR = process.env.LOG_TO_ROLLBAR === 'true'; // default: false
 const SERVER_PORT = process.env.PORT || 3000;
 const WEBPACK_PORT = 8085; // For dev environment only
 const FORCE_HTTPS = process.env.FORCE_HTTPS === 'true'; // default: false
+const AUTHENTICATION = process.env.AUTHENTICATION; // default: undefined . format: username:password
 
 // analytics
 const ROLLBAR_ACCESS_TOKEN_SERVER = process.env.ROLLBAR_ACCESS_TOKEN_SERVER;
@@ -48,7 +49,7 @@ const POOLING_INTERVAL = parseInt(process.env.POOLING_INTERVAL || '2000');
 
 // DB Builder
 const BLOCKS_POLLING_BATCH_SIZE = parseInt(process.env.BLOCKS_POLLING_BATCH_SIZE) || 1000;
-const MAXIMUM_PARALLEL_PROMISES = parseInt(process.env.MAXIMUM_PARALLEL_PROMISES) ||100;
+const MAXIMUM_PARALLEL_PROMISES = parseInt(process.env.MAXIMUM_PARALLEL_PROMISES) || 100;
 
 // gap filler
 const GAP_FILLER_ACTIVE = process.env.GAP_FILLER_ACTIVE !== 'false'; // default: true
@@ -64,6 +65,7 @@ module.exports = {
   ROLLBAR_ACCESS_TOKEN_SERVER,
   SERVER_PORT,
   FORCE_HTTPS,
+  AUTHENTICATION,
   WEBPACK_PORT,
   DATABASE_TYPE,
   MONGODB_URI,

@@ -14,13 +14,34 @@ import { apiRouter } from './routes/api-router';
 import { pagesRouter } from './routes/pages-router';
 import { staticsRouter } from './routes/statics-router';
 import { Storage } from './storage/storage';
-import {metricsRouter} from './routes/metrics-router';
+import { metricsRouter } from './routes/metrics-router';
+import passport from 'passport';
+import { DigestStrategy } from 'passport-http';
 
 export function initServer(storage: Storage) {
   const app = express();
 
   if (config.FORCE_HTTPS) {
     app.use(forceHttps);
+  }
+
+  if (config.AUTHENTICATION) {
+    const [username, password] = config.AUTHENTICATION.split(':');
+    app.use(passport.initialize());
+    app.use(passport.session());
+    passport.use(
+      new DigestStrategy({ qop: 'auth' }, function (usernameArg, done) {
+        return done(null, usernameArg === username, password);
+      }),
+    );
+    passport.serializeUser(function (user, done) {
+      done(null, user);
+    });
+
+    passport.deserializeUser(function (user, done) {
+      done(null, user);
+    });
+    app.use(passport.authenticate('digest'));
   }
 
   app.set('view engine', 'ejs');
