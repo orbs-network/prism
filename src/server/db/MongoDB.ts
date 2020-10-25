@@ -45,6 +45,7 @@ const blockSchema = new mongoose.Schema({
   blockHash: { type: String, index: { unique: true }},
   blockHeight: { type: (mongoose.Schema.Types as any).Long, index: { unique: true }},
   blockTimestamp: Number,
+  protocolVersion: Number,
   txIds: [String],
 });
 
