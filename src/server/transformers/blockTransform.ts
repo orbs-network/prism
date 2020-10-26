@@ -19,6 +19,7 @@ export function blockToBlockSummary(block: IBlock): IBlockSummary {
     blockHeight: block.blockHeight,
     numTransactions: block.txIds.length,
     blockTimestamp: block.blockTimestamp,
+    protocolVersion: block.protocolVersion,
   };
 }
 
@@ -30,6 +31,7 @@ export function blockResponseToBlockSummary(getBlockResponse: GetBlockResponse):
     blockHeight,
     numTransactions: getBlockResponse.transactions.length,
     blockTimestamp: getBlockResponse.blockTimestamp.getTime(),
+    protocolVersion: getBlockResponse.resultsBlockHeader.protocolVersion,
   };
 }
 
@@ -41,6 +43,7 @@ export function blockResponseToBlock(getBlockResponse: GetBlockResponse): IBlock
     blockHash,
     blockTimestamp: getBlockResponse.blockTimestamp.getTime(),
     txIds: getBlockResponse.transactions.map(tx => encodeHex(tx.txId)),
+    protocolVersion: getBlockResponse.resultsBlockHeader.protocolVersion,
   };
 }
 

@@ -10,6 +10,7 @@ interface IBlockHeader {
   blockHash: string;
   blockHeight: string;
   blockTimestamp: number;
+  protocolVersion: number;
 }
 
 export interface IBlockSummary extends IBlockHeader {
